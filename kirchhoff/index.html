@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kirchhoffsche Regeln — Interaktive Animation</title>
+<title>Kirchhoffsche Regeln — Interaktiv</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Segoe UI',system-ui,sans-serif;background:#f0f2f5;color:#1a1a2e}
 header{background:linear-gradient(135deg,#1a1a2e,#16213e);color:#fff;padding:1.8rem 2rem;text-align:center}
-header h1{font-size:1.9rem;letter-spacing:0.5px}
+header h1{font-size:1.9rem;letter-spacing:.5px}
 header p{opacity:.75;margin-top:.3rem}
 .tabs{display:flex;justify-content:center;background:#16213e;border-bottom:3px solid #0f3460}
 .tab{padding:.9rem 2rem;cursor:pointer;color:rgba(255,255,255,.6);background:none;border:none;
@@ -24,10 +24,6 @@ svg{display:block;margin:1rem auto;max-width:100%;height:auto}
 .ctrl label{font-weight:700;font-size:.92rem}
 .ctrl input[type=range]{flex:1;min-width:180px;accent-color:#e94560}
 .sv{color:#e94560;font-weight:700;font-size:1.1rem;min-width:60px;text-align:center}
-.btn{padding:.55rem 1.4rem;border:none;border-radius:8px;font-weight:700;cursor:pointer;font-size:.92rem;transition:.15s}
-.btn-r{background:#e94560;color:#fff}.btn-r:hover{background:#c73651}
-.btn-b{background:#0f3460;color:#fff}.btn-b:hover{background:#0a2647}
-.btn-g{background:#27ae60;color:#fff}.btn-g:hover{background:#1e8449}
 .vg{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:.7rem;margin:1rem 0}
 .vb{background:#f8f9fa;border-radius:8px;padding:.7rem 1rem;text-align:center;border-left:4px solid #0f3460}
 .vb .l{font-size:.82rem;color:#666}.vb .v{font-size:1.25rem;font-weight:700}
@@ -36,26 +32,6 @@ svg{display:block;margin:1rem auto;max-width:100%;height:auto}
 .eq{background:#fef9e7;border:2px solid #f0b429;border-radius:10px;padding:1rem 1.5rem;text-align:center;
   font-size:1.15rem;font-weight:600;margin:1rem 0}
 .eq .ok{color:#27ae60;font-size:1.3rem}
-
-/* SVG styles */
-.wire{stroke:#333;stroke-width:2.5;fill:none;stroke-linecap:round}
-.resistor{stroke:#333;stroke-width:2.5;fill:#fff}
-.rlabel{font:bold 14px sans-serif;fill:#333;text-anchor:middle}
-.rvalue{font:12px sans-serif;fill:#666;text-anchor:middle}
-.source-circle{stroke:#333;stroke-width:2.5;fill:#fff}
-.slabel{font:bold 14px sans-serif;fill:#333;text-anchor:middle}
-.plus-minus{font:bold 16px sans-serif;fill:#c0392b}
-.dot{fill:#e94560}
-.varrow{stroke:#3498db;stroke-width:2;fill:none;marker-end:url(#varr)}
-.vlabel{font:bold 13px sans-serif;fill:#3498db;text-anchor:middle}
-.iarrow{stroke:#e94560;stroke-width:1.8;fill:none;marker-end:url(#iarr)}
-.ilabel{font:bold 12px sans-serif;fill:#e94560}
-.knoten-label{font:bold 13px sans-serif;fill:#e94560}
-.masche-arrow{stroke:#999;stroke-width:1.5;fill:none;stroke-dasharray:6,4;marker-end:url(#marr)}
-.masche-label{font:13px sans-serif;fill:#999;text-anchor:middle}
-.particle{fill:#e94560;opacity:.8}
-
-/* Aufgabe */
 .aufg{background:#fdf2e9;border-left:4px solid #f0b429;border-radius:10px;padding:1.5rem;margin:1rem 0}
 .aufg h3{color:#e67e22;margin-bottom:.6rem}
 .ig{display:flex;align-items:center;gap:.5rem;margin:.4rem 0}
@@ -65,25 +41,23 @@ svg{display:block;margin:1rem auto;max-width:100%;height:auto}
 .ig input.nok{border-color:#e94560;background:#fdedec}
 .ig .u{color:#666;font-weight:600}
 .fb{padding:.8rem;border-radius:8px;margin-top:1rem;font-weight:600;display:none}
-.fb.show{display:block}
-.fb.s{background:#eafaf1;color:#27ae60;border:1px solid #27ae60}
+.fb.show{display:block}.fb.s{background:#eafaf1;color:#27ae60;border:1px solid #27ae60}
 .fb.e{background:#fdedec;color:#e94560;border:1px solid #e94560}
 #solution{display:none;margin-top:1.2rem}
 #solution .card{background:#eafaf1;border:2px solid #27ae60}
 #solution h2{color:#27ae60}
 #solution p{margin-top:.6rem}
-
-@media(max-width:650px){
-  .tab{padding:.7rem 1rem;font-size:.85rem}
-  .aufg-grid{grid-template-columns:1fr}
-  header h1{font-size:1.4rem}
-}
+.btn{padding:.55rem 1.4rem;border:none;border-radius:8px;font-weight:700;cursor:pointer;font-size:.92rem;transition:.15s}
+.btn-g{background:#27ae60;color:#fff}.btn-g:hover{background:#1e8449}
+.btn-b{background:#0f3460;color:#fff}.btn-b:hover{background:#0a2647}
+.btn-r{background:#e94560;color:#fff}.btn-r:hover{background:#c73651}
+@media(max-width:650px){.tab{padding:.7rem 1rem;font-size:.85rem}header h1{font-size:1.4rem}}
 </style>
 </head>
 <body>
 <header>
   <h1>Kirchhoffsche Regeln</h1>
-  <p>Interaktive Animation — Fachpraxis 11NP</p>
+  <p>Interaktiv — Fachpraxis 11NP</p>
 </header>
 <div class="tabs">
   <button class="tab active" data-p="knoten">1. Knotenregel</button>
@@ -92,7 +66,6 @@ svg{display:block;margin:1rem auto;max-width:100%;height:auto}
 </div>
 <div class="wrap">
 
-<!-- ===== KNOTENREGEL ===== -->
 <div id="knoten" class="panel active">
 <div class="card">
   <h2>Versuch 1: Knotenregel — Parallelschaltung</h2>
@@ -101,59 +74,55 @@ svg{display:block;margin:1rem auto;max-width:100%;height:auto}
     <label>Spannung U:</label>
     <input type="range" id="v1" min="1" max="12" value="5" step="0.5">
     <span class="sv" id="v1v">5,0 V</span>
-    <button class="btn btn-r" id="anim1btn">▶ Animation</button>
   </div>
-  <div id="svg1wrap"></div>
-  <div class="vg" id="kvals"></div>
-  <div class="eq" id="keq"></div>
+  <div id="svg1"></div>
+  <div class="vg" id="kv"></div>
+  <div class="eq" id="ke"></div>
 </div>
 </div>
 
-<!-- ===== MASCHENREGEL ===== -->
 <div id="maschen" class="panel">
 <div class="card">
   <h2>Versuch 2: Maschenregel — Reihenschaltung</h2>
-  <p>Verändern Sie die Quellspannung und beobachten Sie die Spannungsaufteilung in der Masche.</p>
+  <p>Verändern Sie die Quellspannung und beobachten Sie die Spannungsaufteilung.</p>
   <div class="ctrl">
     <label>U₀:</label>
     <input type="range" id="v2" min="1" max="24" value="12" step="0.5">
     <span class="sv" id="v2v">12,0 V</span>
-    <button class="btn btn-b" id="anim2btn">▶ Animation</button>
   </div>
-  <div id="svg2wrap"></div>
-  <div class="vg" id="mvals"></div>
-  <div class="eq" id="meq"></div>
+  <div id="svg2"></div>
+  <div class="vg" id="mv"></div>
+  <div class="eq" id="me"></div>
 </div>
 </div>
 
-<!-- ===== RECHENAUFGABE ===== -->
 <div id="aufgabe" class="panel">
 <div class="card">
   <h2>📝 Rechenaufgabe: Beide Regeln anwenden</h2>
   <div class="aufg">
     <h3>Aufgabe</h3>
-    <p>Gegeben ist folgende Schaltung:</p>
+    <p>Gegeben:</p>
     <ul style="margin:.6rem 0 .6rem 1.5rem">
       <li>Quellspannung: <strong>U₀ = 12 V</strong></li>
       <li>R₁ = 100 Ω und R₂ = 200 Ω sind <strong>parallel</strong> geschaltet</li>
       <li>R₃ = 150 Ω ist dazu <strong>in Reihe</strong> geschaltet</li>
     </ul>
-    <div id="svg3wrap"></div>
+    <div id="svg3"></div>
     <p><strong>Berechnen Sie:</strong></p>
   </div>
   <div class="aufg" style="border-left-color:#0f3460;background:#eaf2f8">
-    <h3 style="color:#0f3460">a) Ersatzwiderstand R₁₂ der Parallelschaltung</h3>
+    <h3 style="color:#0f3460">a) Ersatzwiderstand R₁₂</h3>
     <div class="ig"><label>R₁₂ =</label><input type="number" id="a-r12" step="0.1" placeholder="?"><span class="u">Ω</span></div>
     <h3 style="color:#0f3460;margin-top:1rem">b) Gesamtwiderstand R_ges</h3>
     <div class="ig"><label>R_ges =</label><input type="number" id="a-rges" step="0.1" placeholder="?"><span class="u">Ω</span></div>
     <h3 style="color:#0f3460;margin-top:1rem">c) Gesamtstrom I_ges</h3>
     <div class="ig"><label>I_ges =</label><input type="number" id="a-iges" step="0.1" placeholder="?"><span class="u">mA</span></div>
-    <h3 style="color:#0f3460;margin-top:1rem">d) Teilströme I₁ und I₂ (Knotenregel)</h3>
+    <h3 style="color:#0f3460;margin-top:1rem">d) Teilströme (Knotenregel)</h3>
     <div style="display:flex;gap:1.5rem;flex-wrap:wrap">
       <div class="ig"><label>I₁ =</label><input type="number" id="a-i1" step="0.1" placeholder="?"><span class="u">mA</span></div>
       <div class="ig"><label>I₂ =</label><input type="number" id="a-i2" step="0.1" placeholder="?"><span class="u">mA</span></div>
     </div>
-    <h3 style="color:#0f3460;margin-top:1rem">e) Spannungen U₃ und U₁₂ (Maschenregel)</h3>
+    <h3 style="color:#0f3460;margin-top:1rem">e) Spannungen (Maschenregel)</h3>
     <div style="display:flex;gap:1.5rem;flex-wrap:wrap">
       <div class="ig"><label>U₃ =</label><input type="number" id="a-u3" step="0.01" placeholder="?"><span class="u">V</span></div>
       <div class="ig"><label>U₁₂ =</label><input type="number" id="a-u12" step="0.01" placeholder="?"><span class="u">V</span></div>
@@ -170,384 +139,265 @@ svg{display:block;margin:1rem auto;max-width:100%;height:auto}
       <h2>Lösung</h2>
       <p><strong>a)</strong> 1/R₁₂ = 1/100 + 1/200 = 3/200 → <strong>R₁₂ ≈ 66,7 Ω</strong></p>
       <p><strong>b)</strong> R_ges = 66,7 + 150 = <strong>216,7 Ω</strong></p>
-      <p><strong>c)</strong> I_ges = 12 V / 216,7 Ω = <strong>55,4 mA</strong></p>
-      <p><strong>d)</strong> U₁₂ = 55,4 mA · 66,7 Ω = 3,69 V<br>
-         I₁ = 3,69 / 100 = <strong>36,9 mA</strong> · I₂ = 3,69 / 200 = <strong>18,5 mA</strong><br>
-         Probe: 36,9 + 18,5 = 55,4 mA ✓</p>
-      <p><strong>e)</strong> U₃ = 55,4 mA · 150 Ω = <strong>8,31 V</strong><br>
-         U₁₂ = <strong>3,69 V</strong><br>
-         Probe: 8,31 + 3,69 = 12,00 V ✓</p>
+      <p><strong>c)</strong> I_ges = 12 / 216,7 = <strong>55,4 mA</strong></p>
+      <p><strong>d)</strong> U₁₂ = 55,4 mA · 66,7 Ω = 3,69 V → I₁ = <strong>36,9 mA</strong>, I₂ = <strong>18,5 mA</strong><br>Probe: 36,9 + 18,5 = 55,4 mA ✓</p>
+      <p><strong>e)</strong> U₃ = <strong>8,31 V</strong>, U₁₂ = <strong>3,69 V</strong><br>Probe: 8,31 + 3,69 = 12,00 V ✓</p>
     </div>
   </div>
 </div>
 </div>
 
 </div>
-
 <script>
 const f=(n,d=1)=>n.toFixed(d).replace('.',',');
 
-// ===== SVG DEFS (shared arrow markers) =====
-const DEFS=`<defs>
-<marker id="varr" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
-  <path d="M0,0 L8,3 L0,6" fill="#3498db"/>
-</marker>
-<marker id="iarr" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
-  <path d="M0,0 L8,3 L0,6" fill="#e94560"/>
-</marker>
-<marker id="marr" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
-  <path d="M0,0 L8,3 L0,6" fill="#999"/>
-</marker>
-</defs>`;
+// Helper: draw arrow (line with triangle tip)
+function arrow(x1,y1,x2,y2,color,sw=2){
+  const dx=x2-x1,dy=y2-y1,len=Math.sqrt(dx*dx+dy*dy);
+  const ux=dx/len,uy=dy/len; // unit vector
+  const tipLen=10,tipW=5;
+  const tx=x2-ux*tipLen,ty=y2-uy*tipLen;
+  const px=-uy,py=ux; // perpendicular
+  return `<line x1="${x1}" y1="${y1}" x2="${tx}" y2="${ty}" stroke="${color}" stroke-width="${sw}" fill="none"/>
+    <polygon points="${x2},${y2} ${tx+px*tipW},${ty+py*tipW} ${tx-px*tipW},${ty-py*tipW}" fill="${color}"/>`;
+}
 
-// ===== KNOTENREGEL SVG =====
-let anim1=false, particles1=[], raf1;
 const R1K=220,R2K=330,R3K=470;
+const R1M=100,R2M=220,R3M=330;
+const BLUE='#3498db',RED='#e94560';
 
-function buildKnoten(){
+// ===== KNOTENREGEL =====
+function buildK(){
   const U=+document.getElementById('v1').value;
   document.getElementById('v1v').textContent=f(U)+' V';
-  const I1=(U/R1K)*1000, I2=(U/R2K)*1000, I3=(U/R3K)*1000, Ig=I1+I2+I3;
+  const I1=(U/R1K)*1000,I2=(U/R2K)*1000,I3=(U/R3K)*1000,Ig=I1+I2+I3;
 
-  // SVG coordinates
-  const W=700,H=380;
-  const sx=60,sy=190; // source center
-  const top_=60, bot=320;
-  const kx=260; // knoten x = erste Verzweigung (bx[0])
-  const bx=[260,400,540]; // branch x positions
+  const W=680,H=370,sx=70,top_=55,bot=315;
+  const bx=[220,370,520]; // branch positions = where wires split
 
-  let svg=`<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">${DEFS}`;
+  let s=`<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">`;
 
-  // Source (left, vertical)
-  svg+=`<line x1="${sx}" y1="${bot}" x2="${sx}" y2="${bot-30}" class="wire"/>`;
-  svg+=`<circle cx="${sx}" cy="${sy}" r="20" class="source-circle"/>`;
-  svg+=`<text x="${sx}" y="${sy+5}" class="slabel">${f(U)} V</text>`;
-  svg+=`<line x1="${sx}" y1="${top_+30}" x2="${sx}" y2="${top_}" class="wire"/>`;
-  // + / -
-  svg+=`<text x="${sx-28}" y="${top_+45}" class="plus-minus">+</text>`;
-  svg+=`<text x="${sx-28}" y="${bot-35}" class="plus-minus">−</text>`;
-  // U arrow (+ to -, top to bottom)
-  svg+=`<line x1="${sx-38}" y1="${top_+55}" x2="${sx-38}" y2="${bot-50}" class="varrow"/>`;
-  svg+=`<text x="${sx-52}" y="${sy+5}" class="vlabel">U</text>`;
+  // Source (left vertical)
+  const scy=(top_+bot)/2;
+  s+=`<line x1="${sx}" y1="${bot}" x2="${sx}" y2="${scy+22}" stroke="#333" stroke-width="2.5"/>`;
+  s+=`<circle cx="${sx}" cy="${scy}" r="20" stroke="#333" stroke-width="2.5" fill="#fff"/>`;
+  s+=`<text x="${sx}" y="${scy+5}" text-anchor="middle" font-weight="bold" font-size="14" fill="#333">${f(U)} V</text>`;
+  s+=`<line x1="${sx}" y1="${scy-22}" x2="${sx}" y2="${top_}" stroke="#333" stroke-width="2.5"/>`;
+  // +/-
+  s+=`<text x="${sx-30}" y="${top_+40}" font-weight="bold" font-size="16" fill="#c0392b">+</text>`;
+  s+=`<text x="${sx-30}" y="${bot-30}" font-weight="bold" font-size="16" fill="#c0392b">−</text>`;
+  // U arrow (+ to -, downward)
+  s+=arrow(sx-42,top_+50,sx-42,bot-40,BLUE,2);
+  s+=`<text x="${sx-58}" y="${scy+5}" font-weight="bold" font-size="13" fill="${BLUE}" text-anchor="middle">U</text>`;
 
-  // Top wire source to knoten
-  svg+=`<line x1="${sx}" y1="${top_}" x2="${kx}" y2="${top_}" class="wire"/>`;
-  // Iges arrow
-  svg+=`<line x1="${sx+15}" y1="${top_-15}" x2="${kx-15}" y2="${top_-15}" class="iarrow"/>`;
-  svg+=`<text x="${(sx+kx)/2}" y="${top_-22}" class="ilabel" text-anchor="middle">I_ges</text>`;
+  // Top wire: source → first branch
+  s+=`<line x1="${sx}" y1="${top_}" x2="${bx[2]}" y2="${top_}" stroke="#333" stroke-width="2.5"/>`;
+  // I_ges arrow
+  s+=arrow(sx+15,top_-16,bx[0]-15,top_-16,RED,1.8);
+  s+=`<text x="${(sx+bx[0])/2}" y="${top_-24}" text-anchor="middle" font-weight="bold" font-size="12" fill="${RED}">I_ges</text>`;
 
-  // Knoten top
-  svg+=`<circle cx="${kx}" cy="${top_}" r="5" class="dot"/>`;
-  svg+=`<text x="${kx+8}" y="${top_-10}" class="knoten-label">Knoten</text>`;
-
-  // Top wire knoten to rightmost branch
-  svg+=`<line x1="${kx}" y1="${top_}" x2="${bx[2]}" y2="${top_}" class="wire"/>`;
+  // Knoten top (at first branch point)
+  s+=`<circle cx="${bx[0]}" cy="${top_}" r="6" fill="${RED}"/>`;
+  s+=`<text x="${bx[0]-5}" y="${top_-14}" font-weight="bold" font-size="13" fill="${RED}">Knoten</text>`;
 
   // 3 branches
-  const Rs=[R1K,R2K,R3K], Is=[I1,I2,I3], labels=['R₁','R₂','R₃'], iLabels=['I₁','I₂','I₃'];
+  const Rs=[R1K,R2K,R3K],labs=['R₁','R₂','R₃'],iLabs=['I₁','I₂','I₃'];
   bx.forEach((x,i)=>{
-    // Wire down to resistor
-    svg+=`<line x1="${x}" y1="${top_}" x2="${x}" y2="${top_+50}" class="wire"/>`;
-    // Resistor (rectangle)
-    const ry=top_+50, rh=100, rw=40;
-    svg+=`<rect x="${x-rw/2}" y="${ry}" width="${rw}" height="${rh}" class="resistor"/>`;
-    svg+=`<text x="${x}" y="${ry+rh/2+5}" class="rlabel">${labels[i]}</text>`;
-    svg+=`<text x="${x}" y="${ry-8}" class="rvalue">${Rs[i]} Ω</text>`;
-    // Wire from resistor to bottom
-    svg+=`<line x1="${x}" y1="${ry+rh}" x2="${x}" y2="${bot}" class="wire"/>`;
-    // Current arrow (beside branch)
-    svg+=`<line x1="${x+25}" y1="${top_+30}" x2="${x+25}" y2="${bot-30}" class="iarrow"/>`;
-    svg+=`<text x="${x+32}" y="${sy}" class="ilabel">${iLabels[i]}</text>`;
+    const ry=top_+45,rh=110,rw=44;
+    // Wire down
+    s+=`<line x1="${x}" y1="${top_}" x2="${x}" y2="${ry}" stroke="#333" stroke-width="2.5"/>`;
+    // Resistor
+    s+=`<rect x="${x-rw/2}" y="${ry}" width="${rw}" height="${rh}" stroke="#333" stroke-width="2.5" fill="#fff" rx="2"/>`;
+    s+=`<text x="${x}" y="${ry+rh/2+5}" text-anchor="middle" font-weight="bold" font-size="14" fill="#333">${labs[i]}</text>`;
+    s+=`<text x="${x}" y="${ry-8}" text-anchor="middle" font-size="12" fill="#666">${Rs[i]} Ω</text>`;
+    // Wire down from resistor
+    s+=`<line x1="${x}" y1="${ry+rh}" x2="${x}" y2="${bot}" stroke="#333" stroke-width="2.5"/>`;
+    // I arrow
+    s+=arrow(x+26,top_+25,x+26,bot-25,RED,1.5);
+    s+=`<text x="${x+34}" y="${scy+4}" font-weight="bold" font-size="12" fill="${RED}">${iLabs[i]}</text>`;
   });
 
   // Bottom wire
-  svg+=`<line x1="${bx[2]}" y1="${bot}" x2="${sx}" y2="${bot}" class="wire"/>`;
-
+  s+=`<line x1="${bx[2]}" y1="${bot}" x2="${sx}" y2="${bot}" stroke="#333" stroke-width="2.5"/>`;
   // Knoten bottom
-  svg+=`<circle cx="${kx}" cy="${bot}" r="5" class="dot"/>`;
+  s+=`<circle cx="${bx[0]}" cy="${bot}" r="6" fill="${RED}"/>`;
 
-  // Particles
-  if(anim1) particles1.forEach(p=>{
-    svg+=`<circle cx="${p.x}" cy="${p.y}" r="4" class="particle"/>`;
-  });
+  s+=`</svg>`;
+  document.getElementById('svg1').innerHTML=s;
 
-  svg+=`</svg>`;
-  document.getElementById('svg1wrap').innerHTML=svg;
-
-  // Values
-  document.getElementById('kvals').innerHTML=`
+  document.getElementById('kv').innerHTML=`
     <div class="vb cr"><div class="l">I_ges</div><div class="v">${f(Ig)} mA</div></div>
     <div class="vb"><div class="l">I₁ (${R1K} Ω)</div><div class="v">${f(I1)} mA</div></div>
     <div class="vb"><div class="l">I₂ (${R2K} Ω)</div><div class="v">${f(I2)} mA</div></div>
     <div class="vb"><div class="l">I₃ (${R3K} Ω)</div><div class="v">${f(I3)} mA</div></div>`;
-  document.getElementById('keq').innerHTML=`Knotenregel: I_ges = I₁ + I₂ + I₃<br>
+  document.getElementById('ke').innerHTML=`Knotenregel: I_ges = I₁ + I₂ + I₃<br>
     ${f(Ig)} = ${f(I1)} + ${f(I2)} + ${f(I3)} mA <span class="ok">✓</span>`;
 }
 
-function animKnoten(){
-  if(!anim1)return;
-  const U=+document.getElementById('v1').value;
-  const top_=60,bot=320,sx=60,kx=260,bx=[260,400,540];
-  const speed=U/5;
-
-  particles1.forEach(p=>{
-    p.t+=speed*0.015;
-    if(p.t>1)p.t-=1;
-    const t=p.t;
-    const bxi=bx[p.branch]||bx[0];
-    // Path: top wire → down through branch → bottom wire → up source → top
-    if(t<0.15){const tt=t/0.15; p.x=sx+(kx-sx)*tt; p.y=top_;}
-    else if(t<0.3){const tt=(t-0.15)/0.15; p.x=kx+(bxi-kx)*tt; p.y=top_;}
-    else if(t<0.6){const tt=(t-0.3)/0.3; p.x=bxi; p.y=top_+(bot-top_)*tt;}
-    else if(t<0.75){const tt=(t-0.6)/0.15; p.x=bxi-(bxi-sx)*tt; p.y=bot;}
-    else{const tt=(t-0.75)/0.25; p.x=sx; p.y=bot-(bot-top_)*tt;}
-  });
-  buildKnoten();
-  raf1=requestAnimationFrame(animKnoten);
-}
-
-// ===== MASCHENREGEL SVG =====
-let anim2=false, particles2=[], raf2;
-const R1M=100,R2M=220,R3M=330;
-
-function buildMaschen(){
+// ===== MASCHENREGEL =====
+function buildM(){
   const U0=+document.getElementById('v2').value;
   document.getElementById('v2v').textContent=f(U0)+' V';
-  const Rg=R1M+R2M+R3M, I=U0/Rg;
-  const U1=I*R1M, U2=I*R2M, U3=I*R3M;
+  const Rg=R1M+R2M+R3M,I=U0/Rg;
+  const U1=I*R1M,U2=I*R2M,U3=I*R3M;
 
-  const W=700,H=340;
-  const lx=80,rx=620,ty=60,by=280;
-  const r1s=lx+60,r1e=lx+200, r2s=lx+240,r2e=lx+380;
-  const r3s=ty+50,r3e=by-50;
-
-  let svg=`<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">${DEFS}`;
-
-  // Source (left)
-  svg+=`<line x1="${lx}" y1="${by}" x2="${lx}" y2="${by-60}" class="wire"/>`;
+  const W=720,H=360;
+  const lx=80,rx=640,ty=70,by=290;
   const scy=(ty+by)/2;
-  svg+=`<circle cx="${lx}" cy="${scy}" r="20" class="source-circle"/>`;
-  svg+=`<text x="${lx}" y="${scy+5}" class="slabel">U₀</text>`;
-  svg+=`<line x1="${lx}" y1="${ty+60}" x2="${lx}" y2="${ty}" class="wire"/>`;
-  svg+=`<text x="${lx-28}" y="${ty+50}" class="plus-minus">+</text>`;
-  svg+=`<text x="${lx-28}" y="${by-40}" class="plus-minus">−</text>`;
-  // U0 arrow (+ to -, downward)
-  svg+=`<line x1="${lx-40}" y1="${ty+40}" x2="${lx-40}" y2="${by-40}" class="varrow"/>`;
-  svg+=`<text x="${lx-55}" y="${scy+5}" class="vlabel">U₀</text>`;
+  // R positions: more space between them
+  const r1s=160,r1e=280, r2s=320,r2e=440;
+  const r3t=ty+45,r3b=by-45;
 
-  // Top wire to R1
-  svg+=`<line x1="${lx}" y1="${ty}" x2="${r1s}" y2="${ty}" class="wire"/>`;
-  // R1
-  svg+=`<rect x="${r1s}" y="${ty-18}" width="${r1e-r1s}" height="36" class="resistor"/>`;
-  svg+=`<text x="${(r1s+r1e)/2}" y="${ty+5}" class="rlabel">R₁</text>`;
-  svg+=`<text x="${(r1s+r1e)/2}" y="${ty-25}" class="rvalue">${R1M} Ω</text>`;
-  // U1 arrow
-  svg+=`<line x1="${r1s+5}" y1="${ty+30}" x2="${r1e-5}" y2="${ty+30}" class="varrow"/>`;
-  svg+=`<text x="${(r1s+r1e)/2}" y="${ty+48}" class="vlabel">U₁ = ${f(U1,2)} V</text>`;
+  let s=`<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">`;
 
-  // Wire R1 to R2
-  svg+=`<line x1="${r1e}" y1="${ty}" x2="${r2s}" y2="${ty}" class="wire"/>`;
-  // R2
-  svg+=`<rect x="${r2s}" y="${ty-18}" width="${r2e-r2s}" height="36" class="resistor"/>`;
-  svg+=`<text x="${(r2s+r2e)/2}" y="${ty+5}" class="rlabel">R₂</text>`;
-  svg+=`<text x="${(r2s+r2e)/2}" y="${ty-25}" class="rvalue">${R2M} Ω</text>`;
-  // U2 arrow
-  svg+=`<line x1="${r2s+5}" y1="${ty+30}" x2="${r2e-5}" y2="${ty+30}" class="varrow"/>`;
-  svg+=`<text x="${(r2s+r2e)/2}" y="${ty+48}" class="vlabel">U₂ = ${f(U2,2)} V</text>`;
+  // Source (left vertical)
+  s+=`<line x1="${lx}" y1="${by}" x2="${lx}" y2="${scy+22}" stroke="#333" stroke-width="2.5"/>`;
+  s+=`<circle cx="${lx}" cy="${scy}" r="20" stroke="#333" stroke-width="2.5" fill="#fff"/>`;
+  s+=`<text x="${lx}" y="${scy+5}" text-anchor="middle" font-weight="bold" font-size="14" fill="#333">U₀</text>`;
+  s+=`<line x1="${lx}" y1="${scy-22}" x2="${lx}" y2="${ty}" stroke="#333" stroke-width="2.5"/>`;
+  // +/- (well away from source circle)
+  s+=`<text x="${lx}" y="${ty+18}" text-anchor="middle" font-weight="bold" font-size="15" fill="#c0392b">+</text>`;
+  s+=`<text x="${lx}" y="${by-10}" text-anchor="middle" font-weight="bold" font-size="15" fill="#c0392b">−</text>`;
+  // U₀ arrow: from + (top) to − (bottom), LEFT of source, with good clearance
+  s+=arrow(lx-42,ty+25,lx-42,by-20,BLUE,2);
+  s+=`<text x="${lx-58}" y="${scy+5}" text-anchor="middle" font-weight="bold" font-size="13" fill="${BLUE}">U₀</text>`;
 
-  // Wire R2 to corner
-  svg+=`<line x1="${r2e}" y1="${ty}" x2="${rx}" y2="${ty}" class="wire"/>`;
-  // Wire down to R3
-  svg+=`<line x1="${rx}" y1="${ty}" x2="${rx}" y2="${r3s}" class="wire"/>`;
-  // R3
-  svg+=`<rect x="${rx-18}" y="${r3s}" width="36" height="${r3e-r3s}" class="resistor"/>`;
-  svg+=`<text x="${rx}" y="${(r3s+r3e)/2+5}" class="rlabel">R₃</text>`;
-  svg+=`<text x="${rx-55}" y="${(r3s+r3e)/2+5}" class="rvalue">${R3M} Ω</text>`;
-  // U3 arrow
-  svg+=`<line x1="${rx+30}" y1="${r3s+5}" x2="${rx+30}" y2="${r3e-5}" class="varrow"/>`;
-  svg+=`<text x="${rx+50}" y="${(r3s+r3e)/2+5}" class="vlabel">U₃ = ${f(U3,2)} V</text>`;
+  // Top wire → R₁
+  s+=`<line x1="${lx}" y1="${ty}" x2="${r1s}" y2="${ty}" stroke="#333" stroke-width="2.5"/>`;
+  // R₁
+  s+=`<rect x="${r1s}" y="${ty-18}" width="${r1e-r1s}" height="36" stroke="#333" stroke-width="2.5" fill="#fff" rx="2"/>`;
+  s+=`<text x="${(r1s+r1e)/2}" y="${ty+5}" text-anchor="middle" font-weight="bold" font-size="14" fill="#333">R₁</text>`;
+  s+=`<text x="${(r1s+r1e)/2}" y="${ty-26}" text-anchor="middle" font-size="12" fill="#666">${R1M} Ω</text>`;
+  // U₁ arrow (below R₁)
+  s+=arrow(r1s+8,ty+32,r1e-8,ty+32,BLUE,1.8);
+  s+=`<text x="${(r1s+r1e)/2}" y="${ty+52}" text-anchor="middle" font-weight="bold" font-size="12" fill="${BLUE}">U₁=${f(U1,2)} V</text>`;
 
-  // Wire R3 to bottom
-  svg+=`<line x1="${rx}" y1="${r3e}" x2="${rx}" y2="${by}" class="wire"/>`;
-  // Bottom wire
-  svg+=`<line x1="${rx}" y1="${by}" x2="${lx}" y2="${by}" class="wire"/>`;
+  // Wire → R₂
+  s+=`<line x1="${r1e}" y1="${ty}" x2="${r2s}" y2="${ty}" stroke="#333" stroke-width="2.5"/>`;
+  // R₂
+  s+=`<rect x="${r2s}" y="${ty-18}" width="${r2e-r2s}" height="36" stroke="#333" stroke-width="2.5" fill="#fff" rx="2"/>`;
+  s+=`<text x="${(r2s+r2e)/2}" y="${ty+5}" text-anchor="middle" font-weight="bold" font-size="14" fill="#333">R₂</text>`;
+  s+=`<text x="${(r2s+r2e)/2}" y="${ty-26}" text-anchor="middle" font-size="12" fill="#666">${R2M} Ω</text>`;
+  // U₂ arrow
+  s+=arrow(r2s+8,ty+32,r2e-8,ty+32,BLUE,1.8);
+  s+=`<text x="${(r2s+r2e)/2}" y="${ty+52}" text-anchor="middle" font-weight="bold" font-size="12" fill="${BLUE}">U₂=${f(U2,2)} V</text>`;
 
-  // Masche arrow (center, clockwise)
-  const mcx=(lx+rx)/2, mcy=(ty+by)/2;
-  svg+=`<path d="M${mcx+40},${mcy-30} A45,45 0 1,1 ${mcx+35},${mcy-25}" class="masche-arrow"/>`;
-  svg+=`<text x="${mcx}" y="${mcy+5}" class="masche-label">Masche</text>`;
+  // Wire → corner → R₃
+  s+=`<line x1="${r2e}" y1="${ty}" x2="${rx}" y2="${ty}" stroke="#333" stroke-width="2.5"/>`;
+  s+=`<line x1="${rx}" y1="${ty}" x2="${rx}" y2="${r3t}" stroke="#333" stroke-width="2.5"/>`;
+  // R₃ (vertical, right side)
+  s+=`<rect x="${rx-18}" y="${r3t}" width="36" height="${r3b-r3t}" stroke="#333" stroke-width="2.5" fill="#fff" rx="2"/>`;
+  s+=`<text x="${rx}" y="${(r3t+r3b)/2+5}" text-anchor="middle" font-weight="bold" font-size="14" fill="#333">R₃</text>`;
+  s+=`<text x="${rx-48}" y="${(r3t+r3b)/2+5}" text-anchor="middle" font-size="12" fill="#666">${R3M} Ω</text>`;
+  // U₃ arrow (right of R₃, with clearance)
+  s+=arrow(rx+32,r3t+8,rx+32,r3b-8,BLUE,1.8);
+  s+=`<text x="${rx+55}" y="${(r3t+r3b)/2+5}" text-anchor="start" font-weight="bold" font-size="12" fill="${BLUE}">U₃=${f(U3,2)} V</text>`;
+
+  // Wire from R₃ → bottom → back
+  s+=`<line x1="${rx}" y1="${r3b}" x2="${rx}" y2="${by}" stroke="#333" stroke-width="2.5"/>`;
+  s+=`<line x1="${rx}" y1="${by}" x2="${lx}" y2="${by}" stroke="#333" stroke-width="2.5"/>`;
+
+  // Masche arrow (dashed arc, center)
+  const mcx=(lx+rx)/2,mcy=(ty+by)/2;
+  s+=`<circle cx="${mcx}" cy="${mcy}" r="40" stroke="#aaa" stroke-width="1.5" fill="none" stroke-dasharray="6,4"/>`;
+  // Small arrow tip on the arc (clockwise, top)
+  s+=`<polygon points="${mcx+40},${mcy-5} ${mcx+35},${mcy-14} ${mcx+45},${mcy-14}" fill="#aaa"/>`;
+  s+=`<text x="${mcx}" y="${mcy+5}" text-anchor="middle" font-size="13" fill="#aaa">Masche</text>`;
 
   // Current label
-  svg+=`<text x="${lx+15}" y="${ty-12}" class="ilabel">→ I = ${f(I*1000)} mA</text>`;
+  s+=`<text x="${lx+20}" y="${ty-10}" font-weight="bold" font-size="12" fill="${RED}">→ I = ${f(I*1000)} mA</text>`;
 
-  // Particles
-  if(anim2) particles2.forEach(p=>{
-    svg+=`<circle cx="${p.x}" cy="${p.y}" r="4" class="particle"/>`;
-  });
+  s+=`</svg>`;
+  document.getElementById('svg2').innerHTML=s;
 
-  svg+=`</svg>`;
-  document.getElementById('svg2wrap').innerHTML=svg;
-
-  document.getElementById('mvals').innerHTML=`
+  document.getElementById('mv').innerHTML=`
     <div class="vb hi"><div class="l">U₀</div><div class="v">${f(U0,2)} V</div></div>
     <div class="vb"><div class="l">U₁ (${R1M} Ω)</div><div class="v">${f(U1,2)} V</div></div>
     <div class="vb"><div class="l">U₂ (${R2M} Ω)</div><div class="v">${f(U2,2)} V</div></div>
     <div class="vb"><div class="l">U₃ (${R3M} Ω)</div><div class="v">${f(U3,2)} V</div></div>
     <div class="vb cr"><div class="l">I</div><div class="v">${f(I*1000)} mA</div></div>`;
-  document.getElementById('meq').innerHTML=`
-    Maschenregel: +U₀ − U₁ − U₂ − U₃ = 0<br>
+  document.getElementById('me').innerHTML=`Maschenregel: +U₀ − U₁ − U₂ − U₃ = 0<br>
     +${f(U0,2)} − ${f(U1,2)} − ${f(U2,2)} − ${f(U3,2)} = ${f(U0-U1-U2-U3,2)} V <span class="ok">✓</span>`;
 }
 
-function animMaschen(){
-  if(!anim2)return;
-  const lx=80,rx=620,ty=60,by=280;
-  const perim=2*(rx-lx)+2*(by-ty);
-  const speed=0.004;
-  particles2.forEach(p=>{
-    p.t+=speed; if(p.t>1)p.t-=1;
-    const d=p.t*perim;
-    const segW=rx-lx,segH=by-ty;
-    if(d<segW){p.x=lx+d;p.y=ty;}
-    else if(d<segW+segH){p.x=rx;p.y=ty+(d-segW);}
-    else if(d<2*segW+segH){p.x=rx-(d-segW-segH);p.y=by;}
-    else{p.x=lx;p.y=by-(d-2*segW-segH);}
-  });
-  buildMaschen();
-  raf2=requestAnimationFrame(animMaschen);
-}
-
-// ===== AUFGABE SVG =====
-function buildAufgabe(){
-  const W=650,H=300;
-  const lx=60,ty=50,by=250,kx=260,rx=420;
-
-  let svg=`<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">${DEFS}`;
-
+// ===== AUFGABE =====
+function buildA(){
+  const W=620,H=300,lx=60,ty=50,by=250,kx=260,rx=420,scy=(ty+by)/2;
+  let s=`<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">`;
   // Source
-  const scy=(ty+by)/2;
-  svg+=`<line x1="${lx}" y1="${by}" x2="${lx}" y2="${by-50}" class="wire"/>`;
-  svg+=`<circle cx="${lx}" cy="${scy}" r="18" class="source-circle"/>`;
-  svg+=`<text x="${lx}" y="${scy+5}" class="slabel">12 V</text>`;
-  svg+=`<line x1="${lx}" y1="${ty+50}" x2="${lx}" y2="${ty}" class="wire"/>`;
-  svg+=`<text x="${lx-25}" y="${ty+42}" class="plus-minus">+</text>`;
-  svg+=`<text x="${lx-25}" y="${by-35}" class="plus-minus">−</text>`;
-
-  // R3 in series (top)
-  svg+=`<line x1="${lx}" y1="${ty}" x2="${lx+30}" y2="${ty}" class="wire"/>`;
-  svg+=`<rect x="${lx+30}" y="${ty-16}" width="100" height="32" class="resistor"/>`;
-  svg+=`<text x="${lx+80}" y="${ty+5}" class="rlabel">R₃</text>`;
-  svg+=`<text x="${lx+80}" y="${ty-22}" class="rvalue">150 Ω</text>`;
-  svg+=`<line x1="${lx+130}" y1="${ty}" x2="${kx}" y2="${ty}" class="wire"/>`;
-
-  // Knoten top
-  svg+=`<circle cx="${kx}" cy="${ty}" r="5" class="dot"/>`;
-  svg+=`<text x="${kx+8}" y="${ty-10}" class="knoten-label">Knoten</text>`;
-
-  // R1 branch (left)
-  svg+=`<line x1="${kx}" y1="${ty}" x2="${kx}" y2="${ty+35}" class="wire"/>`;
-  svg+=`<rect x="${kx-18}" y="${ty+35}" width="36" height="100" class="resistor"/>`;
-  svg+=`<text x="${kx}" y="${ty+90}" class="rlabel">R₁</text>`;
-  svg+=`<text x="${kx-50}" y="${ty+90}" class="rvalue">100 Ω</text>`;
-  svg+=`<line x1="${kx}" y1="${ty+135}" x2="${kx}" y2="${by}" class="wire"/>`;
-
-  // R2 branch (right)
-  svg+=`<line x1="${kx}" y1="${ty}" x2="${rx}" y2="${ty}" class="wire"/>`;
-  svg+=`<line x1="${rx}" y1="${ty}" x2="${rx}" y2="${ty+35}" class="wire"/>`;
-  svg+=`<rect x="${rx-18}" y="${ty+35}" width="36" height="100" class="resistor"/>`;
-  svg+=`<text x="${rx}" y="${ty+90}" class="rlabel">R₂</text>`;
-  svg+=`<text x="${rx+30}" y="${ty+90}" class="rvalue">200 Ω</text>`;
-  svg+=`<line x1="${rx}" y1="${ty+135}" x2="${rx}" y2="${by}" class="wire"/>`;
-  svg+=`<line x1="${rx}" y1="${by}" x2="${kx}" y2="${by}" class="wire"/>`;
-
-  // Knoten bottom
-  svg+=`<circle cx="${kx}" cy="${by}" r="5" class="dot"/>`;
-
-  // Bottom wire
-  svg+=`<line x1="${kx}" y1="${by}" x2="${lx}" y2="${by}" class="wire"/>`;
-
-  // Current labels
-  svg+=`<text x="${lx+15}" y="${ty-10}" class="ilabel">→ I_ges</text>`;
-  svg+=`<text x="${kx+6}" y="${ty+75}" class="ilabel">↓ I₁</text>`;
-  svg+=`<text x="${rx+6}" y="${ty+75}" class="ilabel">↓ I₂</text>`;
-
-  svg+=`</svg>`;
-  document.getElementById('svg3wrap').innerHTML=svg;
+  s+=`<line x1="${lx}" y1="${by}" x2="${lx}" y2="${scy+20}" stroke="#333" stroke-width="2.5"/>`;
+  s+=`<circle cx="${lx}" cy="${scy}" r="18" stroke="#333" stroke-width="2.5" fill="#fff"/>`;
+  s+=`<text x="${lx}" y="${scy+5}" text-anchor="middle" font-weight="bold" font-size="13" fill="#333">12 V</text>`;
+  s+=`<line x1="${lx}" y1="${scy-20}" x2="${lx}" y2="${ty}" stroke="#333" stroke-width="2.5"/>`;
+  s+=`<text x="${lx}" y="${ty+16}" text-anchor="middle" font-weight="bold" font-size="14" fill="#c0392b">+</text>`;
+  s+=`<text x="${lx}" y="${by-8}" text-anchor="middle" font-weight="bold" font-size="14" fill="#c0392b">−</text>`;
+  // R3 series
+  s+=`<line x1="${lx}" y1="${ty}" x2="${lx+30}" y2="${ty}" stroke="#333" stroke-width="2.5"/>`;
+  s+=`<rect x="${lx+30}" y="${ty-16}" width="100" height="32" stroke="#333" stroke-width="2.5" fill="#fff" rx="2"/>`;
+  s+=`<text x="${lx+80}" y="${ty+5}" text-anchor="middle" font-weight="bold" font-size="13" fill="#333">R₃</text>`;
+  s+=`<text x="${lx+80}" y="${ty-22}" text-anchor="middle" font-size="11" fill="#666">150 Ω</text>`;
+  s+=`<line x1="${lx+130}" y1="${ty}" x2="${kx}" y2="${ty}" stroke="#333" stroke-width="2.5"/>`;
+  // Knoten
+  s+=`<circle cx="${kx}" cy="${ty}" r="5" fill="${RED}"/>`;
+  s+=`<text x="${kx+8}" y="${ty-10}" font-weight="bold" font-size="12" fill="${RED}">Knoten</text>`;
+  // R1
+  s+=`<line x1="${kx}" y1="${ty}" x2="${kx}" y2="${ty+35}" stroke="#333" stroke-width="2.5"/>`;
+  s+=`<rect x="${kx-18}" y="${ty+35}" width="36" height="100" stroke="#333" stroke-width="2.5" fill="#fff" rx="2"/>`;
+  s+=`<text x="${kx}" y="${ty+90}" text-anchor="middle" font-weight="bold" font-size="13" fill="#333">R₁</text>`;
+  s+=`<text x="${kx-48}" y="${ty+90}" text-anchor="middle" font-size="11" fill="#666">100 Ω</text>`;
+  s+=`<line x1="${kx}" y1="${ty+135}" x2="${kx}" y2="${by}" stroke="#333" stroke-width="2.5"/>`;
+  // R2
+  s+=`<line x1="${kx}" y1="${ty}" x2="${rx}" y2="${ty}" stroke="#333" stroke-width="2.5"/>`;
+  s+=`<line x1="${rx}" y1="${ty}" x2="${rx}" y2="${ty+35}" stroke="#333" stroke-width="2.5"/>`;
+  s+=`<rect x="${rx-18}" y="${ty+35}" width="36" height="100" stroke="#333" stroke-width="2.5" fill="#fff" rx="2"/>`;
+  s+=`<text x="${rx}" y="${ty+90}" text-anchor="middle" font-weight="bold" font-size="13" fill="#333">R₂</text>`;
+  s+=`<text x="${rx+48}" y="${ty+90}" text-anchor="middle" font-size="11" fill="#666">200 Ω</text>`;
+  s+=`<line x1="${rx}" y1="${ty+135}" x2="${rx}" y2="${by}" stroke="#333" stroke-width="2.5"/>`;
+  s+=`<line x1="${rx}" y1="${by}" x2="${kx}" y2="${by}" stroke="#333" stroke-width="2.5"/>`;
+  s+=`<circle cx="${kx}" cy="${by}" r="5" fill="${RED}"/>`;
+  s+=`<line x1="${kx}" y1="${by}" x2="${lx}" y2="${by}" stroke="#333" stroke-width="2.5"/>`;
+  // Current
+  s+=`<text x="${lx+15}" y="${ty-10}" font-weight="bold" font-size="11" fill="${RED}">→ I_ges</text>`;
+  s+=`<text x="${kx+6}" y="${ty+75}" font-weight="bold" font-size="11" fill="${RED}">↓I₁</text>`;
+  s+=`<text x="${rx+6}" y="${ty+75}" font-weight="bold" font-size="11" fill="${RED}">↓I₂</text>`;
+  s+=`</svg>`;
+  document.getElementById('svg3').innerHTML=s;
 }
 
-// ===== ANSWER CHECK =====
-const C={r12:200/3, rges:200/3+150};
-C.iges=(12/C.rges)*1000;
-C.u12=(12/C.rges)*C.r12;
-C.u3=(12/C.rges)*150;
-C.i1=C.u12/100*1000;
-C.i2=C.u12/200*1000;
-
-function checkAns(){
+// ===== CHECK =====
+const C={r12:200/3,rges:200/3+150};
+C.iges=(12/C.rges)*1000;C.u12=(12/C.rges)*C.r12;C.u3=(12/C.rges)*150;
+C.i1=C.u12/100*1000;C.i2=C.u12/200*1000;
+function chk(){
   const ids=[['a-r12',C.r12],['a-rges',C.rges],['a-iges',C.iges],['a-i1',C.i1],['a-i2',C.i2],['a-u3',C.u3],['a-u12',C.u12]];
   let ok=true,n=0;
-  ids.forEach(([id,cor])=>{
-    const el=document.getElementById(id),v=parseFloat(el.value);
-    el.classList.remove('ok','nok');
-    if(isNaN(v)||el.value==='')return;
-    n++;
-    if(Math.abs(v-cor)/cor<0.08)el.classList.add('ok');
-    else{el.classList.add('nok');ok=false;}
-  });
-  const fb=document.getElementById('fb');
-  fb.classList.add('show');
-  if(!n){fb.className='fb show e';fb.textContent='Bitte tragen Sie mindestens einen Wert ein.';}
-  else if(ok&&n===7){fb.className='fb show s';fb.textContent='✓ Alle Antworten korrekt!';}
-  else if(ok){fb.className='fb show s';fb.textContent=`✓ ${n}/7 korrekt. Füllen Sie die restlichen Felder aus.`;}
+  ids.forEach(([id,c])=>{const el=document.getElementById(id),v=parseFloat(el.value);
+    el.classList.remove('ok','nok');if(isNaN(v)||el.value==='')return;n++;
+    Math.abs(v-c)/c<.08?el.classList.add('ok'):(el.classList.add('nok'),ok=false);});
+  const fb=document.getElementById('fb');fb.classList.add('show');
+  if(!n){fb.className='fb show e';fb.textContent='Bitte Werte eintragen.';}
+  else if(ok&&n===7){fb.className='fb show s';fb.textContent='✓ Alle korrekt!';}
+  else if(ok){fb.className='fb show s';fb.textContent=`✓ ${n}/7 korrekt.`;}
   else{fb.className='fb show e';fb.textContent='✗ Rot markierte Werte prüfen.';}
 }
 
-// ===== EVENT LISTENERS =====
+// ===== INIT =====
 document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{
   document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
   document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
-  t.classList.add('active');
-  document.getElementById(t.dataset.p).classList.add('active');
-  if(t.dataset.p==='knoten')buildKnoten();
-  if(t.dataset.p==='maschen')buildMaschen();
-  if(t.dataset.p==='aufgabe')buildAufgabe();
+  t.classList.add('active');document.getElementById(t.dataset.p).classList.add('active');
+  if(t.dataset.p==='knoten')buildK();if(t.dataset.p==='maschen')buildM();if(t.dataset.p==='aufgabe')buildA();
 }));
-
-document.getElementById('v1').addEventListener('input',()=>{if(!anim1)buildKnoten();});
-document.getElementById('v2').addEventListener('input',()=>{if(!anim2)buildMaschen();});
-
-document.getElementById('anim1btn').addEventListener('click',function(){
-  anim1=!anim1;
-  this.textContent=anim1?'⏸ Stopp':'▶ Animation';
-  if(anim1){
-    particles1=[];
-    for(let i=0;i<25;i++)particles1.push({t:Math.random(),branch:i%3,x:0,y:0});
-    animKnoten();
-  }else{cancelAnimationFrame(raf1);buildKnoten();}
-});
-
-document.getElementById('anim2btn').addEventListener('click',function(){
-  anim2=!anim2;
-  this.textContent=anim2?'⏸ Stopp':'▶ Animation';
-  if(anim2){
-    particles2=[];
-    for(let i=0;i<18;i++)particles2.push({t:Math.random(),x:0,y:0});
-    animMaschen();
-  }else{cancelAnimationFrame(raf2);buildMaschen();}
-});
-
-document.getElementById('checkBtn').addEventListener('click',checkAns);
+document.getElementById('v1').addEventListener('input',buildK);
+document.getElementById('v2').addEventListener('input',buildM);
+document.getElementById('checkBtn').addEventListener('click',chk);
 document.getElementById('solBtn').addEventListener('click',()=>document.getElementById('solution').style.display='block');
 document.getElementById('resetBtn').addEventListener('click',()=>{
   ['a-r12','a-rges','a-iges','a-i1','a-i2','a-u3','a-u12'].forEach(id=>{
-    const el=document.getElementById(id);el.value='';el.classList.remove('ok','nok');
-  });
-  document.getElementById('fb').classList.remove('show');
-  document.getElementById('solution').style.display='none';
+    const el=document.getElementById(id);el.value='';el.classList.remove('ok','nok');});
+  document.getElementById('fb').classList.remove('show');document.getElementById('solution').style.display='none';
 });
-
-// Init
-buildKnoten();buildMaschen();buildAufgabe();
+buildK();buildM();buildA();
 </script>
 </body>
 </html>
