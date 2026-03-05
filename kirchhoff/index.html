@@ -325,44 +325,74 @@ function buildM(){
 
 // ===== AUFGABE =====
 function buildA(){
-  const W=620,H=300,lx=60,ty=50,by=250,kx=260,rx=420,scy=(ty+by)/2;
+  const W=660,H=340;
+  const lx=80,ty=70,by=280,kx=300,rx=480,scy=(ty+by)/2;
+  const rw=40,rh=110; // resistor size for vertical
+  const r3w=110,r3h=34; // resistor size for horizontal R₃
+
   let s=`<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">`;
-  // Source
+
+  // Source (left vertical)
   s+=`<line x1="${lx}" y1="${by}" x2="${lx}" y2="${scy+20}" stroke="#333" stroke-width="2.5"/>`;
-  s+=`<circle cx="${lx}" cy="${scy}" r="18" stroke="#333" stroke-width="2.5" fill="#fff"/>`;
+  s+=`<circle cx="${lx}" cy="${scy}" r="20" stroke="#333" stroke-width="2.5" fill="#fff"/>`;
   s+=`<text x="${lx}" y="${scy+5}" text-anchor="middle" font-weight="bold" font-size="13" fill="#333">12 V</text>`;
   s+=`<line x1="${lx}" y1="${scy-20}" x2="${lx}" y2="${ty}" stroke="#333" stroke-width="2.5"/>`;
-  s+=`<text x="${lx}" y="${ty+16}" text-anchor="middle" font-weight="bold" font-size="14" fill="#c0392b">+</text>`;
-  s+=`<text x="${lx}" y="${by-8}" text-anchor="middle" font-weight="bold" font-size="14" fill="#c0392b">−</text>`;
-  // R3 series
-  s+=`<line x1="${lx}" y1="${ty}" x2="${lx+30}" y2="${ty}" stroke="#333" stroke-width="2.5"/>`;
-  s+=`<rect x="${lx+30}" y="${ty-16}" width="100" height="32" stroke="#333" stroke-width="2.5" fill="#fff" rx="2"/>`;
-  s+=`<text x="${lx+80}" y="${ty+5}" text-anchor="middle" font-weight="bold" font-size="13" fill="#333">R₃</text>`;
-  s+=`<text x="${lx+80}" y="${ty-22}" text-anchor="middle" font-size="11" fill="#666">150 Ω</text>`;
-  s+=`<line x1="${lx+130}" y1="${ty}" x2="${kx}" y2="${ty}" stroke="#333" stroke-width="2.5"/>`;
-  // Knoten
-  s+=`<circle cx="${kx}" cy="${ty}" r="5" fill="${RED}"/>`;
-  s+=`<text x="${kx+8}" y="${ty-10}" font-weight="bold" font-size="12" fill="${RED}">Knoten</text>`;
-  // R1
-  s+=`<line x1="${kx}" y1="${ty}" x2="${kx}" y2="${ty+35}" stroke="#333" stroke-width="2.5"/>`;
-  s+=`<rect x="${kx-18}" y="${ty+35}" width="36" height="100" stroke="#333" stroke-width="2.5" fill="#fff" rx="2"/>`;
-  s+=`<text x="${kx}" y="${ty+90}" text-anchor="middle" font-weight="bold" font-size="13" fill="#333">R₁</text>`;
-  s+=`<text x="${kx-48}" y="${ty+90}" text-anchor="middle" font-size="11" fill="#666">100 Ω</text>`;
-  s+=`<line x1="${kx}" y1="${ty+135}" x2="${kx}" y2="${by}" stroke="#333" stroke-width="2.5"/>`;
-  // R2
+  // +/-
+  s+=`<text x="${lx}" y="${ty+16}" text-anchor="middle" font-weight="bold" font-size="15" fill="#c0392b">+</text>`;
+  s+=`<text x="${lx}" y="${by-8}" text-anchor="middle" font-weight="bold" font-size="15" fill="#c0392b">−</text>`;
+  // U₀ arrow
+  s+=arrow(lx-38,ty+22,lx-38,by-18,BLUE,2);
+  s+=`<text x="${lx-54}" y="${scy+5}" text-anchor="middle" font-weight="bold" font-size="12" fill="${BLUE}">U₀</text>`;
+
+  // I_ges arrow (above top wire, source → R₃)
+  const r3s=lx+50,r3e=r3s+r3w;
+  s+=arrow(lx+10,ty-16,r3s-8,ty-16,RED,1.5);
+  s+=`<text x="${(lx+r3s)/2}" y="${ty-24}" text-anchor="middle" font-weight="bold" font-size="11" fill="${RED}">I_ges</text>`;
+
+  // Top wire → R₃ (horizontal, in series)
+  s+=`<line x1="${lx}" y1="${ty}" x2="${r3s}" y2="${ty}" stroke="#333" stroke-width="2.5"/>`;
+  s+=`<rect x="${r3s}" y="${ty-r3h/2}" width="${r3w}" height="${r3h}" stroke="#333" stroke-width="2.5" fill="#fff" rx="2"/>`;
+  s+=`<text x="${r3s+r3w/2}" y="${ty+5}" text-anchor="middle" font-weight="bold" font-size="13" fill="#333">R₃</text>`;
+  // R₃ value above
+  s+=`<text x="${r3s+r3w/2}" y="${ty-r3h/2-8}" text-anchor="middle" font-size="11" fill="#666">150 Ω</text>`;
+  s+=`<line x1="${r3e}" y1="${ty}" x2="${kx}" y2="${ty}" stroke="#333" stroke-width="2.5"/>`;
+
+  // Knoten top
+  s+=`<circle cx="${kx}" cy="${ty}" r="6" fill="${RED}"/>`;
+  s+=`<text x="${kx+10}" y="${ty-12}" font-weight="bold" font-size="12" fill="${RED}">Knoten</text>`;
+
+  // Top wire knoten → R₂
   s+=`<line x1="${kx}" y1="${ty}" x2="${rx}" y2="${ty}" stroke="#333" stroke-width="2.5"/>`;
-  s+=`<line x1="${rx}" y1="${ty}" x2="${rx}" y2="${ty+35}" stroke="#333" stroke-width="2.5"/>`;
-  s+=`<rect x="${rx-18}" y="${ty+35}" width="36" height="100" stroke="#333" stroke-width="2.5" fill="#fff" rx="2"/>`;
-  s+=`<text x="${rx}" y="${ty+90}" text-anchor="middle" font-weight="bold" font-size="13" fill="#333">R₂</text>`;
-  s+=`<text x="${rx+48}" y="${ty+90}" text-anchor="middle" font-size="11" fill="#666">200 Ω</text>`;
-  s+=`<line x1="${rx}" y1="${ty+135}" x2="${rx}" y2="${by}" stroke="#333" stroke-width="2.5"/>`;
+
+  // R₁ (vertical, left branch)
+  const r1y=ty+40;
+  s+=`<line x1="${kx}" y1="${ty}" x2="${kx}" y2="${r1y}" stroke="#333" stroke-width="2.5"/>`;
+  s+=`<rect x="${kx-rw/2}" y="${r1y}" width="${rw}" height="${rh}" stroke="#333" stroke-width="2.5" fill="#fff" rx="2"/>`;
+  s+=`<text x="${kx}" y="${r1y+rh/2+5}" text-anchor="middle" font-weight="bold" font-size="13" fill="#333">R₁</text>`;
+  // R₁ value left
+  s+=`<text x="${kx-rw/2-8}" y="${r1y+rh/2+5}" text-anchor="end" font-size="11" fill="#666">100 Ω</text>`;
+  s+=`<line x1="${kx}" y1="${r1y+rh}" x2="${kx}" y2="${by}" stroke="#333" stroke-width="2.5"/>`;
+  // I₁ arrow right of branch
+  s+=arrow(kx+rw/2+10,ty+25,kx+rw/2+10,by-25,RED,1.5);
+  s+=`<text x="${kx+rw/2+18}" y="${scy+4}" font-weight="bold" font-size="11" fill="${RED}">I₁</text>`;
+
+  // R₂ (vertical, right branch)
+  const r2y=ty+40;
+  s+=`<line x1="${rx}" y1="${ty}" x2="${rx}" y2="${r2y}" stroke="#333" stroke-width="2.5"/>`;
+  s+=`<rect x="${rx-rw/2}" y="${r2y}" width="${rw}" height="${rh}" stroke="#333" stroke-width="2.5" fill="#fff" rx="2"/>`;
+  s+=`<text x="${rx}" y="${r2y+rh/2+5}" text-anchor="middle" font-weight="bold" font-size="13" fill="#333">R₂</text>`;
+  // R₂ value left
+  s+=`<text x="${rx-rw/2-8}" y="${r2y+rh/2+5}" text-anchor="end" font-size="11" fill="#666">200 Ω</text>`;
+  s+=`<line x1="${rx}" y1="${r2y+rh}" x2="${rx}" y2="${by}" stroke="#333" stroke-width="2.5"/>`;
+  // I₂ arrow right of branch
+  s+=arrow(rx+rw/2+10,ty+25,rx+rw/2+10,by-25,RED,1.5);
+  s+=`<text x="${rx+rw/2+18}" y="${scy+4}" font-weight="bold" font-size="11" fill="${RED}">I₂</text>`;
+
+  // Bottom wire
   s+=`<line x1="${rx}" y1="${by}" x2="${kx}" y2="${by}" stroke="#333" stroke-width="2.5"/>`;
-  s+=`<circle cx="${kx}" cy="${by}" r="5" fill="${RED}"/>`;
+  s+=`<circle cx="${kx}" cy="${by}" r="6" fill="${RED}"/>`;
   s+=`<line x1="${kx}" y1="${by}" x2="${lx}" y2="${by}" stroke="#333" stroke-width="2.5"/>`;
-  // Current
-  s+=`<text x="${lx+15}" y="${ty-10}" font-weight="bold" font-size="11" fill="${RED}">→ I_ges</text>`;
-  s+=`<text x="${kx+6}" y="${ty+75}" font-weight="bold" font-size="11" fill="${RED}">↓I₁</text>`;
-  s+=`<text x="${rx+6}" y="${ty+75}" font-weight="bold" font-size="11" fill="${RED}">↓I₂</text>`;
+
   s+=`</svg>`;
   document.getElementById('svg3').innerHTML=s;
 }
