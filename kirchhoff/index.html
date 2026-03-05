@@ -110,6 +110,31 @@ svg{display:block;margin:1rem auto;max-width:100%;height:auto}
     <div id="svg3"></div>
     <p><strong>Berechnen Sie:</strong></p>
   </div>
+  <div class="aufg" style="border-left-color:#27ae60;background:#eafaf1">
+    <h3 style="color:#27ae60">💡 Lösungsstrategie: Wie wendet man die Regeln an?</h3>
+    <p style="margin-top:.6rem"><strong>Schritt 1: Ersatzwiderstand der Parallelschaltung</strong></p>
+    <p style="margin:.3rem 0 .3rem 1rem">R₁ und R₂ sind parallel → Zusammenfassen zu R₁₂:<br>
+    <span style="font-family:monospace;background:#fff;padding:2px 6px;border-radius:4px">1/R₁₂ = 1/R₁ + 1/R₂</span></p>
+
+    <p style="margin-top:.8rem"><strong>Schritt 2: Gesamtwiderstand (Reihenschaltung)</strong></p>
+    <p style="margin:.3rem 0 .3rem 1rem">R₁₂ und R₃ liegen in Reihe:<br>
+    <span style="font-family:monospace;background:#fff;padding:2px 6px;border-radius:4px">R_ges = R₁₂ + R₃</span></p>
+
+    <p style="margin-top:.8rem"><strong>Schritt 3: Gesamtstrom (Ohmsches Gesetz)</strong></p>
+    <p style="margin:.3rem 0 .3rem 1rem">
+    <span style="font-family:monospace;background:#fff;padding:2px 6px;border-radius:4px">I_ges = U₀ / R_ges</span></p>
+
+    <p style="margin-top:.8rem"><strong>Schritt 4: Knotenregel → Teilströme</strong></p>
+    <p style="margin:.3rem 0 .3rem 1rem">Am Knoten teilt sich I_ges in I₁ und I₂ auf:<br>
+    <span style="font-family:monospace;background:#fff;padding:2px 6px;border-radius:4px">I_ges = I₁ + I₂</span><br>
+    Die Spannung über R₁ und R₂ ist gleich (Parallelschaltung!): U₁₂<br>
+    <span style="font-family:monospace;background:#fff;padding:2px 6px;border-radius:4px">I₁ = U₁₂ / R₁</span> &nbsp; und &nbsp; <span style="font-family:monospace;background:#fff;padding:2px 6px;border-radius:4px">I₂ = U₁₂ / R₂</span></p>
+
+    <p style="margin-top:.8rem"><strong>Schritt 5: Maschenregel → Spannungen</strong></p>
+    <p style="margin:.3rem 0 .3rem 1rem">In der Masche gilt: Die Summe aller Spannungen ist Null:<br>
+    <span style="font-family:monospace;background:#fff;padding:2px 6px;border-radius:4px">U₀ = U₃ + U₁₂</span><br>
+    Dabei ist U₃ = I_ges · R₃ und U₁₂ = I_ges · R₁₂</p>
+  </div>
   <div class="aufg" style="border-left-color:#0f3460;background:#eaf2f8">
     <h3 style="color:#0f3460">a) Ersatzwiderstand R₁₂</h3>
     <div class="ig"><label>R₁₂ =</label><input type="number" id="a-r12" step="0.1" placeholder="?"><span class="u">Ω</span></div>
