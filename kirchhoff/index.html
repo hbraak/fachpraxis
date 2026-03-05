@@ -262,8 +262,9 @@ function buildM(){
   s+=arrow(lx-42,ty+22,lx-42,by-18,BLUE,2);
   s+=`<text x="${lx-58}" y="${scy+5}" text-anchor="middle" font-weight="bold" font-size="13" fill="${BLUE}">U₀</text>`;
 
-  // Current label (above top wire, far left — no overlap with R values)
-  s+=`<text x="${lx+5}" y="${ty-16}" font-weight="bold" font-size="12" fill="${RED}">→ I = ${f(I*1000)} mA</text>`;
+  // Current arrow + label (above top wire, between source and R₁)
+  s+=arrow(lx+15,ty-14,r1s-15,ty-14,RED,1.5);
+  s+=`<text x="${(lx+r1s)/2}" y="${ty-22}" text-anchor="middle" font-weight="bold" font-size="12" fill="${RED}">I = ${f(I*1000)} mA</text>`;
 
   // Top wire → R₁
   s+=`<line x1="${lx}" y1="${ty}" x2="${r1s}" y2="${ty}" stroke="#333" stroke-width="2.5"/>`;
