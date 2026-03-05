@@ -213,7 +213,7 @@ function buildKnoten(){
   const W=700,H=380;
   const sx=60,sy=190; // source center
   const top_=60, bot=320;
-  const kx=160; // knoten x
+  const kx=260; // knoten x = erste Verzweigung (bx[0])
   const bx=[260,400,540]; // branch x positions
 
   let svg=`<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">${DEFS}`;
@@ -287,7 +287,7 @@ function buildKnoten(){
 function animKnoten(){
   if(!anim1)return;
   const U=+document.getElementById('v1').value;
-  const top_=60,bot=320,sx=60,kx=160,bx=[260,400,540];
+  const top_=60,bot=320,sx=60,kx=260,bx=[260,400,540];
   const speed=U/5;
 
   particles1.forEach(p=>{
