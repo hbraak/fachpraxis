@@ -1,0 +1,1169 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kirchhoffsche Regeln -- Interaktive Animation</title>
+<style>
+  :root {
+    --primary: #2c3e50;
+    --accent: #e74c3c;
+    --accent2: #3498db;
+    --success: #27ae60;
+    --warn: #f39c12;
+    --bg: #f8f9fa;
+    --card: #ffffff;
+    --wire: #333;
+    --current: #e74c3c;
+    --voltage: #3498db;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--primary);
+    line-height: 1.6;
+  }
+
+  header {
+    background: var(--primary);
+    color: white;
+    padding: 1.5rem 2rem;
+    text-align: center;
+  }
+
+  header h1 { font-size: 1.8rem; margin-bottom: 0.3rem; }
+  header p { opacity: 0.8; font-size: 0.95rem; }
+
+  .tabs {
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    background: #34495e;
+    flex-wrap: wrap;
+  }
+
+  .tab {
+    padding: 1rem 2rem;
+    cursor: pointer;
+    color: rgba(255,255,255,0.7);
+    border: none;
+    background: none;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: all 0.3s;
+    border-bottom: 3px solid transparent;
+  }
+
+  .tab:hover { color: white; background: rgba(255,255,255,0.1); }
+  .tab.active { color: white; border-bottom-color: var(--accent); }
+
+  .content {
+    max-width: 1100px;
+    margin: 2rem auto;
+    padding: 0 1.5rem;
+  }
+
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  .card {
+    background: var(--card);
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  }
+
+  .card h2 {
+    font-size: 1.3rem;
+    margin-bottom: 1rem;
+    color: var(--primary);
+    border-bottom: 2px solid var(--bg);
+    padding-bottom: 0.5rem;
+  }
+
+  .canvas-container {
+    display: flex;
+    justify-content: center;
+    margin: 1rem 0;
+  }
+
+  canvas {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: white;
+    max-width: 100%;
+    height: auto;
+  }
+
+  .controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: center;
+    margin: 1rem 0;
+  }
+
+  .slider-group {
+    flex: 1;
+    min-width: 200px;
+  }
+
+  .slider-group label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+    font-size: 0.95rem;
+  }
+
+  .slider-group input[type="range"] {
+    width: 100%;
+    accent-color: var(--accent);
+  }
+
+  .slider-value {
+    text-align: center;
+    font-weight: 700;
+    color: var(--accent);
+    font-size: 1.1rem;
+  }
+
+  .btn {
+    padding: 0.6rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-primary { background: var(--accent); color: white; }
+  .btn-primary:hover { background: #c0392b; }
+  .btn-blue { background: var(--accent2); color: white; }
+  .btn-blue:hover { background: #2980b9; }
+  .btn-green { background: var(--success); color: white; }
+  .btn-green:hover { background: #219a52; }
+
+  .values-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 0.8rem;
+    margin: 1rem 0;
+  }
+
+  .value-box {
+    background: var(--bg);
+    border-radius: 8px;
+    padding: 0.8rem 1rem;
+    text-align: center;
+    border-left: 4px solid var(--accent2);
+  }
+
+  .value-box .label { font-size: 0.85rem; color: #666; }
+  .value-box .val { font-size: 1.3rem; font-weight: 700; color: var(--primary); }
+  .value-box.highlight { border-left-color: var(--success); background: #eafaf1; }
+  .value-box.current { border-left-color: var(--accent); }
+
+  .equation {
+    background: #fef9e7;
+    border: 2px solid var(--warn);
+    border-radius: 8px;
+    padding: 1rem 1.5rem;
+    text-align: center;
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin: 1rem 0;
+  }
+
+  .equation .check { color: var(--success); font-size: 1.4rem; }
+
+  .aufgabe {
+    background: #fdf2e9;
+    border-left: 4px solid var(--warn);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin: 1rem 0;
+  }
+
+  .aufgabe h3 { color: var(--warn); margin-bottom: 0.8rem; }
+
+  .aufgabe-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin: 1rem 0;
+  }
+
+  .input-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .input-group label {
+    font-weight: 600;
+    min-width: 100px;
+  }
+
+  .input-group input {
+    width: 100px;
+    padding: 0.4rem 0.6rem;
+    border: 2px solid #ddd;
+    border-radius: 6px;
+    font-size: 1rem;
+    text-align: center;
+  }
+
+  .input-group input.correct { border-color: var(--success); background: #eafaf1; }
+  .input-group input.wrong { border-color: var(--accent); background: #fdedec; }
+  .input-group .unit { color: #666; font-weight: 600; }
+
+  .feedback {
+    padding: 1rem;
+    border-radius: 8px;
+    margin-top: 1rem;
+    font-weight: 600;
+    display: none;
+  }
+
+  .feedback.show { display: block; }
+  .feedback.success { background: #eafaf1; color: var(--success); border: 1px solid var(--success); }
+  .feedback.error { background: #fdedec; color: var(--accent); border: 1px solid var(--accent); }
+
+  @media (max-width: 700px) {
+    .aufgabe-grid { grid-template-columns: 1fr; }
+    .controls { flex-direction: column; }
+    header h1 { font-size: 1.4rem; }
+    .tab { padding: 0.8rem 1rem; font-size: 0.85rem; }
+    .card { padding: 1.2rem; }
+    .content { padding: 0 0.8rem; margin: 1rem auto; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Kirchhoffsche Regeln</h1>
+  <p>Interaktive Animation -- Fachpraxis 11NP</p>
+</header>
+
+<div class="tabs">
+  <button class="tab active" data-panel="knoten">1. Knotenregel</button>
+  <button class="tab" data-panel="maschen">2. Maschenregel</button>
+  <button class="tab" data-panel="aufgabe">Rechenaufgabe</button>
+</div>
+
+<div class="content">
+
+  <!-- KNOTENREGEL -->
+  <div id="knoten" class="panel active">
+    <div class="card">
+      <h2>Versuch 1: Knotenregel -- Parallelschaltung</h2>
+      <p>Veraendern Sie die Spannung und beobachten Sie, wie sich die Stroeme an den Knoten aufteilen.</p>
+
+      <div class="controls">
+        <div class="slider-group">
+          <label>Spannung U</label>
+          <input type="range" id="voltage1" min="1" max="12" value="5" step="0.5">
+          <div class="slider-value" id="voltage1-val">5,0 V</div>
+        </div>
+        <button class="btn btn-primary" id="btn-anim1">Animation starten</button>
+      </div>
+
+      <div class="canvas-container">
+        <canvas id="canvas1" width="900" height="520"></canvas>
+      </div>
+
+      <div class="values-grid" id="knoten-values"></div>
+      <div class="equation" id="knoten-eq"></div>
+    </div>
+  </div>
+
+  <!-- MASCHENREGEL -->
+  <div id="maschen" class="panel">
+    <div class="card">
+      <h2>Versuch 2: Maschenregel -- Reihenschaltung</h2>
+      <p>Veraendern Sie die Quellspannung und beobachten Sie die Spannungsaufteilung in der Masche.</p>
+
+      <div class="controls">
+        <div class="slider-group">
+          <label>Quellspannung U0</label>
+          <input type="range" id="voltage2" min="1" max="24" value="12" step="0.5">
+          <div class="slider-value" id="voltage2-val">12,0 V</div>
+        </div>
+        <button class="btn btn-blue" id="btn-anim2">Animation starten</button>
+      </div>
+
+      <div class="canvas-container">
+        <canvas id="canvas2" width="900" height="520"></canvas>
+      </div>
+
+      <div class="values-grid" id="maschen-values"></div>
+      <div class="equation" id="maschen-eq"></div>
+    </div>
+  </div>
+
+  <!-- RECHENAUFGABE -->
+  <div id="aufgabe" class="panel">
+    <div class="card">
+      <h2>Rechenaufgabe: Beide Regeln anwenden</h2>
+
+      <div class="aufgabe">
+        <h3>Aufgabe</h3>
+        <p>Gegeben ist die folgende Schaltung:</p>
+        <ul style="margin: 0.8rem 0 0.8rem 1.5rem;">
+          <li>Quellspannung: <strong>U0 = 12 V</strong></li>
+          <li>R1 = 100 Ohm und R2 = 200 Ohm sind <strong>parallel</strong> geschaltet</li>
+          <li>R3 = 150 Ohm ist dazu <strong>in Reihe</strong> geschaltet</li>
+        </ul>
+
+        <div class="canvas-container">
+          <canvas id="canvas3" width="900" height="480"></canvas>
+        </div>
+
+        <p style="margin-top:1rem;"><strong>Berechnen Sie:</strong></p>
+      </div>
+
+      <div class="aufgabe" style="border-left-color: var(--accent2); background: #eaf2f8;">
+        <h3 style="color: var(--accent2);">a) Ersatzwiderstand R12 der Parallelschaltung</h3>
+        <div class="aufgabe-grid">
+          <div class="input-group">
+            <label>R12 =</label>
+            <input type="number" id="ans-r12" step="0.1" placeholder="?">
+            <span class="unit">Ohm</span>
+          </div>
+        </div>
+
+        <h3 style="color: var(--accent2); margin-top:1rem;">b) Gesamtwiderstand Rges</h3>
+        <div class="aufgabe-grid">
+          <div class="input-group">
+            <label>Rges =</label>
+            <input type="number" id="ans-rges" step="0.1" placeholder="?">
+            <span class="unit">Ohm</span>
+          </div>
+        </div>
+
+        <h3 style="color: var(--accent2); margin-top:1rem;">c) Gesamtstrom Iges (Maschenregel)</h3>
+        <div class="aufgabe-grid">
+          <div class="input-group">
+            <label>Iges =</label>
+            <input type="number" id="ans-iges" step="0.1" placeholder="?">
+            <span class="unit">mA</span>
+          </div>
+        </div>
+
+        <h3 style="color: var(--accent2); margin-top:1rem;">d) Teilstroeme I1 und I2 (Knotenregel)</h3>
+        <div class="aufgabe-grid">
+          <div class="input-group">
+            <label>I1 =</label>
+            <input type="number" id="ans-i1" step="0.1" placeholder="?">
+            <span class="unit">mA</span>
+          </div>
+          <div class="input-group">
+            <label>I2 =</label>
+            <input type="number" id="ans-i2" step="0.1" placeholder="?">
+            <span class="unit">mA</span>
+          </div>
+        </div>
+
+        <h3 style="color: var(--accent2); margin-top:1rem;">e) Spannungsabfall an R3 und an R12 (Maschenregel)</h3>
+        <div class="aufgabe-grid">
+          <div class="input-group">
+            <label>U3 =</label>
+            <input type="number" id="ans-u3" step="0.01" placeholder="?">
+            <span class="unit">V</span>
+          </div>
+          <div class="input-group">
+            <label>U12 =</label>
+            <input type="number" id="ans-u12" step="0.01" placeholder="?">
+            <span class="unit">V</span>
+          </div>
+        </div>
+
+        <div style="margin-top:1.5rem; display:flex; gap:1rem; flex-wrap:wrap;">
+          <button class="btn btn-green" id="btn-check">Antworten pruefen</button>
+          <button class="btn btn-blue" id="btn-solution">Loesung anzeigen</button>
+          <button class="btn btn-primary" id="btn-reset">Zuruecksetzen</button>
+        </div>
+
+        <div class="feedback" id="feedback"></div>
+
+        <div id="solution" style="display:none; margin-top:1.5rem;">
+          <div class="card" style="background:#eafaf1; border:2px solid var(--success);">
+            <h2 style="color:var(--success);">Loesung</h2>
+            <p><strong>a) Parallelwiderstand:</strong><br>
+            1/R12 = 1/R1 + 1/R2 = 1/100 + 1/200 = 3/200<br>
+            <strong>R12 = 200/3 = 66,7 Ohm</strong></p>
+
+            <p style="margin-top:0.8rem;"><strong>b) Gesamtwiderstand:</strong><br>
+            Rges = R12 + R3 = 66,7 + 150 = <strong>216,7 Ohm</strong></p>
+
+            <p style="margin-top:0.8rem;"><strong>c) Gesamtstrom (Maschenregel: U0 = I * Rges):</strong><br>
+            Iges = U0 / Rges = 12 / 216,7 = <strong>55,4 mA</strong></p>
+
+            <p style="margin-top:0.8rem;"><strong>d) Teilstroeme (Knotenregel: Iges = I1 + I2):</strong><br>
+            U12 = Iges * R12 = 0,0554 * 66,7 = 3,69 V<br>
+            I1 = U12 / R1 = 3,69 / 100 = <strong>36,9 mA</strong><br>
+            I2 = U12 / R2 = 3,69 / 200 = <strong>18,5 mA</strong><br>
+            Probe: 36,9 + 18,5 = 55,4 mA</p>
+
+            <p style="margin-top:0.8rem;"><strong>e) Spannungen (Maschenregel: U0 = U3 + U12):</strong><br>
+            U3 = Iges * R3 = 0,0554 * 150 = <strong>8,31 V</strong><br>
+            U12 = Iges * R12 = 0,0554 * 66,7 = <strong>3,69 V</strong><br>
+            Probe: 8,31 + 3,69 = 12,00 V</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ==================== GLOBALS ====================
+const R1_K = 220, R2_K = 330, R3_K = 470;
+const R1_M = 100, R2_M = 220, R3_M = 330;
+
+let anim1Running = false, anim2Running = false;
+let anim1Id = null, anim2Id = null;
+let particles1 = [], particles2 = [];
+
+// ==================== TAB SWITCHING ====================
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', function() {
+    const id = this.dataset.panel;
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    this.classList.add('active');
+    if (id === 'knoten') updateKnoten();
+    if (id === 'maschen') updateMaschen();
+    if (id === 'aufgabe') drawAufgabe();
+  });
+});
+
+// ==================== RESPONSIVE CANVAS ====================
+function setupCanvas(canvas) {
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  const w = canvas.width;
+  const h = canvas.height;
+  const displayW = Math.min(rect.width, w);
+  const scale = displayW / w;
+  canvas.style.width = displayW + 'px';
+  canvas.style.height = (h * scale) + 'px';
+}
+
+function resizeCanvases() {
+  document.querySelectorAll('canvas').forEach(setupCanvas);
+}
+window.addEventListener('resize', resizeCanvases);
+
+// ==================== NUMBER FORMATTING ====================
+function fmt(n, d) {
+  if (d === undefined) d = 1;
+  return n.toFixed(d).replace('.', ',');
+}
+
+// ==================== DRAWING HELPERS ====================
+const FONT_LABEL = 'bold 17px sans-serif';
+const FONT_VALUE = '15px sans-serif';
+const FONT_LARGE = 'bold 18px sans-serif';
+const WIRE_WIDTH = 3;
+const COL_WIRE = '#333';
+const COL_CURRENT = '#e74c3c';
+const COL_VOLTAGE = '#3498db';
+
+function drawWire(ctx, x1, y1, x2, y2) {
+  ctx.strokeStyle = COL_WIRE;
+  ctx.lineWidth = WIRE_WIDTH;
+  ctx.lineCap = 'round';
+  ctx.beginPath();
+  ctx.moveTo(x1, y1);
+  ctx.lineTo(x2, y2);
+  ctx.stroke();
+}
+
+function drawSource(ctx, x, y, label) {
+  const r = 24;
+  ctx.strokeStyle = COL_WIRE;
+  ctx.lineWidth = WIRE_WIDTH;
+  ctx.beginPath();
+  ctx.arc(x, y, r, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.fillStyle = '#fff';
+  ctx.beginPath();
+  ctx.arc(x, y, r - 2, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = COL_WIRE;
+  ctx.font = FONT_LABEL;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(label, x, y);
+  ctx.textBaseline = 'alphabetic';
+  ctx.textAlign = 'start';
+}
+
+function drawPlusMinus(ctx, x, yPlus, yMinus) {
+  ctx.fillStyle = COL_CURRENT;
+  ctx.font = 'bold 22px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('+', x, yPlus);
+  ctx.fillStyle = '#2980b9';
+  ctx.fillText('\u2212', x, yMinus);
+  ctx.textBaseline = 'alphabetic';
+  ctx.textAlign = 'start';
+}
+
+function drawResistor(ctx, x1, y1, x2, y2, label, value) {
+  const horizontal = Math.abs(y1 - y2) < 5;
+  ctx.strokeStyle = COL_WIRE;
+  ctx.lineWidth = WIRE_WIDTH;
+
+  if (horizontal) {
+    const w = Math.abs(x2 - x1);
+    const h = 30;
+    const rx = Math.min(x1, x2);
+    ctx.strokeRect(rx, y1 - h / 2, w, h);
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(rx + 1, y1 - h / 2 + 1, w - 2, h - 2);
+    ctx.fillStyle = COL_WIRE;
+    ctx.font = FONT_LABEL;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(label, rx + w / 2, y1);
+    ctx.font = FONT_VALUE;
+    ctx.fillStyle = '#555';
+    ctx.textBaseline = 'bottom';
+    ctx.fillText(value, rx + w / 2, y1 - h / 2 - 4);
+    ctx.textAlign = 'start';
+    ctx.textBaseline = 'alphabetic';
+  } else {
+    const h = Math.abs(y2 - y1);
+    const w = 30;
+    const ry = Math.min(y1, y2);
+    ctx.strokeRect(x1 - w / 2, ry, w, h);
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(x1 - w / 2 + 1, ry + 1, w - 2, h - 2);
+    ctx.fillStyle = COL_WIRE;
+    ctx.font = FONT_LABEL;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(label, x1, ry + h / 2);
+    ctx.font = FONT_VALUE;
+    ctx.fillStyle = '#555';
+    ctx.textAlign = 'right';
+    ctx.fillText(value, x1 - w / 2 - 8, ry + h / 2 + 5);
+    ctx.textAlign = 'start';
+    ctx.textBaseline = 'alphabetic';
+  }
+}
+
+function drawArrowhead(ctx, x, y, angle, size) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.rotate(angle);
+  ctx.beginPath();
+  ctx.moveTo(0, 0);
+  ctx.lineTo(-size, -size * 0.45);
+  ctx.lineTo(-size, size * 0.45);
+  ctx.closePath();
+  ctx.fill();
+  ctx.restore();
+}
+
+function drawCurrentArrow(ctx, x1, y1, x2, y2, label) {
+  ctx.strokeStyle = COL_CURRENT;
+  ctx.fillStyle = COL_CURRENT;
+  ctx.lineWidth = 2;
+  const angle = Math.atan2(y2 - y1, x2 - x1);
+  ctx.beginPath();
+  ctx.moveTo(x1, y1);
+  ctx.lineTo(x2, y2);
+  ctx.stroke();
+  drawArrowhead(ctx, x2, y2, angle, 12);
+  if (label) {
+    ctx.font = FONT_LABEL;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'bottom';
+    const mx = (x1 + x2) / 2;
+    const my = (y1 + y2) / 2;
+    const nx = -(y2 - y1);
+    const ny = (x2 - x1);
+    const len = Math.sqrt(nx * nx + ny * ny) || 1;
+    ctx.fillText(label, mx + nx / len * 14, my + ny / len * 14);
+    ctx.textAlign = 'start';
+    ctx.textBaseline = 'alphabetic';
+  }
+}
+
+function drawVoltageArrow(ctx, x1, y1, x2, y2, label, value) {
+  // Blue arrow from + to - direction
+  ctx.strokeStyle = COL_VOLTAGE;
+  ctx.fillStyle = COL_VOLTAGE;
+  ctx.lineWidth = 2.5;
+  ctx.setLineDash([]);
+  const angle = Math.atan2(y2 - y1, x2 - x1);
+  ctx.beginPath();
+  ctx.moveTo(x1, y1);
+  ctx.lineTo(x2, y2);
+  ctx.stroke();
+  drawArrowhead(ctx, x2, y2, angle, 12);
+
+  const horizontal = Math.abs(y1 - y2) < 5;
+  ctx.font = FONT_LABEL;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  if (horizontal) {
+    ctx.fillText(label, (x1 + x2) / 2, y1 + 22);
+    if (value) {
+      ctx.font = FONT_VALUE;
+      ctx.fillText(value, (x1 + x2) / 2, y1 + 40);
+    }
+  } else {
+    ctx.fillText(label, x1 + 24, (y1 + y2) / 2);
+    if (value) {
+      ctx.font = FONT_VALUE;
+      ctx.fillText(value, x1 + 24, (y1 + y2) / 2 + 18);
+    }
+  }
+  ctx.textAlign = 'start';
+  ctx.textBaseline = 'alphabetic';
+}
+
+function drawKnotenDot(ctx, x, y, label) {
+  ctx.fillStyle = COL_CURRENT;
+  ctx.beginPath();
+  ctx.arc(x, y, 7, 0, Math.PI * 2);
+  ctx.fill();
+  if (label) {
+    ctx.fillStyle = COL_WIRE;
+    ctx.font = FONT_LABEL;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'bottom';
+    ctx.fillText(label, x, y - 12);
+    ctx.textAlign = 'start';
+    ctx.textBaseline = 'alphabetic';
+  }
+}
+
+// ==================== WIRE PATH UTILITIES ====================
+function buildPath(points) {
+  // points: array of {x,y}
+  let totalLen = 0;
+  const segs = [];
+  for (let i = 0; i < points.length - 1; i++) {
+    const dx = points[i + 1].x - points[i].x;
+    const dy = points[i + 1].y - points[i].y;
+    const len = Math.sqrt(dx * dx + dy * dy);
+    segs.push({ x0: points[i].x, y0: points[i].y, x1: points[i + 1].x, y1: points[i + 1].y, len: len });
+    totalLen += len;
+  }
+  return { segs: segs, totalLen: totalLen };
+}
+
+function posOnPath(path, t) {
+  // t in [0,1]
+  t = ((t % 1) + 1) % 1;
+  let dist = t * path.totalLen;
+  for (let i = 0; i < path.segs.length; i++) {
+    const s = path.segs[i];
+    if (dist <= s.len) {
+      const f = s.len > 0 ? dist / s.len : 0;
+      return { x: s.x0 + (s.x1 - s.x0) * f, y: s.y0 + (s.y1 - s.y0) * f };
+    }
+    dist -= s.len;
+  }
+  const last = path.segs[path.segs.length - 1];
+  return { x: last.x1, y: last.y1 };
+}
+
+function drawParticlesOnPaths(ctx, particles, paths) {
+  particles.forEach(function(p) {
+    var path = paths[p.pathIdx];
+    if (!path) return;
+    var pos = posOnPath(path, p.t);
+    ctx.fillStyle = 'rgba(231, 76, 60, 0.85)';
+    ctx.beginPath();
+    ctx.arc(pos.x, pos.y, 5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+    ctx.beginPath();
+    ctx.arc(pos.x, pos.y, 2, 0, Math.PI * 2);
+    ctx.fill();
+  });
+}
+
+// ==================== KNOTENREGEL ====================
+function getKnotenLayout(c) {
+  var cx = c.width / 2, cy = c.height / 2;
+  var W = 680, H = 340;
+  var left = cx - W / 2, right = cx + W / 2;
+  var top = cy - H / 2, bot = cy + H / 2;
+  var srcX = left;
+  var kx = left + 120;
+  var spacing = (right - kx) / 3;
+  var bx1 = kx + spacing * 0.5;
+  var bx2 = kx + spacing * 1.5;
+  var bx3 = kx + spacing * 2.5;
+  return { cx: cx, cy: cy, left: left, right: right, top: top, bot: bot, srcX: srcX, kx: kx, bx1: bx1, bx2: bx2, bx3: bx3, spacing: spacing };
+}
+
+function knotenPaths(L) {
+  // Main path: source up, along top, through each branch, back along bottom
+  var mainTop = [
+    { x: L.srcX, y: L.bot }, { x: L.srcX, y: L.top }, { x: L.kx, y: L.top }
+  ];
+  var branch1 = [
+    { x: L.kx, y: L.top }, { x: L.bx1, y: L.top }, { x: L.bx1, y: L.bot }, { x: L.kx, y: L.bot }
+  ];
+  var branch2 = [
+    { x: L.kx, y: L.top }, { x: L.bx2, y: L.top }, { x: L.bx2, y: L.bot }, { x: L.kx, y: L.bot }
+  ];
+  var branch3 = [
+    { x: L.kx, y: L.top }, { x: L.bx3, y: L.top }, { x: L.bx3, y: L.bot }, { x: L.kx, y: L.bot }
+  ];
+  var mainBot = [
+    { x: L.kx, y: L.bot }, { x: L.srcX, y: L.bot }
+  ];
+  // Full loop for each branch
+  var path1 = mainTop.concat(branch1).concat(mainBot);
+  var path2 = mainTop.concat(branch2).concat(mainBot);
+  var path3 = mainTop.concat(branch3).concat(mainBot);
+  return [buildPath(path1), buildPath(path2), buildPath(path3)];
+}
+
+function drawKnoten(U, I1, I2, I3, Iges) {
+  var c = document.getElementById('canvas1');
+  var ctx = c.getContext('2d');
+  ctx.clearRect(0, 0, c.width, c.height);
+  var L = getKnotenLayout(c);
+
+  var resH = 100;
+  var resTop = L.cy - resH / 2;
+  var resBot = L.cy + resH / 2;
+
+  // Source wires
+  drawWire(ctx, L.srcX, L.bot, L.srcX, L.top);
+  drawSource(ctx, L.srcX, L.cy, fmt(U) + ' V');
+  drawPlusMinus(ctx, L.srcX - 32, L.top + 40, L.bot - 40);
+
+  // Voltage arrow on source
+  drawVoltageArrow(ctx, L.srcX - 50, L.top + 20, L.srcX - 50, L.bot - 20, 'U', fmt(U) + ' V');
+
+  // Top wire to junction
+  drawWire(ctx, L.srcX, L.top, L.kx, L.top);
+  drawKnotenDot(ctx, L.kx, L.top, 'Knoten A');
+
+  // Iges arrow on top wire
+  drawCurrentArrow(ctx, L.srcX + 30, L.top - 18, L.kx - 20, L.top - 18, 'Iges = ' + fmt(Iges) + ' mA');
+
+  // Three parallel branches
+  var branches = [
+    { x: L.bx1, r: R1_K, label: 'R1', i: I1, iLabel: 'I1' },
+    { x: L.bx2, r: R2_K, label: 'R2', i: I2, iLabel: 'I2' },
+    { x: L.bx3, r: R3_K, label: 'R3', i: I3, iLabel: 'I3' },
+  ];
+
+  branches.forEach(function(b) {
+    drawWire(ctx, L.kx, L.top, b.x, L.top);
+    drawWire(ctx, b.x, L.top, b.x, resTop);
+    drawResistor(ctx, b.x, resTop, b.x, resBot, b.label, b.r + ' \u03A9');
+    drawWire(ctx, b.x, resBot, b.x, L.bot);
+    drawWire(ctx, b.x, L.bot, L.kx, L.bot);
+    drawCurrentArrow(ctx, b.x + 20, L.top + 30, b.x + 20, L.bot - 30, b.iLabel + ' = ' + fmt(b.i) + ' mA');
+  });
+
+  // Bottom wire back
+  drawWire(ctx, L.kx, L.bot, L.srcX, L.bot);
+  drawKnotenDot(ctx, L.kx, L.bot, 'Knoten B');
+}
+
+function updateKnoten() {
+  var U = parseFloat(document.getElementById('voltage1').value);
+  document.getElementById('voltage1-val').textContent = fmt(U) + ' V';
+
+  var I1 = (U / R1_K) * 1000;
+  var I2 = (U / R2_K) * 1000;
+  var I3 = (U / R3_K) * 1000;
+  var Iges = I1 + I2 + I3;
+
+  document.getElementById('knoten-values').innerHTML =
+    '<div class="value-box current"><div class="label">Iges</div><div class="val">' + fmt(Iges) + ' mA</div></div>' +
+    '<div class="value-box"><div class="label">I1 (' + R1_K + ' \u03A9)</div><div class="val">' + fmt(I1) + ' mA</div></div>' +
+    '<div class="value-box"><div class="label">I2 (' + R2_K + ' \u03A9)</div><div class="val">' + fmt(I2) + ' mA</div></div>' +
+    '<div class="value-box"><div class="label">I3 (' + R3_K + ' \u03A9)</div><div class="val">' + fmt(I3) + ' mA</div></div>';
+
+  document.getElementById('knoten-eq').innerHTML =
+    'Knotenregel: Iges = I1 + I2 + I3<br>' +
+    fmt(Iges) + ' = ' + fmt(I1) + ' + ' + fmt(I2) + ' + ' + fmt(I3) + ' mA' +
+    ' <span class="check">&#10003;</span>';
+
+  drawKnoten(U, I1, I2, I3, Iges);
+
+  if (anim1Running) {
+    var L = getKnotenLayout(document.getElementById('canvas1'));
+    var paths = knotenPaths(L);
+    var c = document.getElementById('canvas1');
+    var ctx = c.getContext('2d');
+    drawParticlesOnPaths(ctx, particles1, paths);
+  }
+}
+
+// ==================== MASCHENREGEL ====================
+function getMaschenLayout(c) {
+  var cx = c.width / 2, cy = c.height / 2;
+  var W = 660, H = 320;
+  var left = cx - W / 2, right = cx + W / 2;
+  var top = cy - H / 2, bot = cy + H / 2;
+  var r1Left = left + 100;
+  var r1Right = left + 260;
+  var r2Left = left + 300;
+  var r2Right = left + 460;
+  return { cx: cx, cy: cy, left: left, right: right, top: top, bot: bot, r1Left: r1Left, r1Right: r1Right, r2Left: r2Left, r2Right: r2Right };
+}
+
+function maschenPath(L) {
+  return buildPath([
+    { x: L.left, y: L.top },
+    { x: L.right, y: L.top },
+    { x: L.right, y: L.bot },
+    { x: L.left, y: L.bot },
+    { x: L.left, y: L.top },
+  ]);
+}
+
+function drawMaschen(U0, U1, U2, U3, I) {
+  var c = document.getElementById('canvas2');
+  var ctx = c.getContext('2d');
+  ctx.clearRect(0, 0, c.width, c.height);
+  var L = getMaschenLayout(c);
+  var resH = 120;
+  var resTop = L.cy - resH / 2;
+  var resBot = L.cy + resH / 2;
+
+  // Source left side
+  drawWire(ctx, L.left, L.bot, L.left, L.top);
+  drawSource(ctx, L.left, L.cy, 'U0');
+  drawPlusMinus(ctx, L.left - 32, L.top + 40, L.bot - 40);
+
+  // U0 voltage arrow (blue, + to -, pointing down)
+  drawVoltageArrow(ctx, L.left - 55, L.top + 20, L.left - 55, L.bot - 20, 'U0', fmt(U0, 1) + ' V');
+
+  // Top wire
+  drawWire(ctx, L.left, L.top, L.r1Left, L.top);
+  // R1 on top
+  drawResistor(ctx, L.r1Left, L.top, L.r1Right, L.top, 'R1', R1_M + ' \u03A9');
+  drawWire(ctx, L.r1Right, L.top, L.r2Left, L.top);
+  // R2 on top
+  drawResistor(ctx, L.r2Left, L.top, L.r2Right, L.top, 'R2', R2_M + ' \u03A9');
+  drawWire(ctx, L.r2Right, L.top, L.right, L.top);
+
+  // R3 on right side
+  drawWire(ctx, L.right, L.top, L.right, resTop);
+  drawResistor(ctx, L.right, resTop, L.right, resBot, 'R3', R3_M + ' \u03A9');
+  drawWire(ctx, L.right, resBot, L.right, L.bot);
+
+  // Bottom wire
+  drawWire(ctx, L.right, L.bot, L.left, L.bot);
+
+  // Voltage arrows (blue, from + to -)
+  drawVoltageArrow(ctx, L.r1Left, L.top + 40, L.r1Right, L.top + 40, 'U1', fmt(U1, 1) + ' V');
+  drawVoltageArrow(ctx, L.r2Left, L.top + 40, L.r2Right, L.top + 40, 'U2', fmt(U2, 1) + ' V');
+  drawVoltageArrow(ctx, L.right + 45, resTop, L.right + 45, resBot, 'U3', fmt(U3, 1) + ' V');
+
+  // Current arrow on top wire
+  drawCurrentArrow(ctx, L.left + 30, L.top - 18, L.r1Left - 10, L.top - 18, 'I = ' + fmt(I * 1000) + ' mA');
+
+  // Masche arrow (dashed circle in center)
+  ctx.save();
+  ctx.setLineDash([6, 4]);
+  ctx.strokeStyle = '#999';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.arc(L.cx, L.cy, 45, -0.3, Math.PI * 1.85);
+  ctx.stroke();
+  var angle = Math.PI * 1.85;
+  var ax = L.cx + 45 * Math.cos(angle);
+  var ay = L.cy + 45 * Math.sin(angle);
+  ctx.setLineDash([]);
+  ctx.fillStyle = '#999';
+  drawArrowhead(ctx, ax, ay, angle + Math.PI / 2, 10);
+  ctx.restore();
+  ctx.fillStyle = '#999';
+  ctx.font = '16px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('Masche', L.cx, L.cy + 5);
+  ctx.textAlign = 'start';
+}
+
+function updateMaschen() {
+  var U0 = parseFloat(document.getElementById('voltage2').value);
+  document.getElementById('voltage2-val').textContent = fmt(U0) + ' V';
+
+  var Rges = R1_M + R2_M + R3_M;
+  var I = U0 / Rges;
+  var U1 = I * R1_M;
+  var U2 = I * R2_M;
+  var U3 = I * R3_M;
+
+  document.getElementById('maschen-values').innerHTML =
+    '<div class="value-box highlight"><div class="label">U0 (Quelle)</div><div class="val">' + fmt(U0, 2) + ' V</div></div>' +
+    '<div class="value-box"><div class="label">U1 (' + R1_M + ' \u03A9)</div><div class="val">' + fmt(U1, 2) + ' V</div></div>' +
+    '<div class="value-box"><div class="label">U2 (' + R2_M + ' \u03A9)</div><div class="val">' + fmt(U2, 2) + ' V</div></div>' +
+    '<div class="value-box"><div class="label">U3 (' + R3_M + ' \u03A9)</div><div class="val">' + fmt(U3, 2) + ' V</div></div>' +
+    '<div class="value-box current"><div class="label">I (Strom)</div><div class="val">' + fmt(I * 1000) + ' mA</div></div>';
+
+  document.getElementById('maschen-eq').innerHTML =
+    'Maschenregel: +U0 \u2212 U1 \u2212 U2 \u2212 U3 = 0<br>' +
+    '+' + fmt(U0, 2) + ' \u2212 ' + fmt(U1, 2) + ' \u2212 ' + fmt(U2, 2) + ' \u2212 ' + fmt(U3, 2) + ' = ' + fmt(U0 - U1 - U2 - U3, 2) + ' V' +
+    ' <span class="check">&#10003;</span>';
+
+  drawMaschen(U0, U1, U2, U3, I);
+
+  if (anim2Running) {
+    var L = getMaschenLayout(document.getElementById('canvas2'));
+    var path = maschenPath(L);
+    var c = document.getElementById('canvas2');
+    var ctx = c.getContext('2d');
+    drawParticlesOnPaths(ctx, particles2, [path]);
+  }
+}
+
+// ==================== ANIMATION CONTROL ====================
+document.getElementById('btn-anim1').addEventListener('click', function() {
+  anim1Running = !anim1Running;
+  if (anim1Running) {
+    this.textContent = 'Animation stoppen';
+    var L = getKnotenLayout(document.getElementById('canvas1'));
+    var paths = knotenPaths(L);
+    particles1 = [];
+    for (var i = 0; i < 36; i++) {
+      particles1.push({ t: Math.random(), speed: 0.002 + Math.random() * 0.002, pathIdx: Math.floor(Math.random() * 3) });
+    }
+    animateKnoten();
+  } else {
+    this.textContent = 'Animation starten';
+    cancelAnimationFrame(anim1Id);
+    updateKnoten();
+  }
+});
+
+function animateKnoten() {
+  if (!anim1Running) return;
+  var U = parseFloat(document.getElementById('voltage1').value);
+  var I1 = (U / R1_K) * 1000;
+  var I2 = (U / R2_K) * 1000;
+  var I3 = (U / R3_K) * 1000;
+  var Iges = I1 + I2 + I3;
+
+  drawKnoten(U, I1, I2, I3, Iges);
+
+  var c = document.getElementById('canvas1');
+  var ctx = c.getContext('2d');
+  var L = getKnotenLayout(c);
+  var paths = knotenPaths(L);
+
+  // Speed proportional to current
+  var maxI = Math.max(I1, I2, I3);
+  particles1.forEach(function(p) {
+    var branchI = [I1, I2, I3][p.pathIdx];
+    p.speed = 0.001 + (branchI / maxI) * 0.003;
+    p.t += p.speed;
+    if (p.t > 1) p.t -= 1;
+  });
+
+  drawParticlesOnPaths(ctx, particles1, paths);
+
+  anim1Id = requestAnimationFrame(animateKnoten);
+}
+
+document.getElementById('btn-anim2').addEventListener('click', function() {
+  anim2Running = !anim2Running;
+  if (anim2Running) {
+    this.textContent = 'Animation stoppen';
+    particles2 = [];
+    for (var i = 0; i < 24; i++) {
+      particles2.push({ t: Math.random(), speed: 0.003 + Math.random() * 0.002, pathIdx: 0 });
+    }
+    animateMaschen();
+  } else {
+    this.textContent = 'Animation starten';
+    cancelAnimationFrame(anim2Id);
+    updateMaschen();
+  }
+});
+
+function animateMaschen() {
+  if (!anim2Running) return;
+  var U0 = parseFloat(document.getElementById('voltage2').value);
+  var Rges = R1_M + R2_M + R3_M;
+  var I = U0 / Rges;
+
+  drawMaschen(U0, I * R1_M, I * R2_M, I * R3_M, I);
+
+  var c = document.getElementById('canvas2');
+  var ctx = c.getContext('2d');
+  var L = getMaschenLayout(c);
+  var path = maschenPath(L);
+
+  particles2.forEach(function(p) {
+    p.t += p.speed;
+    if (p.t > 1) p.t -= 1;
+  });
+
+  drawParticlesOnPaths(ctx, particles2, [path]);
+
+  anim2Id = requestAnimationFrame(animateMaschen);
+}
+
+// ==================== AUFGABE SCHALTBILD ====================
+function drawAufgabe() {
+  var c = document.getElementById('canvas3');
+  var ctx = c.getContext('2d');
+  ctx.clearRect(0, 0, c.width, c.height);
+
+  var cx = c.width / 2, cy = c.height / 2;
+  var W = 660, H = 320;
+  var left = cx - W / 2, right = cx + W / 2;
+  var top = cy - H / 2, bot = cy + H / 2;
+  var junctionX = cx - 30;
+  var r2X = junctionX + 160;
+  var resH = 110;
+  var resTop = cy - resH / 2;
+  var resBot = cy + resH / 2;
+
+  // Source left
+  drawWire(ctx, left, bot, left, top);
+  drawSource(ctx, left, cy, '12 V');
+  drawPlusMinus(ctx, left - 32, top + 40, bot - 40);
+  drawVoltageArrow(ctx, left - 55, top + 20, left - 55, bot - 20, 'U0', '12 V');
+
+  // R3 in series on top
+  var r3Left = left + 80;
+  var r3Right = left + 240;
+  drawWire(ctx, left, top, r3Left, top);
+  drawResistor(ctx, r3Left, top, r3Right, top, 'R3', '150 \u03A9');
+  drawWire(ctx, r3Right, top, junctionX, top);
+
+  // Junction top
+  drawKnotenDot(ctx, junctionX, top, 'Knoten');
+
+  // R1 branch (straight down)
+  drawWire(ctx, junctionX, top, junctionX, resTop);
+  drawResistor(ctx, junctionX, resTop, junctionX, resBot, 'R1', '100 \u03A9');
+  drawWire(ctx, junctionX, resBot, junctionX, bot);
+
+  // R2 branch (right)
+  drawWire(ctx, junctionX, top, r2X, top);
+  drawWire(ctx, r2X, top, r2X, resTop);
+  drawResistor(ctx, r2X, resTop, r2X, resBot, 'R2', '200 \u03A9');
+  drawWire(ctx, r2X, resBot, r2X, bot);
+  drawWire(ctx, r2X, bot, junctionX, bot);
+
+  // Junction bottom
+  drawKnotenDot(ctx, junctionX, bot, '');
+
+  // Bottom wire back
+  drawWire(ctx, junctionX, bot, left, bot);
+
+  // Voltage arrows
+  drawVoltageArrow(ctx, r3Left, top + 40, r3Right, top + 40, 'U3', '');
+
+  // Current labels
+  drawCurrentArrow(ctx, left + 20, top - 18, r3Left - 10, top - 18, 'Iges');
+  drawCurrentArrow(ctx, junctionX + 20, top + 30, junctionX + 20, resTop - 5, 'I1');
+  drawCurrentArrow(ctx, r2X + 20, top + 30, r2X + 20, resTop - 5, 'I2');
+}
+
+// ==================== AUFGABE CHECK ====================
+var CORRECT = {
+  r12: 200 / 3,
+  rges: 200 / 3 + 150,
+  iges: (12 / (200 / 3 + 150)) * 1000,
+  u3: (12 / (200 / 3 + 150)) * 150,
+  u12: (12 / (200 / 3 + 150)) * (200 / 3),
+};
+CORRECT.i1 = CORRECT.u12 / 100 * 1000;
+CORRECT.i2 = CORRECT.u12 / 200 * 1000;
+
+document.getElementById('btn-check').addEventListener('click', function() {
+  var tolerance = 0.08;
+  var fields = [
+    { id: 'ans-r12', correct: CORRECT.r12 },
+    { id: 'ans-rges', correct: CORRECT.rges },
+    { id: 'ans-iges', correct: CORRECT.iges },
+    { id: 'ans-i1', correct: CORRECT.i1 },
+    { id: 'ans-i2', correct: CORRECT.i2 },
+    { id: 'ans-u3', correct: CORRECT.u3 },
+    { id: 'ans-u12', correct: CORRECT.u12 },
+  ];
+
+  var allCorrect = true;
+  var answered = 0;
+
+  fields.forEach(function(f) {
+    var el = document.getElementById(f.id);
+    var val = parseFloat(el.value);
+    el.classList.remove('correct', 'wrong');
+    if (isNaN(val) || el.value === '') return;
+    answered++;
+    var relError = Math.abs(val - f.correct) / f.correct;
+    if (relError < tolerance) {
+      el.classList.add('correct');
+    } else {
+      el.classList.add('wrong');
+      allCorrect = false;
+    }
+  });
+
+  var fb = document.getElementById('feedback');
+  fb.classList.add('show');
+  if (answered === 0) {
+    fb.className = 'feedback show error';
+    fb.textContent = 'Bitte tragen Sie mindestens einen Wert ein.';
+  } else if (allCorrect && answered === fields.length) {
+    fb.className = 'feedback show success';
+    fb.textContent = 'Alle Antworten korrekt! Knotenregel und Maschenregel verstanden.';
+  } else if (allCorrect) {
+    fb.className = 'feedback show success';
+    fb.textContent = answered + ' von ' + fields.length + ' Antworten korrekt. Fuellen Sie die restlichen Felder aus.';
+  } else {
+    fb.className = 'feedback show error';
+    fb.textContent = 'Einige Antworten sind nicht korrekt (rot markiert). Versuchen Sie es erneut.';
+  }
+});
+
+document.getElementById('btn-solution').addEventListener('click', function() {
+  document.getElementById('solution').style.display = 'block';
+});
+
+document.getElementById('btn-reset').addEventListener('click', function() {
+  ['ans-r12', 'ans-rges', 'ans-iges', 'ans-i1', 'ans-i2', 'ans-u3', 'ans-u12'].forEach(function(id) {
+    var el = document.getElementById(id);
+    el.value = '';
+    el.classList.remove('correct', 'wrong');
+  });
+  document.getElementById('feedback').classList.remove('show');
+  document.getElementById('solution').style.display = 'none';
+});
+
+// ==================== SLIDER EVENTS ====================
+document.getElementById('voltage1').addEventListener('input', updateKnoten);
+document.getElementById('voltage2').addEventListener('input', updateMaschen);
+
+// ==================== INIT ====================
+window.addEventListener('load', function() {
+  resizeCanvases();
+  updateKnoten();
+  updateMaschen();
+  drawAufgabe();
+});
+</script>
+</body>
+</html>
