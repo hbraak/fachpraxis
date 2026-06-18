@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lösung AB 2 — Analoger Eingang (NTC)</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f8f9fa; color: #2c3e50; line-height: 1.6; }
+  header { background: #2c3e50; color: white; padding: 1.5rem 2rem; }
+  header h1 { font-size: 1.5rem; }
+  header p { opacity: 0.8; margin-top: 0.3rem; font-size: 0.95rem; }
+  .container { max-width: 800px; margin: 1.5rem auto; padding: 0 1.5rem; }
+  h2 { color: #2c3e50; margin: 1.5rem 0 0.8rem; padding-bottom: 0.3rem; border-bottom: 2px solid #27ae60; }
+  h3 { color: #27ae60; margin: 1rem 0 0.5rem; }
+  .code-block {
+    background: #1e1e1e; color: #d4d4d4; border-radius: 8px; padding: 1.2rem;
+    font-family: 'Fira Code', 'Consolas', monospace; font-size: 0.9rem;
+    overflow-x: auto; margin: 0.8rem 0; line-height: 1.5;
+  }
+  .code-block .kw { color: #569cd6; font-weight: bold; }
+  .code-block .fn { color: #dcdcaa; }
+  .code-block .cm { color: #6a9955; font-style: italic; }
+  .code-block .val { color: #b5cea8; }
+  .code-block .str { color: #ce9178; }
+  .code-block .const { color: #4fc1ff; }
+  .info {
+    background: #e8f8f0; border-left: 4px solid #27ae60; padding: 1rem 1.2rem;
+    border-radius: 0 8px 8px 0; margin: 1rem 0;
+  }
+  .info strong { color: #27ae60; }
+  table { border-collapse: collapse; margin: 0.8rem 0; width: 100%; }
+  th, td { border: 1px solid #ddd; padding: 0.5rem 0.8rem; text-align: left; }
+  th { background: #f0f0f0; }
+  .nav { display: flex; gap: 1rem; margin: 1.5rem 0; flex-wrap: wrap; }
+  .nav a {
+    background: #27ae60; color: white; padding: 0.5rem 1.2rem; border-radius: 6px;
+    text-decoration: none; font-size: 0.9rem; transition: background 0.2s;
+  }
+  .nav a:hover { background: #219a52; }
+  .nav a.outline { background: transparent; color: #27ae60; border: 2px solid #27ae60; }
+  .nav a.outline:hover { background: #e8f8f0; }
+  footer { text-align: center; padding: 2rem; color: #999; font-size: 0.85rem; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Lösung AB 2: Analoger Eingang — NTC-Temperatursensor</h1>
+  <p>Arduino: Vom Digitalen zum Analogen</p>
+</header>
+<div class="container">
+
+<div class="nav">
+  <a href="lsg1.html" class="outline">&larr; AB 1</a>
+  <a href="lsg3.html">Weiter zu AB 3 &rarr;</a>
+  <a href="../" class="outline">&larr; Übersicht</a>
+</div>
+
+<h2>Aufgabe 2: Vollständiger Sketch</h2>
+
+<div class="code-block">
+<span class="kw">int</span> sensorPin = <span class="const">A0</span>;
+<span class="kw">int</span> sensorWert;
+
+<span class="kw">void</span> <span class="fn">setup</span>() {
+  <span class="fn">Serial.begin</span>(<span class="val">9600</span>);    <span class="cm">// Serial Monitor starten</span>
+}
+
+<span class="kw">void</span> <span class="fn">loop</span>() {
+  sensorWert = <span class="fn">analogRead</span>(sensorPin);   <span class="cm">// Analog-Pin lesen</span>
+  <span class="fn">Serial.print</span>(<span class="str">"Sensorwert: "</span>);
+  <span class="fn">Serial.println</span>(sensorWert);           <span class="cm">// Wert ausgeben</span>
+  <span class="fn">delay</span>(<span class="val">500</span>);                              <span class="cm">// 0,5 s warten</span>
+}
+</div>
+
+<div class="info">
+  <strong>Die Lücken:</strong><br>
+  &bull; <code>analogRead(sensorPin)</code> &mdash; liest die Spannung an Pin A0 (Wert 0–1023)<br>
+  &bull; <code>sensorWert</code> &mdash; die Variable, die ausgegeben werden soll
+</div>
+
+<h2>Aufgabe 4: Erwartete Messwerte</h2>
+
+<table>
+  <tr><th>Situation</th><th>Sensorwert (ca.)</th><th>Erklärung</th></tr>
+  <tr><td>Raumtemperatur</td><td>300 – 450</td><td>NTC hat mittleren Widerstand</td></tr>
+  <tr><td>Mit Fingern festhalten</td><td>450 – 600</td><td>Körperwärme → R<sub>NTC</sub> sinkt → U<sub>A0</sub> steigt</td></tr>
+  <tr><td>Mit Eiswürfel kühlen</td><td>100 – 250</td><td>Kalt → R<sub>NTC</sub> groß → U<sub>A0</sub> klein</td></tr>
+  <tr><td>Mit Fön erwärmen</td><td>600 – 900</td><td>Heiß → R<sub>NTC</sub> sehr klein → U<sub>A0</sub> groß</td></tr>
+</table>
+
+<div class="info">
+  <strong>Hinweis:</strong> Die genauen Werte hängen vom konkreten NTC und der Umgebungstemperatur ab. Die Tendenz ist entscheidend!
+</div>
+
+<h2>Aufgabe 5: Zusammenhang</h2>
+
+<p>Wird der NTC wärmer, wird der Sensorwert <strong>größer</strong>.</p>
+
+<p><strong>Begründung:</strong> Im Spannungsteiler bilden NTC (oben) und 10 kΩ (unten) eine Reihenschaltung.
+Wenn die Temperatur steigt, sinkt der NTC-Widerstand. Dadurch fällt weniger Spannung über dem NTC ab
+und mehr über dem 10 kΩ-Widerstand. Da Pin A0 die Spannung über dem 10 kΩ-Widerstand misst,
+steigt der Sensorwert.</p>
+
+<h2>Aufgabe 6 (Zusatz): Text im Serial Monitor</h2>
+
+<div class="code-block">
+<span class="kw">void</span> <span class="fn">loop</span>() {
+  sensorWert = <span class="fn">analogRead</span>(sensorPin);
+  <span class="fn">Serial.print</span>(<span class="str">"Sensorwert: "</span>);
+  <span class="fn">Serial.print</span>(sensorWert);
+
+  <span class="kw">if</span> (sensorWert &lt; <span class="val">400</span>) {
+    <span class="fn">Serial.println</span>(<span class="str">"  -&gt; kalt"</span>);
+  }
+  <span class="kw">else if</span> (sensorWert &lt; <span class="val">600</span>) {
+    <span class="fn">Serial.println</span>(<span class="str">"  -&gt; warm"</span>);
+  }
+  <span class="kw">else</span> {
+    <span class="fn">Serial.println</span>(<span class="str">"  -&gt; heiss"</span>);
+  }
+
+  <span class="fn">delay</span>(<span class="val">500</span>);
+}
+</div>
+
+<div class="nav">
+  <a href="lsg1.html" class="outline">&larr; AB 1</a>
+  <a href="lsg3.html">Weiter zu AB 3 &rarr;</a>
+  <a href="../" class="outline">&larr; Übersicht</a>
+</div>
+
+</div>
+<footer>Fachpraxis Physik 11NP — Lore-Lorentz-Schule Düsseldorf</footer>
+</body>
+</html>

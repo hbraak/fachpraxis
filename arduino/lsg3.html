@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lösung AB 3 — NTC-Temperaturampel</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f8f9fa; color: #2c3e50; line-height: 1.6; }
+  header { background: #2c3e50; color: white; padding: 1.5rem 2rem; }
+  header h1 { font-size: 1.5rem; }
+  header p { opacity: 0.8; margin-top: 0.3rem; font-size: 0.95rem; }
+  .container { max-width: 800px; margin: 1.5rem auto; padding: 0 1.5rem; }
+  h2 { color: #2c3e50; margin: 1.5rem 0 0.8rem; padding-bottom: 0.3rem; border-bottom: 2px solid #e74c3c; }
+  h3 { color: #e74c3c; margin: 1rem 0 0.5rem; }
+  .code-block {
+    background: #1e1e1e; color: #d4d4d4; border-radius: 8px; padding: 1.2rem;
+    font-family: 'Fira Code', 'Consolas', monospace; font-size: 0.9rem;
+    overflow-x: auto; margin: 0.8rem 0; line-height: 1.5;
+  }
+  .code-block .kw { color: #569cd6; font-weight: bold; }
+  .code-block .fn { color: #dcdcaa; }
+  .code-block .cm { color: #6a9955; font-style: italic; }
+  .code-block .val { color: #b5cea8; }
+  .code-block .str { color: #ce9178; }
+  .code-block .const { color: #4fc1ff; }
+  .info {
+    background: #fde8e8; border-left: 4px solid #e74c3c; padding: 1rem 1.2rem;
+    border-radius: 0 8px 8px 0; margin: 1rem 0;
+  }
+  .info strong { color: #e74c3c; }
+  .success {
+    background: #e8f8f0; border-left: 4px solid #27ae60; padding: 1rem 1.2rem;
+    border-radius: 0 8px 8px 0; margin: 1rem 0;
+  }
+  .success strong { color: #27ae60; }
+  table { border-collapse: collapse; margin: 0.8rem 0; width: 100%; }
+  th, td { border: 1px solid #ddd; padding: 0.5rem 0.8rem; text-align: left; }
+  th { background: #f0f0f0; }
+  .led-green { color: #27ae60; font-weight: bold; }
+  .led-yellow { color: #f39c12; font-weight: bold; }
+  .led-red { color: #e74c3c; font-weight: bold; }
+  .nav { display: flex; gap: 1rem; margin: 1.5rem 0; flex-wrap: wrap; }
+  .nav a {
+    background: #e74c3c; color: white; padding: 0.5rem 1.2rem; border-radius: 6px;
+    text-decoration: none; font-size: 0.9rem; transition: background 0.2s;
+  }
+  .nav a:hover { background: #c0392b; }
+  .nav a.outline { background: transparent; color: #e74c3c; border: 2px solid #e74c3c; }
+  .nav a.outline:hover { background: #fde8e8; }
+  footer { text-align: center; padding: 2rem; color: #999; font-size: 0.85rem; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Lösung AB 3: Temperaturampel — NTC steuert LEDs</h1>
+  <p>Arduino: Analoger Eingang + Digitaler Ausgang</p>
+</header>
+<div class="container">
+
+<div class="nav">
+  <a href="lsg1.html" class="outline">&larr; AB 1</a>
+  <a href="lsg2.html" class="outline">&larr; AB 2</a>
+  <a href="../" class="outline">&larr; Übersicht</a>
+</div>
+
+<h2>Aufgabe 2: Vollständiger Sketch</h2>
+
+<div class="code-block">
+<span class="kw">int</span> sensorPin = <span class="const">A0</span>;
+<span class="kw">int</span> ledGruen = <span class="val">11</span>;
+<span class="kw">int</span> ledGelb = <span class="val">12</span>;
+<span class="kw">int</span> ledRot = <span class="val">13</span>;
+<span class="kw">int</span> sensorWert;
+
+<span class="kw">void</span> <span class="fn">setup</span>() {
+  <span class="fn">pinMode</span>(ledGruen, <span class="const">OUTPUT</span>);
+  <span class="fn">pinMode</span>(ledGelb, <span class="const">OUTPUT</span>);    <span class="cm">// gelbe LED</span>
+  <span class="fn">pinMode</span>(ledRot, <span class="const">OUTPUT</span>);     <span class="cm">// rote LED</span>
+  <span class="fn">Serial.begin</span>(<span class="val">9600</span>);
+}
+
+<span class="kw">void</span> <span class="fn">loop</span>() {
+  sensorWert = <span class="fn">analogRead</span>(sensorPin);
+  <span class="fn">Serial.println</span>(sensorWert);
+
+  <span class="kw">if</span> (sensorWert &lt; <span class="val">400</span>) {
+    <span class="cm">// kalt: nur grün an</span>
+    <span class="fn">digitalWrite</span>(ledGruen, <span class="const">HIGH</span>);
+    <span class="fn">digitalWrite</span>(ledGelb,  <span class="const">LOW</span>);
+    <span class="fn">digitalWrite</span>(ledRot,   <span class="const">LOW</span>);
+  }
+  <span class="kw">else if</span> (sensorWert &lt; <span class="val">600</span>) {
+    <span class="cm">// warm: nur gelb an</span>
+    <span class="fn">digitalWrite</span>(ledGruen, <span class="const">LOW</span>);
+    <span class="fn">digitalWrite</span>(ledGelb,  <span class="const">HIGH</span>);
+    <span class="fn">digitalWrite</span>(ledRot,   <span class="const">LOW</span>);
+  }
+  <span class="kw">else</span> {
+    <span class="cm">// heiß: nur rot an</span>
+    <span class="fn">digitalWrite</span>(ledGruen, <span class="const">LOW</span>);
+    <span class="fn">digitalWrite</span>(ledGelb,  <span class="const">LOW</span>);
+    <span class="fn">digitalWrite</span>(ledRot,   <span class="const">HIGH</span>);
+  }
+
+  <span class="fn">delay</span>(<span class="val">200</span>);
+}
+</div>
+
+<div class="info">
+  <strong>Die Lücken:</strong><br>
+  &bull; <code>pinMode(ledGelb, OUTPUT)</code> und <code>pinMode(ledRot, OUTPUT)</code><br>
+  &bull; <code>else if (sensorWert < 600)</code><br>
+  &bull; Im kalt-Block: grün = <code>HIGH</code>, gelb = <code>LOW</code>, rot = <code>LOW</code><br>
+  &bull; Im warm-Block: grün = <code>LOW</code>, gelb = <code>HIGH</code>, rot = <code>LOW</code><br>
+  &bull; Im heiß-Block: alle drei <code>digitalWrite</code>-Aufrufe ausschreiben
+</div>
+
+<h2>Aufgabe 3: Schwellwerte anpassen</h2>
+
+<p>Die Schwellwerte 400 und 600 sind Startwerte. Nach dem Testen sollten die Werte
+so angepasst werden, dass die Übergänge zur beobachteten Temperatur passen.</p>
+
+<table>
+  <tr><th>Bereich</th><th>Schwellwert (Beispiel)</th><th>LED</th></tr>
+  <tr><td>kalt</td><td>Sensorwert &lt; <strong>350</strong></td><td class="led-green">grün</td></tr>
+  <tr><td>warm</td><td><strong>350</strong> &le; Sensorwert &lt; <strong>550</strong></td><td class="led-yellow">gelb</td></tr>
+  <tr><td>heiß</td><td>Sensorwert &ge; <strong>550</strong></td><td class="led-red">rot</td></tr>
+</table>
+
+<div class="success">
+  <strong>Tipp:</strong> Nutzen Sie den Serial Monitor (AB 2), um die tatsächlichen Sensorwerte bei verschiedenen Temperaturen abzulesen und die Schwellwerte gezielt einzustellen.
+</div>
+
+<h2>Aufgabe 5 (Zusatz 1): Taster + Temperaturmessung</h2>
+
+<div class="code-block">
+<span class="kw">int</span> tasterPin = <span class="val">8</span>;
+
+<span class="kw">void</span> <span class="fn">setup</span>() {
+  <span class="fn">pinMode</span>(ledGruen, <span class="const">OUTPUT</span>);
+  <span class="fn">pinMode</span>(ledGelb, <span class="const">OUTPUT</span>);
+  <span class="fn">pinMode</span>(ledRot, <span class="const">OUTPUT</span>);
+  <span class="fn">pinMode</span>(tasterPin, <span class="const">INPUT</span>);
+  <span class="fn">Serial.begin</span>(<span class="val">9600</span>);
+}
+
+<span class="kw">void</span> <span class="fn">loop</span>() {
+  <span class="kw">if</span> (<span class="fn">digitalRead</span>(tasterPin) == <span class="const">HIGH</span>) {
+    <span class="cm">// Taster gedrückt: Temperatur messen</span>
+    sensorWert = <span class="fn">analogRead</span>(sensorPin);
+    <span class="fn">Serial.println</span>(sensorWert);
+
+    <span class="kw">if</span> (sensorWert &lt; <span class="val">400</span>) {
+      <span class="fn">digitalWrite</span>(ledGruen, <span class="const">HIGH</span>);
+      <span class="fn">digitalWrite</span>(ledGelb,  <span class="const">LOW</span>);
+      <span class="fn">digitalWrite</span>(ledRot,   <span class="const">LOW</span>);
+    } <span class="kw">else if</span> (sensorWert &lt; <span class="val">600</span>) {
+      <span class="fn">digitalWrite</span>(ledGruen, <span class="const">LOW</span>);
+      <span class="fn">digitalWrite</span>(ledGelb,  <span class="const">HIGH</span>);
+      <span class="fn">digitalWrite</span>(ledRot,   <span class="const">LOW</span>);
+    } <span class="kw">else</span> {
+      <span class="fn">digitalWrite</span>(ledGruen, <span class="const">LOW</span>);
+      <span class="fn">digitalWrite</span>(ledGelb,  <span class="const">LOW</span>);
+      <span class="fn">digitalWrite</span>(ledRot,   <span class="const">HIGH</span>);
+    }
+  }
+  <span class="kw">else</span> {
+    <span class="cm">// Taster nicht gedrückt: alle LEDs aus</span>
+    <span class="fn">digitalWrite</span>(ledGruen, <span class="const">LOW</span>);
+    <span class="fn">digitalWrite</span>(ledGelb,  <span class="const">LOW</span>);
+    <span class="fn">digitalWrite</span>(ledRot,   <span class="const">LOW</span>);
+  }
+
+  <span class="fn">delay</span>(<span class="val">200</span>);
+}
+</div>
+
+<h2>Aufgabe 6 (Zusatz 2): Rote LED blinkt als Warnsignal</h2>
+
+<div class="code-block">
+  <span class="kw">else</span> {
+    <span class="cm">// heiß: rot blinkt als Warnung!</span>
+    <span class="fn">digitalWrite</span>(ledGruen, <span class="const">LOW</span>);
+    <span class="fn">digitalWrite</span>(ledGelb,  <span class="const">LOW</span>);
+    <span class="fn">digitalWrite</span>(ledRot,   <span class="const">HIGH</span>);
+    <span class="fn">delay</span>(<span class="val">150</span>);
+    <span class="fn">digitalWrite</span>(ledRot,   <span class="const">LOW</span>);
+    <span class="fn">delay</span>(<span class="val">150</span>);
+  }
+</div>
+
+<div class="success">
+  <strong>Zusammenfassung der drei Arbeitsblätter:</strong>
+  <table>
+    <tr><th>AB</th><th>Thema</th><th>Wichtigste Befehle</th></tr>
+    <tr><td>AB 1</td><td>Digitaler Eingang (Taster)</td><td><code>digitalRead()</code>, <code>if/else</code></td></tr>
+    <tr><td>AB 2</td><td>Analoger Eingang (NTC)</td><td><code>analogRead()</code>, <code>Serial.println()</code></td></tr>
+    <tr><td>AB 3</td><td>Sensor &rarr; Aktor</td><td><code>if / else if / else</code></td></tr>
+  </table>
+</div>
+
+<div class="nav">
+  <a href="lsg1.html" class="outline">&larr; AB 1</a>
+  <a href="lsg2.html" class="outline">&larr; AB 2</a>
+  <a href="../" class="outline">&larr; Übersicht</a>
+</div>
+
+</div>
+<footer>Fachpraxis Physik 11NP — Lore-Lorentz-Schule Düsseldorf</footer>
+</body>
+</html>

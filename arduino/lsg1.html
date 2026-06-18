@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lösung AB 1 — Digitaler Eingang (Taster)</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f8f9fa; color: #2c3e50; line-height: 1.6; }
+  header { background: #2c3e50; color: white; padding: 1.5rem 2rem; }
+  header h1 { font-size: 1.5rem; }
+  header p { opacity: 0.8; margin-top: 0.3rem; font-size: 0.95rem; }
+  .container { max-width: 800px; margin: 1.5rem auto; padding: 0 1.5rem; }
+  h2 { color: #2c3e50; margin: 1.5rem 0 0.8rem; padding-bottom: 0.3rem; border-bottom: 2px solid #3498db; }
+  h3 { color: #2980b9; margin: 1rem 0 0.5rem; }
+  .code-block {
+    background: #1e1e1e; color: #d4d4d4; border-radius: 8px; padding: 1.2rem;
+    font-family: 'Fira Code', 'Consolas', monospace; font-size: 0.9rem;
+    overflow-x: auto; margin: 0.8rem 0; line-height: 1.5;
+  }
+  .code-block .kw { color: #569cd6; font-weight: bold; }
+  .code-block .fn { color: #dcdcaa; }
+  .code-block .cm { color: #6a9955; font-style: italic; }
+  .code-block .val { color: #b5cea8; }
+  .code-block .str { color: #ce9178; }
+  .code-block .const { color: #4fc1ff; }
+  .info {
+    background: #eaf4fd; border-left: 4px solid #3498db; padding: 1rem 1.2rem;
+    border-radius: 0 8px 8px 0; margin: 1rem 0;
+  }
+  .info strong { color: #2980b9; }
+  .warn {
+    background: #fdf3e7; border-left: 4px solid #e67e22; padding: 1rem 1.2rem;
+    border-radius: 0 8px 8px 0; margin: 1rem 0;
+  }
+  table { border-collapse: collapse; margin: 0.8rem 0; width: 100%; }
+  th, td { border: 1px solid #ddd; padding: 0.5rem 0.8rem; text-align: left; }
+  th { background: #f0f0f0; }
+  .nav { display: flex; gap: 1rem; margin: 1.5rem 0; flex-wrap: wrap; }
+  .nav a {
+    background: #3498db; color: white; padding: 0.5rem 1.2rem; border-radius: 6px;
+    text-decoration: none; font-size: 0.9rem; transition: background 0.2s;
+  }
+  .nav a:hover { background: #2980b9; }
+  .nav a.outline { background: transparent; color: #3498db; border: 2px solid #3498db; }
+  .nav a.outline:hover { background: #eaf4fd; }
+  footer { text-align: center; padding: 2rem; color: #999; font-size: 0.85rem; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Lösung AB 1: Digitaler Eingang — Taster</h1>
+  <p>Arduino: Vom Ausgang zum Eingang</p>
+</header>
+<div class="container">
+
+<div class="nav">
+  <a href="lsg2.html">Weiter zu AB 2 &rarr;</a>
+  <a href="lsg3.html" class="outline">AB 3</a>
+  <a href="../" class="outline">&larr; Übersicht</a>
+</div>
+
+<h2>Aufgabe 2: Vollständiger Sketch</h2>
+
+<div class="code-block">
+<span class="kw">int</span> ledPin = <span class="val">13</span>;
+<span class="kw">int</span> tasterPin = <span class="val">8</span>;
+<span class="kw">int</span> tasterStatus;
+
+<span class="kw">void</span> <span class="fn">setup</span>() {
+  <span class="fn">pinMode</span>(ledPin, <span class="const">OUTPUT</span>);       <span class="cm">// LED = Ausgang</span>
+  <span class="fn">pinMode</span>(tasterPin, <span class="const">INPUT</span>);    <span class="cm">// Taster = Eingang</span>
+}
+
+<span class="kw">void</span> <span class="fn">loop</span>() {
+  tasterStatus = <span class="fn">digitalRead</span>(tasterPin);  <span class="cm">// Pin lesen</span>
+
+  <span class="kw">if</span> (tasterStatus == <span class="const">HIGH</span>) {
+    <span class="fn">digitalWrite</span>(ledPin, <span class="const">HIGH</span>);   <span class="cm">// LED an</span>
+  }
+  <span class="kw">else</span> {
+    <span class="fn">digitalWrite</span>(ledPin, <span class="const">LOW</span>);    <span class="cm">// LED aus</span>
+  }
+}
+</div>
+
+<div class="info">
+  <strong>Erklärung:</strong> <code>pinMode(tasterPin, INPUT)</code> konfiguriert Pin 8 als Eingang.
+  <code>digitalRead(tasterPin)</code> gibt <code>HIGH</code> zurück, wenn der Taster gedrückt ist (5V über Taster),
+  und <code>LOW</code>, wenn er nicht gedrückt ist (Pull-down zieht auf GND).
+</div>
+
+<h2>Aufgabe 3: Flussdiagramm</h2>
+
+<table>
+  <tr><th>Feld</th><th>Inhalt</th></tr>
+  <tr><td>Pin auslesen</td><td><code>tasterStatus = digitalRead(tasterPin);</code></td></tr>
+  <tr><td>Bedingung</td><td><code>tasterStatus == HIGH?</code></td></tr>
+  <tr><td>ja-Zweig</td><td><code>digitalWrite(ledPin, HIGH);</code> &mdash; LED an</td></tr>
+  <tr><td>nein-Zweig</td><td><code>digitalWrite(ledPin, LOW);</code> &mdash; LED aus</td></tr>
+</table>
+
+<h2>Aufgabe 4 (Zusatz): LED blinkt bei gedrücktem Taster</h2>
+
+<div class="code-block">
+<span class="kw">void</span> <span class="fn">loop</span>() {
+  tasterStatus = <span class="fn">digitalRead</span>(tasterPin);
+
+  <span class="kw">if</span> (tasterStatus == <span class="const">HIGH</span>) {
+    <span class="fn">digitalWrite</span>(ledPin, <span class="const">HIGH</span>);
+    <span class="fn">delay</span>(<span class="val">200</span>);
+    <span class="fn">digitalWrite</span>(ledPin, <span class="const">LOW</span>);
+    <span class="fn">delay</span>(<span class="val">200</span>);
+  }
+  <span class="kw">else</span> {
+    <span class="fn">digitalWrite</span>(ledPin, <span class="const">LOW</span>);
+  }
+}
+</div>
+
+<div class="warn">
+  <strong>Hinweis:</strong> Durch die <code>delay(200)</code>-Aufrufe reagiert der Arduino verzögert auf das Loslassen des Tasters. Für eine bessere Lösung könnte man <code>millis()</code> statt <code>delay()</code> verwenden.
+</div>
+
+<div class="nav">
+  <a href="lsg2.html">Weiter zu AB 2 &rarr;</a>
+  <a href="../" class="outline">&larr; Übersicht</a>
+</div>
+
+</div>
+<footer>Fachpraxis Physik 11NP — Lore-Lorentz-Schule Düsseldorf</footer>
+</body>
+</html>
