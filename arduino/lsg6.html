@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lösung AB 6 — NTC: Abkühlkurve &amp; Hauchdetektor</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f8f9fa; color: #2c3e50; line-height: 1.6; }
+  header { background: #2c3e50; color: white; padding: 1.5rem 2rem; }
+  header h1 { font-size: 1.5rem; }
+  header p { opacity: 0.8; margin-top: 0.3rem; font-size: 0.95rem; }
+  .container { max-width: 800px; margin: 1.5rem auto; padding: 0 1.5rem; }
+  h2 { color: #2c3e50; margin: 1.5rem 0 0.8rem; padding-bottom: 0.3rem; border-bottom: 2px solid #27ae60; }
+  h3 { color: #27ae60; margin: 1rem 0 0.5rem; }
+  .code-block {
+    background: #1e1e1e; color: #d4d4d4; border-radius: 8px; padding: 1.2rem;
+    font-family: 'Fira Code', 'Consolas', monospace; font-size: 0.9rem;
+    overflow-x: auto; margin: 0.8rem 0; line-height: 1.5; white-space: pre;
+  }
+  .code-block .kw { color: #569cd6; font-weight: bold; }
+  .code-block .fn { color: #dcdcaa; }
+  .code-block .cm { color: #6a9955; font-style: italic; }
+  .code-block .val { color: #b5cea8; }
+  .code-block .str { color: #ce9178; }
+  .code-block .const { color: #4fc1ff; }
+  .info {
+    background: #e8f8f0; border-left: 4px solid #27ae60; padding: 1rem 1.2rem;
+    border-radius: 0 8px 8px 0; margin: 1rem 0;
+  }
+  .info strong { color: #27ae60; }
+  .warn { background: #fdf0e8; border-left: 4px solid #e67e22; padding: 1rem 1.2rem; border-radius: 0 8px 8px 0; margin: 1rem 0; }
+  .warn strong { color: #e67e22; }
+  table { border-collapse: collapse; margin: 0.8rem 0; width: 100%; }
+  th, td { border: 1px solid #ddd; padding: 0.5rem 0.8rem; text-align: left; }
+  th { background: #f0f0f0; }
+  .nav { display: flex; gap: 1rem; margin: 1.5rem 0; flex-wrap: wrap; }
+  .nav a {
+    background: #27ae60; color: white; padding: 0.5rem 1.2rem; border-radius: 6px;
+    text-decoration: none; font-size: 0.9rem; transition: background 0.2s;
+  }
+  .nav a:hover { background: #219a52; }
+  .nav a.outline { background: transparent; color: #27ae60; border: 2px solid #27ae60; }
+  .nav a.outline:hover { background: #e8f8f0; }
+  footer { text-align: center; padding: 2rem; color: #999; font-size: 0.85rem; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Lösung AB 6: NTC — Abkühlkurve &amp; Hauchdetektor</h1>
+  <p>Warum Auflösung über den Projekterfolg entscheidet</p>
+</header>
+<div class="container">
+
+<div class="nav">
+  <a href="AB6_NTC_Abkuehlkurve_Hauchdetektor.pdf">📄 Arbeitsblatt (PDF)</a>
+  <a href="lsg2.html" class="outline">&larr; AB 2 (NTC)</a>
+  <a href="lsg4.html" class="outline">AB 4 (ADC)</a>
+  <a href="./" class="outline">&larr; Übersicht</a>
+</div>
+
+<h2>Teil 1 — Abkühlkurve</h2>
+<div class="info">
+  <strong>Aufgabe 2:</strong> Es ist eine <strong>Kurve</strong> (kein Gerade) — sie fällt anfangs steil und wird zum Ende hin flach (<strong>exponentieller</strong> Verlauf).<br>
+  <strong>Aufgabe 3:</strong> <strong>Schnell</strong> am Anfang (großer Temperaturunterschied zur Luft), <strong>langsam</strong> gegen Ende (kaum noch Unterschied zur Raumtemperatur).
+</div>
+<div class="info">
+  <strong>Physik:</strong> Newton'sches Abkühlungsgesetz — die Abkühlrate ist proportional zur Temperaturdifferenz Körper&nbsp;↔&nbsp;Umgebung. Deshalb der exponentielle Verlauf.
+</div>
+
+<h2>Teil 2 — Auflösung</h2>
+<div class="info">
+  <strong>Aufgabe 4:</strong> ΔU = 3,3&nbsp;V / 1024 &asymp; <strong>3,2&nbsp;mV</strong> (gegenüber 4,9&nbsp;mV bei 5&nbsp;V — also feiner).
+</div>
+<div class="warn">
+  <strong>Aufgabe 5 (Sicherheit):</strong> Wird <code>analogReference(EXTERNAL)</code> erst <em>nach</em> einem <code>analogRead()</code> gesetzt, liegt die <strong>interne Referenz</strong> auf dem AREF-Pin und wird mit der externen Spannung <strong>kurzgeschlossen</strong> — das kann den Mikrocontroller beschädigen. Deshalb <strong>immer zuerst</strong> die Referenz setzen.
+</div>
+
+<h2>Teil 3 — Hauchdetektor (Lösung)</h2>
+<div class="code-block">
+<span class="kw">float</span> basis;
+<span class="kw">int</span> ledPin = <span class="val">8</span>;
+
+<span class="kw">float</span> <span class="fn">messe</span>() {                       <span class="cm">// Mittelwert aus 32 Messungen</span>
+  <span class="kw">long</span> summe = <span class="val">0</span>;
+  <span class="kw">for</span> (<span class="kw">int</span> i = <span class="val">0</span>; i &lt; <span class="val">32</span>; i++) summe += <span class="fn">analogRead</span>(<span class="const">A0</span>);
+  <span class="kw">return</span> summe / <span class="val">32.0</span>;
+}
+
+<span class="kw">void</span> <span class="fn">setup</span>() {
+  <span class="fn">analogReference</span>(<span class="const">EXTERNAL</span>);          <span class="cm">// 3,3 V an AREF</span>
+  <span class="fn">pinMode</span>(ledPin, <span class="const">OUTPUT</span>);
+  <span class="fn">analogRead</span>(<span class="const">A0</span>);                     <span class="cm">// erste Messung verwerfen</span>
+  basis = <span class="fn">messe</span>();                    <span class="cm">// Ruhewert merken</span>
+  <span class="fn">Serial.begin</span>(<span class="val">9600</span>);
+}
+
+<span class="kw">void</span> <span class="fn">loop</span>() {
+  <span class="kw">float</span> wert = <span class="fn">messe</span>();
+  <span class="fn">Serial.println</span>(wert - basis);
+  <span class="kw">if</span> (wert &gt; basis + <span class="val">8</span>) {          <span class="cm">// Schwelle ~8 (anpassen!)</span>
+    <span class="fn">digitalWrite</span>(ledPin, <span class="const">HIGH</span>);
+  } <span class="kw">else</span> {
+    <span class="fn">digitalWrite</span>(ledPin, <span class="const">LOW</span>);
+  }
+  <span class="fn">delay</span>(<span class="val">50</span>);
+}
+</div>
+<div class="info">
+  <strong>Aufgabe 6 (Schwelle):</strong> Typisch <strong>~5–10</strong> (ADC-Einheiten über dem Ruhewert). Sie muss über dem Restrauschen, aber unter dem Hauch-Signal liegen. Genauer Wert je nach NTC/Aufbau selbst einstellen.
+</div>
+<div class="info">
+  <strong>Aufgabe 7 (Gegenprobe):</strong> Mit <strong>einer einzelnen</strong> <code>analogRead()</code> und der groben 5-V-Referenz <strong>flackert die LED schon in Ruhe</strong> — das Rauschen überschreitet die Schwelle ständig.
+</div>
+<div class="info">
+  <strong>Aufgabe 8 (Fazit):</strong> Das Hauch-Signal ist nur wenige mV groß. Erst der <strong>Mittelwert</strong> (unterdrückt Rauschen) und die <strong>kleinere Referenz</strong> (feinere Stufen) machen dieses kleine Signal zuverlässig sichtbar. <strong>Ohne gute Auflösung kein Hauchdetektor</strong> — genau das ist der Kern des Themas.
+</div>
+
+<div class="nav">
+  <a href="AB6_NTC_Abkuehlkurve_Hauchdetektor.pdf">📄 Arbeitsblatt (PDF)</a>
+  <a href="lsg2.html" class="outline">&larr; AB 2 (NTC)</a>
+  <a href="lsg4.html" class="outline">AB 4 (ADC)</a>
+  <a href="./" class="outline">&larr; Übersicht</a>
+</div>
+
+</div>
+<footer>Fachpraxis Physik 11NP — Lore-Lorentz-Schule Düsseldorf</footer>
+</body>
+</html>
