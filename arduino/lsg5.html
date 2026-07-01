@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lösung AB 5 — Poti, map() &amp; Servo</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f8f9fa; color: #2c3e50; line-height: 1.6; }
+  header { background: #2c3e50; color: white; padding: 1.5rem 2rem; }
+  header h1 { font-size: 1.5rem; }
+  header p { opacity: 0.8; margin-top: 0.3rem; font-size: 0.95rem; }
+  .container { max-width: 800px; margin: 1.5rem auto; padding: 0 1.5rem; }
+  h2 { color: #2c3e50; margin: 1.5rem 0 0.8rem; padding-bottom: 0.3rem; border-bottom: 2px solid #27ae60; }
+  h3 { color: #27ae60; margin: 1rem 0 0.5rem; }
+  .code-block {
+    background: #1e1e1e; color: #d4d4d4; border-radius: 8px; padding: 1.2rem;
+    font-family: 'Fira Code', 'Consolas', monospace; font-size: 0.9rem;
+    overflow-x: auto; margin: 0.8rem 0; line-height: 1.5; white-space: pre;
+  }
+  .code-block .kw { color: #569cd6; font-weight: bold; }
+  .code-block .fn { color: #dcdcaa; }
+  .code-block .cm { color: #6a9955; font-style: italic; }
+  .code-block .val { color: #b5cea8; }
+  .code-block .str { color: #ce9178; }
+  .code-block .const { color: #4fc1ff; }
+  .info {
+    background: #e8f8f0; border-left: 4px solid #27ae60; padding: 1rem 1.2rem;
+    border-radius: 0 8px 8px 0; margin: 1rem 0;
+  }
+  .info strong { color: #27ae60; }
+  table { border-collapse: collapse; margin: 0.8rem 0; width: 100%; }
+  th, td { border: 1px solid #ddd; padding: 0.5rem 0.8rem; text-align: left; }
+  th { background: #f0f0f0; }
+  .nav { display: flex; gap: 1rem; margin: 1.5rem 0; flex-wrap: wrap; }
+  .nav a {
+    background: #27ae60; color: white; padding: 0.5rem 1.2rem; border-radius: 6px;
+    text-decoration: none; font-size: 0.9rem; transition: background 0.2s;
+  }
+  .nav a:hover { background: #219a52; }
+  .nav a.outline { background: transparent; color: #27ae60; border: 2px solid #27ae60; }
+  .nav a.outline:hover { background: #e8f8f0; }
+  footer { text-align: center; padding: 2rem; color: #999; font-size: 0.85rem; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Lösung AB 5: Poti, Serial Plotter, map() &amp; Servo</h1>
+  <p>Vom Rohwert 0–1023 zur Anwendung</p>
+</header>
+<div class="container">
+
+<div class="nav">
+  <a href="AB5_Poti_Mapping_Servo.pdf">📄 Arbeitsblatt (PDF)</a>
+  <a href="lsg2.html" class="outline">&larr; AB 2 (NTC)</a>
+  <a href="lsg4.html" class="outline">AB 4 (ADC)</a>
+  <a href="./" class="outline">&larr; Übersicht</a>
+</div>
+
+<h2>Teil 2 — Serial Plotter</h2>
+<div class="info">
+  <strong>Aufgabe 2:</strong> Kleinster Wert &asymp; <strong>0</strong> (ein Anschlag), größter Wert &asymp; <strong>1023</strong> (anderer Anschlag).
+  Das Poti nutzt also den <strong>vollen</strong> ADC-Bereich – anders als der NTC.
+</div>
+<div class="info">
+  <strong>Aufgabe 3 — Rohwert &rarr; Spannung:</strong><br>
+  U = wert &middot; 5&nbsp;V / 1023. Bei wert = 512:<br>
+  U = 512 &middot; 5 / 1023 &asymp; <strong>2,50&nbsp;V</strong> (also genau die Mitte).
+</div>
+
+<h2>Teil 3 — map()</h2>
+<p><code>map(512, 0, 1023, 0, 255)</code> = 512 &middot; 255 / 1023 &asymp; <strong>127</strong>.</p>
+<table>
+  <tr><th>ADC-Wert</th><th>map(&hellip;,0,1023,0,255)</th></tr>
+  <tr><td>0</td><td>0</td></tr>
+  <tr><td>512</td><td><strong>127</strong> (Mitte)</td></tr>
+  <tr><td>1023</td><td>255</td></tr>
+</table>
+<div class="info">
+  <strong>Merke:</strong> <code>map()</code> rechnet <strong>linear</strong> und liefert ganze Zahlen (Nachkommastellen fallen weg).
+</div>
+
+<h2>Teil 4 — LED-Dimmer (Lösung)</h2>
+<div class="code-block">
+<span class="kw">int</span> potiPin = <span class="const">A0</span>;
+<span class="kw">int</span> ledPin  = <span class="val">9</span>;      <span class="cm">// PWM-Pin (~)</span>
+<span class="kw">int</span> wert, helligkeit;
+
+<span class="kw">void</span> <span class="fn">setup</span>() {
+  <span class="fn">pinMode</span>(ledPin, <span class="const">OUTPUT</span>);
+}
+
+<span class="kw">void</span> <span class="fn">loop</span>() {
+  wert = <span class="fn">analogRead</span>(potiPin);                <span class="cm">// 0 ... 1023</span>
+  helligkeit = <span class="fn">map</span>(wert, <span class="val">0</span>, <span class="val">1023</span>, <span class="val">0</span>, <span class="val">255</span>);  <span class="cm">// Luecke: 255</span>
+  <span class="fn">analogWrite</span>(ledPin, helligkeit);
+  <span class="fn">delay</span>(<span class="val">20</span>);
+}
+</div>
+<div class="info">
+  <strong>Aufgabe 4:</strong> Lücke = <strong>255</strong>. Beim Drehen wird die LED <strong>stufenlos heller bzw. dunkler</strong> –
+  weil analogWrite() über PWM die mittlere Spannung an der LED verändert.
+</div>
+
+<h2>Teil 5 — Servo (Lösung)</h2>
+<div class="code-block">
+<span class="cm">#include &lt;Servo.h&gt;</span>
+<span class="const">Servo</span> meinServo;
+<span class="kw">int</span> potiPin = <span class="const">A0</span>;
+<span class="kw">int</span> wert, winkel;
+
+<span class="kw">void</span> <span class="fn">setup</span>() {
+  meinServo.<span class="fn">attach</span>(<span class="val">9</span>);
+}
+
+<span class="kw">void</span> <span class="fn">loop</span>() {
+  wert = <span class="fn">analogRead</span>(potiPin);            <span class="cm">// 0 ... 1023</span>
+  winkel = <span class="fn">map</span>(wert, <span class="val">0</span>, <span class="val">1023</span>, <span class="val">0</span>, <span class="val">180</span>);  <span class="cm">// Luecke: 180</span>
+  meinServo.<span class="fn">write</span>(winkel);
+  <span class="fn">delay</span>(<span class="val">20</span>);
+}
+</div>
+<div class="info">
+  <strong>Aufgabe 5:</strong> Winkelbereich = <strong>0 … 180</strong>. Die Poti-Stellung wird <strong>proportional</strong> auf den
+  Servo-Winkel abgebildet: linker Anschlag &rarr; 0°, Mitte &rarr; 90°, rechter Anschlag &rarr; 180°.
+</div>
+
+<h2>Teil 6 — Digitalisierung &amp; Auflösung</h2>
+<div class="info">
+  <strong>Aufgabe 6 (Treppen im Plotter):</strong> Der ADC kennt nur <strong>1024 diskrete Stufen</strong>.
+  Zwischenwerte gibt es nicht – deshalb springt die Kurve in kleinen Stufen statt glatt zu steigen. Das ist die <strong>Quantisierung</strong>.
+</div>
+<div class="info">
+  <strong>Aufgabe 7 (Spannungsauflösung):</strong><br>
+  &Delta;U = 5&nbsp;V / 1024 &asymp; <strong>4,9&nbsp;mV</strong>.
+  Spannungsunterschiede kleiner als ~4,9&nbsp;mV kann der Arduino-Uno nicht unterscheiden.
+</div>
+<h3>Aufgabe 8 (Zusatz): Spannung ausgeben</h3>
+<div class="code-block">
+<span class="kw">void</span> <span class="fn">loop</span>() {
+  wert = <span class="fn">analogRead</span>(potiPin);
+  <span class="kw">float</span> U = wert * <span class="val">5.0</span> / <span class="val">1023</span>;   <span class="cm">// Rohwert -> Spannung</span>
+  <span class="fn">Serial.println</span>(U);                  <span class="cm">// z.B. 2.50</span>
+  <span class="fn">delay</span>(<span class="val">50</span>);
+}
+</div>
+
+<div class="info">
+  <strong>Mehr Auflösung gefällig?</strong> Mittelwert aus vielen Messungen (Oversampling),
+  <code>analogReference(INTERNAL)</code> (1,1&nbsp;V-Bereich) oder ein externer 16-Bit-ADC (ADS1115) – siehe AB 4.
+</div>
+
+<div class="nav">
+  <a href="AB5_Poti_Mapping_Servo.pdf">📄 Arbeitsblatt (PDF)</a>
+  <a href="lsg2.html" class="outline">&larr; AB 2 (NTC)</a>
+  <a href="lsg4.html" class="outline">AB 4 (ADC)</a>
+  <a href="./" class="outline">&larr; Übersicht</a>
+</div>
+
+</div>
+<footer>Fachpraxis Physik 11NP — Lore-Lorentz-Schule Düsseldorf</footer>
+</body>
+</html>
