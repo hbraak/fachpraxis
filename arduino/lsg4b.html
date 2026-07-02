@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lösung AB 4b — Referenzspannung</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f8f9fa; color: #2c3e50; line-height: 1.6; }
+  header { background: #2c3e50; color: white; padding: 1.5rem 2rem; }
+  header h1 { font-size: 1.5rem; }
+  header p { opacity: 0.8; margin-top: 0.3rem; font-size: 0.95rem; }
+  .container { max-width: 800px; margin: 1.5rem auto; padding: 0 1.5rem; }
+  h2 { color: #2c3e50; margin: 1.5rem 0 0.8rem; padding-bottom: 0.3rem; border-bottom: 2px solid #8e44ad; }
+  h3 { color: #8e44ad; margin: 1rem 0 0.5rem; }
+  .code-block {
+    background: #1e1e1e; color: #d4d4d4; border-radius: 8px; padding: 1.2rem;
+    font-family: 'Fira Code', 'Consolas', monospace; font-size: 0.9rem;
+    overflow-x: auto; margin: 0.8rem 0; line-height: 1.5; white-space: pre;
+  }
+  .code-block .kw { color: #569cd6; font-weight: bold; }
+  .code-block .fn { color: #dcdcaa; }
+  .code-block .cm { color: #6a9955; font-style: italic; }
+  .code-block .val { color: #b5cea8; }
+  .code-block .str { color: #ce9178; }
+  .code-block .const { color: #4fc1ff; }
+  .info {
+    background: #f3e8fd; border-left: 4px solid #8e44ad; padding: 1rem 1.2rem;
+    border-radius: 0 8px 8px 0; margin: 1rem 0;
+  }
+  .info strong { color: #8e44ad; }
+  .success {
+    background: #e8f8f0; border-left: 4px solid #27ae60; padding: 1rem 1.2rem;
+    border-radius: 0 8px 8px 0; margin: 1rem 0;
+  }
+  .success strong { color: #27ae60; }
+  .warn {
+    background: #fdf3e7; border-left: 4px solid #e67e22; padding: 1rem 1.2rem;
+    border-radius: 0 8px 8px 0; margin: 1rem 0;
+  }
+  .warn strong { color: #e67e22; }
+  table { border-collapse: collapse; margin: 0.8rem 0; width: 100%; }
+  th, td { border: 1px solid #ddd; padding: 0.5rem 0.8rem; text-align: left; }
+  th { background: #f0f0f0; }
+  .formula { background: #f8f8f8; border: 1px solid #ddd; border-radius: 6px; padding: 0.8rem; margin: 0.5rem 0; text-align: center; font-size: 1.1rem; }
+  .nav { display: flex; gap: 1rem; margin: 1.5rem 0; flex-wrap: wrap; }
+  .nav a {
+    background: #8e44ad; color: white; padding: 0.5rem 1.2rem; border-radius: 6px;
+    text-decoration: none; font-size: 0.9rem; transition: background 0.2s;
+  }
+  .nav a:hover { background: #7d3c98; }
+  .nav a.outline { background: transparent; color: #8e44ad; border: 2px solid #8e44ad; }
+  .nav a.outline:hover { background: #f3e8fd; }
+  footer { text-align: center; padding: 2rem; color: #999; font-size: 0.85rem; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Lösung AB 4b: Feiner messen — die Referenzspannung</h1>
+  <p>Das „Messlineal" des ADC verkürzen</p>
+</header>
+<div class="container">
+
+<div class="nav">
+  <a href="AB4b_Referenzspannung.pdf">📄 Arbeitsblatt (PDF)</a>
+  <a href="lsg4.html" class="outline">&larr; AB 4</a>
+  <a href="./" class="outline">&larr; Übersicht</a>
+</div>
+
+<h2>Aufgabe 1: Welches Lineal passt?</h2>
+
+<h3>a) Auflösung für alle drei Referenzspannungen</h3>
+<table>
+  <tr><th></th><th>U<sub>ref</sub> = 5 V</th><th>U<sub>ref</sub> = 3,3 V</th><th>U<sub>ref</sub> = 1,1 V</th></tr>
+  <tr><td>ΔU pro Stufe</td><td>≈ 4,9 mV</td><td><strong>≈ 3,2 mV</strong></td><td><strong>≈ 1,1 mV</strong></td></tr>
+</table>
+<div class="formula">ΔU = U<sub>ref</sub> / 1024 &nbsp;&nbsp;→&nbsp;&nbsp; 3,3 V / 1024 ≈ <strong>3,2 mV</strong> &nbsp;|&nbsp; 1,1 V / 1024 ≈ <strong>1,07 mV</strong></div>
+
+<h3>b) Warum 1,1 V nicht funktioniert, 3,3 V aber schon</h3>
+<div class="success">
+  <strong>Antwort:</strong> Am NTC-Spannungsteiler liegen bei Raumtemperatur ca. <strong>2,5 V</strong> an.
+  Die Eingangsspannung muss <strong>kleiner als die Referenzspannung</strong> sein
+  (U<sub>in</sub> &lt; U<sub>ref</sub>), sonst „ragt sie über das Lineal hinaus":
+  <ul style="margin: 0.5rem 0 0 1.2rem;">
+    <li>1,1 V: &nbsp;2,5 V &gt; 1,1 V → der ADC ist <strong>übersteuert</strong> und zeigt dauerhaft 1023. ❌</li>
+    <li>3,3 V: &nbsp;2,5 V &lt; 3,3 V → passt auf das Lineal, und jede Stufe ist ca. 1,5-mal feiner. ✅</li>
+  </ul>
+</div>
+
+<h3>c) Vorhersage des neuen ADC-Werts</h3>
+<div class="formula">ADC-Wert = (2,5 V / 3,3 V) · 1023 ≈ <strong>775</strong></div>
+<div class="info">
+  <strong>Merke:</strong> Die Spannung am NTC bleibt gleich — aber der ADC-Wert wird größer,
+  weil dieselbe Spannung auf dem kürzeren „Lineal" weiter rechts liegt.
+</div>
+
+<h2>Aufgabe 2: Messen und vergleichen</h2>
+
+<h3>a) + b) Beispielwerte (eigene Messwerte können abweichen)</h3>
+<table>
+  <tr><th>Referenz</th><th>ADC-Wert (Beispiel)</th><th>Umrechnung</th><th>Spannung</th></tr>
+  <tr><td>5 V</td><td>512</td><td>512 · 5 V / 1023</td><td><strong>≈ 2,50 V</strong></td></tr>
+  <tr><td>3,3 V</td><td>775</td><td>775 · 3,3 V / 1023</td><td><strong>≈ 2,50 V</strong></td></tr>
+</table>
+
+<h3>c) Faktor</h3>
+<div class="formula">Faktor = 775 / 512 ≈ <strong>1,51</strong> &nbsp;&nbsp;≈&nbsp;&nbsp; 5 V / 3,3 V ≈ 1,5 ✅</div>
+<div class="success">
+  <strong>Kernaussage:</strong> Die <em>physikalische</em> Spannung ist unverändert.
+  Nur das Messlineal wurde kürzer — dadurch entfallen auf dieselbe Spannung <em>mehr Stufen</em>:
+  Die Messung ist ca. 1,5-mal feiner geworden.
+</div>
+
+<h2>Aufgabe 3: Was bringt's? — Der Hauchtest</h2>
+
+<h3>a) Ausschlag beim Anhauchen</h3>
+<div class="info">
+  <strong>Erwartung:</strong> Mit der 3,3-V-Referenz schlägt die Kurve im Serial Plotter deutlich
+  sichtbar aus (typisch <strong>15–40 Stufen</strong>, je nach Abstand und Atemtemperatur) —
+  etwa 1,5-mal mehr Stufen als vorher bei gleicher Temperaturänderung.
+</div>
+
+<h3>b) Kleinste erkennbare Temperaturänderung</h3>
+<div class="formula">ΔT<sub>min</sub> = 3,2 mV / 55 mV/°C ≈ <strong>0,06 °C</strong> &nbsp;&nbsp;(vorher: 4,9/55 ≈ 0,09 °C)</div>
+
+<h3>c) Mittelwert (Oversampling)</h3>
+<div class="success">
+  <strong>Beobachtung:</strong> Die Kurve im Serial Plotter wird deutlich <strong>ruhiger/glatter</strong> —
+  das zufällige Rauschen (±1–2 Stufen) mittelt sich heraus. Langsame, echte Änderungen
+  (z.&nbsp;B. Anhauchen) bleiben sichtbar. Nachteil: Die Messung reagiert etwas träger.
+</div>
+
+<div class="code-block"><span class="kw">void</span> <span class="fn">loop</span>() {
+  <span class="kw">long</span> summe = <span class="val">0</span>;
+  <span class="kw">for</span> (<span class="kw">int</span> i = <span class="val">0</span>; i &lt; <span class="val">64</span>; i++) {
+    summe = summe + <span class="fn">analogRead</span>(<span class="const">A0</span>);
+  }
+  <span class="kw">int</span> wert = summe / <span class="val">64</span>;  <span class="cm">// Mittelwert aus 64 Messungen</span>
+  <span class="kw">float</span> spannung = wert * <span class="val">3.3</span> / <span class="val">1023.0</span>;  <span class="cm">// 3,3-V-Lineal!</span>
+  Serial.<span class="fn">println</span>(wert);
+  <span class="fn">delay</span>(<span class="val">100</span>);
+}</div>
+
+<h2>Aufgabe 4 (Zusatz ★): Das 1,1-V-Lineal retten</h2>
+
+<div class="success">
+  <strong>Idee:</strong> Der Arbeitspunkt muss <em>unter</em> 1,1 V rutschen. Dazu das
+  Teilerverhältnis ändern: den <strong>Festwiderstand verkleinern</strong>
+  (z.&nbsp;B. 220 Ω statt 1 kΩ), sodass am Pin A0 bei Raumtemperatur nur noch ca. 0,9 V anliegen.
+</div>
+<div class="warn">
+  <strong>Der Preis dafür:</strong> Weg vom Punkt R<sub>fix</sub> ≈ R<sub>NTC</sub> sinkt die
+  <strong>Empfindlichkeit</strong> des Teilers (weniger mV pro °C — vgl. AB 4). Man gewinnt also
+  feinere ADC-Stufen, verliert aber Signalhub. Außerdem muss die Reserve nach oben reichen:
+  Wird es kälter, steigt R<sub>NTC</sub> … die Spannung an R<sub>fix</sub> sinkt — gut.
+  Wird es wärmer, steigt die Spannung Richtung 1,1 V — der Bereich kann übersteuern.
+  Deshalb ist die <strong>3,3-V-Lösung der beste Kompromiss</strong>: keine Umbauten am Teiler,
+  volle Empfindlichkeit, 1,5-fach feinere Auflösung.
+</div>
+
+<h2>Häufige Fehler</h2>
+
+<div class="warn">
+  <strong>Typische Stolperfallen:</strong>
+  <ul style="margin: 0.5rem 0 0 1.2rem;">
+    <li><strong>Reihenfolge missachtet:</strong> Erst Sketch mit <code>analogReference(EXTERNAL)</code> hochladen, <em>dann</em> das Kabel 3,3 V → AREF stecken. Umgekehrt „kämpfen" zwei Spannungsquellen am AREF-Pin gegeneinander — Gefahr für den Chip!</li>
+    <li><strong>Umrechnung vergessen:</strong> Nach dem Umbau gilt U = ADC · 3,3 V / 1023 (nicht mehr 5 V). Sonst zeigt der Sketch zu große Spannungen an.</li>
+    <li><strong>AREF gesteckt, aber Sketch ohne EXTERNAL:</strong> Werte wirken „falsch" — der ADC misst noch gegen 5 V.</li>
+  </ul>
+</div>
+
+<h2>Zusammenfassung</h2>
+
+<div class="info">
+  <table>
+    <tr><th>Begriff</th><th>Bedeutung</th></tr>
+    <tr><td>Referenzspannung U<sub>ref</sub></td><td>„Linealende" des ADC: ADC-Wert = U<sub>in</sub>/U<sub>ref</sub> · 1023</td></tr>
+    <tr><td>Kleineres U<sub>ref</sub></td><td>1024 Stufen auf kleinerem Bereich → feinere Auflösung</td></tr>
+    <tr><td>Bedingung</td><td>U<sub>in</sub> &lt; U<sub>ref</sub>, sonst übersteuert (immer 1023)</td></tr>
+    <tr><td><code>analogReference(EXTERNAL)</code></td><td>AREF-Pin als Referenz — <strong>vor</strong> dem ersten <code>analogRead()</code>!</td></tr>
+    <tr><td>Oversampling</td><td>Mittelwert aus vielen Messungen → weniger Rauschen</td></tr>
+  </table>
+</div>
+
+<div class="nav">
+  <a href="AB4b_Referenzspannung.pdf">📄 Arbeitsblatt (PDF)</a>
+  <a href="lsg4.html" class="outline">&larr; AB 4</a>
+  <a href="lsg5.html" class="outline">AB 5 &rarr;</a>
+  <a href="./" class="outline">&larr; Übersicht</a>
+</div>
+
+</div>
+<footer>Fachpraxis Physik 11NP — Lore-Lorentz-Schule Düsseldorf</footer>
+</body>
+</html>
