@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lösung AB 0 — Digitaler Ausgang</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f8f9fa; color: #2c3e50; line-height: 1.6; }
+  header { background: #2c3e50; color: white; padding: 1.5rem 2rem; }
+  header h1 { font-size: 1.5rem; }
+  header p { opacity: 0.8; margin-top: 0.3rem; font-size: 0.95rem; }
+  .container { max-width: 800px; margin: 1.5rem auto; padding: 0 1.5rem; }
+  h2 { color: #2c3e50; margin: 1.5rem 0 0.8rem; padding-bottom: 0.3rem; border-bottom: 2px solid #8e44ad; }
+  h3 { color: #8e44ad; margin: 1rem 0 0.5rem; }
+  .code-block {
+    background: #1e1e1e; color: #d4d4d4; border-radius: 8px; padding: 1.2rem;
+    font-family: 'Fira Code', 'Consolas', monospace; font-size: 0.9rem;
+    overflow-x: auto; margin: 0.8rem 0; line-height: 1.5; white-space: pre;
+  }
+  .code-block .kw { color: #569cd6; font-weight: bold; }
+  .code-block .fn { color: #dcdcaa; }
+  .code-block .cm { color: #6a9955; font-style: italic; }
+  .code-block .val { color: #b5cea8; }
+  .code-block .str { color: #ce9178; }
+  .code-block .const { color: #4fc1ff; }
+  .info {
+    background: #f3e8fd; border-left: 4px solid #8e44ad; padding: 1rem 1.2rem;
+    border-radius: 0 8px 8px 0; margin: 1rem 0;
+  }
+  .info strong { color: #8e44ad; }
+  .success {
+    background: #e8f8f0; border-left: 4px solid #27ae60; padding: 1rem 1.2rem;
+    border-radius: 0 8px 8px 0; margin: 1rem 0;
+  }
+  .success strong { color: #27ae60; }
+  .warn {
+    background: #fdf3e7; border-left: 4px solid #e67e22; padding: 1rem 1.2rem;
+    border-radius: 0 8px 8px 0; margin: 1rem 0;
+  }
+  .warn strong { color: #e67e22; }
+  table { border-collapse: collapse; margin: 0.8rem 0; width: 100%; }
+  th, td { border: 1px solid #ddd; padding: 0.5rem 0.8rem; text-align: left; }
+  th { background: #f0f0f0; }
+  .formula { background: #f8f8f8; border: 1px solid #ddd; border-radius: 6px; padding: 0.8rem; margin: 0.5rem 0; text-align: center; font-size: 1.1rem; }
+  .nav { display: flex; gap: 1rem; margin: 1.5rem 0; flex-wrap: wrap; }
+  .nav a {
+    background: #8e44ad; color: white; padding: 0.5rem 1.2rem; border-radius: 6px;
+    text-decoration: none; font-size: 0.9rem; transition: background 0.2s;
+  }
+  .nav a:hover { background: #7d3c98; }
+  .nav a.outline { background: transparent; color: #8e44ad; border: 2px solid #8e44ad; }
+  .nav a.outline:hover { background: #f3e8fd; }
+  footer { text-align: center; padding: 2rem; color: #999; font-size: 0.85rem; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Lösung AB 0: Digitaler Ausgang — Die blinkende LED</h1>
+  <p>Sketch-Struktur, Tastgrad, Lauflicht</p>
+</header>
+<div class="container">
+
+<div class="nav">
+  <a href="AB0_Digitaler_Ausgang_LED.pdf">📄 Arbeitsblatt (PDF)</a>
+  <a href="lsg1.html" class="outline">AB 1 &rarr;</a>
+  <a href="./" class="outline">&larr; Übersicht</a>
+</div>
+
+<h2>Aufgabe 1 + 2: Blink-Sketch und Geschwindigkeit</h2>
+
+<div class="success">
+  <strong>Kontrolle:</strong> Die LED blinkt im Sekundentakt. Für schnelleres Blinken beide
+  <code>delay(1000)</code> durch <code>delay(200)</code> ersetzen, für langsameres durch
+  <code>delay(2000)</code>. Nach jeder Änderung neu hochladen (Pfeil-Button).
+</div>
+
+<h2>Aufgabe 3: Wartezeiten in Variablen auslagern</h2>
+
+<div class="code-block"><span class="kw">int</span> ledPin = <span class="val">13</span>;
+<span class="kw">int</span> zeitAn  = <span class="val">1000</span>;   <span class="cm">// Leuchtdauer in ms</span>
+<span class="kw">int</span> zeitAus = <span class="val">1000</span>;   <span class="cm">// Dunkeldauer in ms</span>
+
+<span class="kw">void</span> <span class="fn">setup</span>() {
+  <span class="fn">pinMode</span>(ledPin, <span class="const">OUTPUT</span>);
+}
+
+<span class="kw">void</span> <span class="fn">loop</span>() {
+  <span class="fn">digitalWrite</span>(ledPin, <span class="const">HIGH</span>);
+  <span class="fn">delay</span>(zeitAn);
+  <span class="fn">digitalWrite</span>(ledPin, <span class="const">LOW</span>);
+  <span class="fn">delay</span>(zeitAus);
+}</div>
+
+<h2>Aufgabe 4: Tastgrad berechnen</h2>
+
+<div class="formula">
+  t = 500 ms, &nbsp; T = 500 ms + 1000 ms = <strong>1500 ms</strong><br>
+  g = 500 / 1500 · 100 % ≈ <strong>33 %</strong>
+</div>
+<div class="info">
+  <strong>Achtung:</strong> T ist die <em>gesamte</em> Periodendauer (an + aus) — nicht nur die Aus-Zeit!
+  Im Sketch: <code>zeitAn = 500</code>, <code>zeitAus = 1000</code>.
+</div>
+
+<h2>Aufgabe 5: Tastgrad 25 % bei T = 2 s</h2>
+
+<div class="formula">
+  t = g · T = 0,25 · 2000 ms = <strong>500 ms</strong><br>
+  <code>zeitAn</code> = <strong>500 ms</strong>, &nbsp; <code>zeitAus</code> = 2000 − 500 = <strong>1500 ms</strong>
+</div>
+
+<h2>Aufgabe 6: Lauflicht — vollständiger Sketch</h2>
+
+<div class="code-block"><span class="kw">int</span> ledPin[] = {<span class="val">7</span>, <span class="val">8</span>, <span class="val">9</span>, <span class="val">10</span>, <span class="val">11</span>, <span class="val">12</span>, <span class="val">13</span>};  <span class="cm">// Array mit 7 Pins</span>
+<span class="kw">int</span> wartezeit = <span class="val">200</span>;                       <span class="cm">// Pause in ms</span>
+
+<span class="kw">void</span> <span class="fn">setup</span>() {
+  <span class="kw">for</span> (<span class="kw">int</span> i = <span class="val">0</span>; i &lt; <span class="val">7</span>; i++) {
+    <span class="fn">pinMode</span>(ledPin[i], <span class="const">OUTPUT</span>);   <span class="cm">// alle 7 Pins als Ausgang</span>
+  }
+}
+
+<span class="kw">void</span> <span class="fn">loop</span>() {
+  <span class="kw">for</span> (<span class="kw">int</span> i = <span class="val">0</span>; i &lt; <span class="val">7</span>; i++) {
+    <span class="fn">digitalWrite</span>(ledPin[i], <span class="const">HIGH</span>);   <span class="cm">// LED i an</span>
+    <span class="fn">delay</span>(wartezeit);
+    <span class="fn">digitalWrite</span>(ledPin[i], <span class="const">LOW</span>);    <span class="cm">// LED i wieder aus</span>
+  }
+}</div>
+
+<h2>Aufgabe 7: Was bedeutet ledPin[i] bei i = 3?</h2>
+
+<div class="success">
+  <strong>Antwort: Pin 10.</strong> Arrays zählen ab <strong>0</strong>:
+  <code>ledPin[0]</code> = 7, <code>ledPin[1]</code> = 8, <code>ledPin[2]</code> = 9,
+  <code>ledPin[3]</code> = <strong>10</strong>.
+</div>
+
+<h2>Aufgabe 8 (Zusatz): Knight Rider — hin und zurück</h2>
+
+<div class="code-block"><span class="kw">void</span> <span class="fn">loop</span>() {
+  <span class="kw">for</span> (<span class="kw">int</span> i = <span class="val">0</span>; i &lt; <span class="val">7</span>; i++) {        <span class="cm">// vorwärts: 0,1,...,6</span>
+    <span class="fn">digitalWrite</span>(ledPin[i], <span class="const">HIGH</span>);
+    <span class="fn">delay</span>(wartezeit);
+    <span class="fn">digitalWrite</span>(ledPin[i], <span class="const">LOW</span>);
+  }
+  <span class="kw">for</span> (<span class="kw">int</span> i = <span class="val">5</span>; i &gt; <span class="val">0</span>; i--) {        <span class="cm">// rückwärts: 5,4,...,1</span>
+    <span class="fn">digitalWrite</span>(ledPin[i], <span class="const">HIGH</span>);
+    <span class="fn">delay</span>(wartezeit);
+    <span class="fn">digitalWrite</span>(ledPin[i], <span class="const">LOW</span>);
+  }
+}</div>
+<div class="info">
+  <strong>Warum 5 bis 1?</strong> Die Endpunkte (6 und 0) leuchten schon in der Vorwärts-Schleife —
+  so blinkt an den Rändern nichts doppelt.
+</div>
+
+<h2>Häufige Fehler</h2>
+
+<div class="warn">
+  <strong>Typische Stolperfallen:</strong>
+  <ul style="margin: 0.5rem 0 0 1.2rem;">
+    <li><strong>LED-Polung:</strong> Langes Bein (Anode) Richtung Pin, kurzes Bein Richtung GND. Falsch herum = LED bleibt dunkel.</li>
+    <li><strong>Vorwiderstand vergessen:</strong> Nie eine LED direkt an einen Pin — 220–330 Ω schützen LED und Arduino.</li>
+    <li><strong>delay() rechnet in Millisekunden:</strong> <code>delay(1)</code> ist 1 ms, nicht 1 s. Eine Sekunde = <code>delay(1000)</code>.</li>
+    <li><strong>Array-Grenze:</strong> <code>i &lt; 7</code>, nicht <code>i &lt;= 7</code> — sonst greift die Schleife auf <code>ledPin[7]</code> zu, das es nicht gibt.</li>
+    <li><strong>Semikolon vergessen:</strong> Der Compiler meldet den Fehler oft erst in der <em>nächsten</em> Zeile.</li>
+  </ul>
+</div>
+
+<div class="nav">
+  <a href="AB0_Digitaler_Ausgang_LED.pdf">📄 Arbeitsblatt (PDF)</a>
+  <a href="lsg1.html" class="outline">AB 1 &rarr;</a>
+  <a href="./" class="outline">&larr; Übersicht</a>
+</div>
+
+</div>
+<footer>Fachpraxis Physik 11NP — Lore-Lorentz-Schule Düsseldorf</footer>
+</body>
+</html>
