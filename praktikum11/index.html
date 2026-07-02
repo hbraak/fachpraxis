@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Physik-Praktikum 11 — Lore-Lorentz-Schule</title>
+<style>
+  :root {
+    --bg: #0f172a;
+    --card: #1e293b;
+    --card-hover: #263449;
+    --text: #e2e8f0;
+    --muted: #94a3b8;
+    --accent: #38bdf8;
+    --accent2: #fbbf24;
+    --green: #34d399;
+    --red: #f87171;
+    --violet: #a78bfa;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+
+  /* ---------- Hero ---------- */
+  .hero {
+    background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 60%, #0e7490 100%);
+    padding: 3.5rem 2rem 2.5rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: "";
+    position: absolute; inset: 0;
+    background-image: radial-gradient(circle at 20% 30%, rgba(56,189,248,0.15) 0, transparent 40%),
+                      radial-gradient(circle at 80% 70%, rgba(251,191,36,0.12) 0, transparent 40%);
+  }
+  .hero h1 { font-size: 2.2rem; position: relative; }
+  .hero h1 .flask { font-size: 2.4rem; }
+  .hero p.sub { color: #bae6fd; margin-top: 0.5rem; font-size: 1.1rem; position: relative; }
+  .hero .pills { margin-top: 1.4rem; display: flex; gap: 0.6rem; justify-content: center; flex-wrap: wrap; position: relative; }
+  .pill {
+    background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.25);
+    padding: 0.35rem 1rem; border-radius: 999px; font-size: 0.85rem; backdrop-filter: blur(4px);
+  }
+
+  .container { max-width: 1000px; margin: 0 auto; padding: 2rem 1.5rem 3rem; }
+
+  h2.section {
+    font-size: 1.35rem; margin: 2.2rem 0 1.2rem; display: flex; align-items: center; gap: 0.6rem;
+  }
+  h2.section::after { content: ""; flex: 1; height: 1px; background: linear-gradient(to right, #334155, transparent); }
+
+  /* ---------- Konzept ---------- */
+  .concept { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 1rem; }
+  .concept .box {
+    background: var(--card); border-radius: 14px; padding: 1.1rem 1.2rem;
+    border: 1px solid #334155;
+  }
+  .concept .box .icon { font-size: 1.6rem; }
+  .concept .box h3 { font-size: 1rem; margin: 0.4rem 0 0.2rem; color: var(--accent); }
+  .concept .box p { font-size: 0.85rem; color: var(--muted); }
+
+  /* ---------- Scaffolding-Leiter ---------- */
+  .ladder { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.8rem; }
+  .rung {
+    border-radius: 12px; padding: 0.9rem 1rem; font-size: 0.85rem;
+    border: 1px solid #334155; background: var(--card); position: relative;
+  }
+  .rung b { display: block; font-size: 0.95rem; margin-bottom: 0.2rem; }
+  .rung .who { color: var(--muted); font-size: 0.78rem; margin-top: 0.3rem; display: block; }
+  .rung.s1 { border-top: 4px solid var(--green); }
+  .rung.s2 { border-top: 4px solid var(--accent); }
+  .rung.s3 { border-top: 4px solid var(--accent2); }
+  .rung.s4 { border-top: 4px solid var(--red); }
+
+  /* ---------- Experiment-Karten ---------- */
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 1.1rem; }
+  .card {
+    background: var(--card); border-radius: 16px; padding: 1.3rem 1.3rem 1.1rem;
+    border: 1px solid #334155; transition: transform 0.15s, background 0.15s, border-color 0.15s;
+    display: flex; flex-direction: column;
+  }
+  .card:hover { transform: translateY(-3px); background: var(--card-hover); border-color: #475569; }
+  .card .top { display: flex; align-items: flex-start; justify-content: space-between; gap: 0.5rem; }
+  .card .emoji { font-size: 2rem; line-height: 1; }
+  .card h3 { font-size: 1.05rem; margin: 0.6rem 0 0.3rem; }
+  .card p { font-size: 0.85rem; color: var(--muted); flex: 1; }
+  .badge {
+    font-size: 0.7rem; font-weight: 600; padding: 0.15rem 0.6rem; border-radius: 999px; white-space: nowrap;
+  }
+  .badge.hj1 { background: rgba(56,189,248,0.15); color: var(--accent); border: 1px solid rgba(56,189,248,0.4); }
+  .badge.hj2 { background: rgba(167,139,250,0.15); color: var(--violet); border: 1px solid rgba(167,139,250,0.4); }
+  .stufe { display: flex; gap: 3px; margin-top: 0.15rem; }
+  .stufe span { width: 9px; height: 9px; border-radius: 50%; background: #334155; }
+  .stufe.s1 span:nth-child(-n+1), .stufe.s2 span:nth-child(-n+2),
+  .stufe.s3 span:nth-child(-n+3), .stufe.s4 span:nth-child(-n+4) { background: var(--accent2); }
+  .links { margin-top: 0.9rem; display: flex; gap: 0.5rem; flex-wrap: wrap; }
+  .btn {
+    text-decoration: none; font-size: 0.8rem; font-weight: 600;
+    padding: 0.4rem 0.9rem; border-radius: 8px; transition: filter 0.15s;
+  }
+  .btn:hover { filter: brightness(1.2); }
+  .btn.pdf { background: var(--accent); color: #082f49; }
+  .btn.extra { background: transparent; color: var(--accent); border: 1px solid var(--accent); }
+  .btn.lsg { background: transparent; color: var(--accent2); border: 1px solid var(--accent2); }
+
+  /* ---------- Lehrkräfte-Bereich ---------- */
+  .teacher {
+    background: linear-gradient(135deg, #1e293b, #312e81); border-radius: 16px;
+    padding: 1.4rem 1.5rem; border: 1px solid #4338ca; margin-top: 1rem;
+    display: flex; flex-wrap: wrap; gap: 1rem; align-items: center; justify-content: space-between;
+  }
+  .teacher .txt h3 { font-size: 1.05rem; }
+  .teacher .txt p { font-size: 0.85rem; color: var(--muted); max-width: 34rem; }
+
+  footer { text-align: center; color: #64748b; font-size: 0.8rem; padding: 2rem 1rem 2.5rem; }
+  footer a { color: var(--accent); text-decoration: none; }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1><span class="flask">⚗️</span> Physik-Praktikum 11</h1>
+  <p class="sub">Messen · Auswerten · Protokollieren — komplett vor Ort</p>
+  <div class="pills">
+    <span class="pill">⏱ 135 Minuten</span>
+    <span class="pill">👥 3er/4er-Gruppen</span>
+    <span class="pill">📁 Praktikumsmappe</span>
+    <span class="pill">🤖 KI-sicher: Abgabe am Stundenende</span>
+  </div>
+</div>
+
+<div class="container">
+
+  <h2 class="section">💡 Das Konzept</h2>
+  <div class="concept">
+    <div class="box"><span class="icon">🏫</span><h3>Vor Ort statt zu Hause</h3><p>Das Protokoll entsteht vollständig in der Praktikumsstunde und wird mit Uhrzeit &amp; Sichtvermerk abgegeben — keine KI-Hausarbeiten.</p></div>
+    <div class="box"><span class="icon">🪜</span><h3>Scaffolding mit Progression</h3><p>Anfangs sind Tabellen und Diagrammachsen vorgegeben — im Jahresverlauf wird das Gerüst Stufe für Stufe abgebaut.</p></div>
+    <div class="box"><span class="icon">🎯</span><h3>Eine Hürde pro Versuch</h3><p>Neue Methode <em>oder</em> weniger Vorgaben — nie beides gleichzeitig. So bleibt jeder Versuch in 135 min schaffbar.</p></div>
+    <div class="box"><span class="icon">📁</span><h3>Die Mappe zählt</h3><p>Alle Protokollbögen wandern in die Praktikumsmappe, die am Ende des Schuljahres vorgelegt wird.</p></div>
+  </div>
+
+  <h2 class="section">🪜 Die vier Scaffolding-Stufen</h2>
+  <div class="ladder">
+    <div class="rung s1"><b>Stufe 1</b> Achsen + Zahlenskala fertig vorgegeben<span class="who">E1 · E2</span></div>
+    <div class="rung s2"><b>Stufe 2</b> Achsen beschriftet, Skalierung selbst wählen<span class="who">E4b · E5 · E6</span></div>
+    <div class="rung s3"><b>Stufe 3</b> Nur leeres Gitter<span class="who">Federpendel</span></div>
+    <div class="rung s4"><b>Stufe 4</b> Millimeterpapier, alles selbst<span class="who">Drillachse → Kurs 12</span></div>
+  </div>
+
+  <h2 class="section">🧪 Halbjahr 11.1 — Mechanik &amp; Energie</h2>
+  <div class="grid">
+
+    <div class="card">
+      <div class="top"><span class="emoji">🚃</span><div><span class="badge hj1">E1 · 11.1</span><div class="stufe s1"><span></span><span></span><span></span><span></span></div></div></div>
+      <h3>Konstante Geschwindigkeit</h3>
+      <p>Fahrbahn &amp; Registrierstreifen: Messwerte tabellieren, erstes t-s-Diagramm, Intervallgeschwindigkeit berechnen.</p>
+      <div class="links"><a class="btn pdf" href="2025_11_1_konst_Geschw.pdf">📄 Anleitung</a></div>
+    </div>
+
+    <div class="card">
+      <div class="top"><span class="emoji">🚀</span><div><span class="badge hj1">E2 · 11.1</span><div class="stufe s1"><span></span><span></span><span></span><span></span></div></div></div>
+      <h3>Konstante Beschleunigung</h3>
+      <p>Gleichmäßig beschleunigte Bewegung auf der Fahrbahn: s = ½at², t-s- und t-v-Diagramm.</p>
+      <div class="links"><a class="btn pdf" href="2025_11_1_konst_Besch.pdf">📄 Anleitung</a></div>
+    </div>
+
+    <div class="card">
+      <div class="top"><span class="emoji">🍎</span><div><span class="badge hj1">E3 · 11.1</span><div class="stufe s1"><span></span><span></span><span></span><span></span></div></div></div>
+      <h3>Erdbeschleunigung</h3>
+      <p>Freier Fall: g aus Fallzeitmessungen bestimmen und mit dem Literaturwert vergleichen.</p>
+      <div class="links"><a class="btn pdf" href="2025_11_1_Erdbeschleunigung.pdf">📄 Anleitung</a></div>
+    </div>
+
+    <div class="card">
+      <div class="top"><span class="emoji">🕰️</span><div><span class="badge hj1">E4 · 11.1</span><div class="stufe s1"><span></span><span></span><span></span><span></span></div></div></div>
+      <h3>Fadenpendel</h3>
+      <p>Hängt T von der Masse ab? Holz- gegen Eisenkugel, Herleitung der Pendelgleichung.</p>
+      <div class="links"><a class="btn pdf" href="2025_11_1_Pendel.pdf">📄 Anleitung</a></div>
+    </div>
+
+    <div class="card">
+      <div class="top"><span class="emoji">📐</span><div><span class="badge hj1">E4b · 11.1</span><div class="stufe s2"><span></span><span></span><span></span><span></span></div></div></div>
+      <h3>Pendel → g (Linearisierung)</h3>
+      <p>T = 2π√(l/g): Über das T²-l-Diagramm wird aus der Kurve eine Gerade — g steckt in der Steigung.</p>
+      <div class="links">
+        <a class="btn pdf" href="2025_11_1_Pendel_Erdbeschleunigung.pdf">📄 Anleitung</a>
+        <a class="btn extra" href="2025_11_1_Pendel_Erdbeschleunigung_Herleitung.pdf">∑ Herleitung</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="top"><span class="emoji">🌡️</span><div><span class="badge hj1">E5 · 11.1</span><div class="stufe s2"><span></span><span></span><span></span><span></span></div></div></div>
+      <h3>Wärmekapazität (Dewar)</h3>
+      <p>Elektrisch heizen, Temperatur verfolgen: c von Wasser über W = mcΔT — mit konstanter und variabler Masse.</p>
+      <div class="links"><a class="btn pdf" href="2025_11_1_Waerme.pdf">📄 Anleitung</a></div>
+    </div>
+
+    <div class="card">
+      <div class="top"><span class="emoji">⚡</span><div><span class="badge hj1">E6 · 11.1</span><div class="stufe s2"><span></span><span></span><span></span><span></span></div></div></div>
+      <h3>Elektrolyseur &amp; Wirkungsgrad</h3>
+      <p>Wasserstoff erzeugen, t-V-Diagramm aufnehmen, Wirkungsgrad berechnen und bewerten.</p>
+      <div class="links">
+        <a class="btn pdf" href="2025_11_1_Elektrolyseur.pdf">📄 Anleitung</a>
+        <a class="btn extra" href="2025_11_1_Elektrolyseur_schlank.pdf">📄 Kompakt-Version</a>
+      </div>
+    </div>
+
+  </div>
+
+  <h2 class="section">🌀 Halbjahr 11.2 — Schwingungen &amp; Rotation</h2>
+  <div class="grid">
+
+    <div class="card">
+      <div class="top"><span class="emoji">🪀</span><div><span class="badge hj2">11.2</span><div class="stufe s3"><span></span><span></span><span></span><span></span></div></div></div>
+      <h3>Federpendel</h3>
+      <p>Federkonstante D doppelt bestimmt: statisch (Hooke) und dynamisch (T = 2π√(m/D)) — Methodenvergleich inklusive.</p>
+      <div class="links"><a class="btn pdf" href="Prak11_2_Federpendel.pdf">📄 Anleitung</a></div>
+    </div>
+
+    <div class="card">
+      <div class="top"><span class="emoji">🌀</span><div><span class="badge hj2">11.2</span><div class="stufe s4"><span></span><span></span><span></span><span></span></div></div></div>
+      <h3>Drillachse &amp; Trägheitsmoment</h3>
+      <p>Königsdisziplin: J-r²-Diagramm auf Millimeterpapier, Ausgleichs- und Extremgeraden, echte Fehlerabschätzung.</p>
+      <div class="links">
+        <a class="btn pdf" href="20260619_Praktikum_Drillachse.pdf">📄 Anleitung</a>
+        <a class="btn lsg" href="20260619_Praktikum_Drillachse_Auswertung.pdf">🔑 Musterlösung</a>
+      </div>
+    </div>
+
+  </div>
+
+  <h2 class="section">🧑‍🏫 Für Lehrkräfte</h2>
+  <div class="teacher">
+    <div class="txt">
+      <h3>Kompetenzmatrix &amp; Materialien</h3>
+      <p>Welcher Versuch trainiert welche Kompetenz? Die Matrix zeigt Fachkompetenz, Erkenntnisgewinnung und Kommunikation für alle 9 Versuche auf einen Blick. Die LaTeX-Quellen aller Anleitungen liegen im Repository und lassen sich für eigene Kurse anpassen.</p>
+    </div>
+    <div class="links">
+      <a class="btn pdf" href="Kompetenzmatrix_Praktika_SJ2025-26.pdf">📊 Kompetenzmatrix</a>
+      <a class="btn extra" href="https://github.com/hbraak/praktikum-11">⚙️ Repository (.tex)</a>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  Physik-Praktikum 11NP · Lore-Lorentz-Schule Düsseldorf · Rev. 1 (SJ 2025/26)<br>
+  Fachpraxis-Materialien: <a href="https://hbraak.github.io/fachpraxis/arduino/">Arduino-Reihe →</a>
+</footer>
+
+</body>
+</html>
