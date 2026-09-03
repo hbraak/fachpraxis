@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lösung AB 7 — Schwimmergeber &amp; Füllstandsanzeige</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f8f9fa; color: #2c3e50; line-height: 1.6; }
+  header { background: #2c3e50; color: white; padding: 1.5rem 2rem; }
+  header h1 { font-size: 1.5rem; }
+  header p { opacity: 0.8; margin-top: 0.3rem; font-size: 0.95rem; }
+  .container { max-width: 800px; margin: 1.5rem auto; padding: 0 1.5rem; }
+  h2 { color: #2c3e50; margin: 1.5rem 0 0.8rem; padding-bottom: 0.3rem; border-bottom: 2px solid #27ae60; }
+  h3 { color: #27ae60; margin: 1rem 0 0.5rem; }
+  .code-block {
+    background: #1e1e1e; color: #d4d4d4; border-radius: 8px; padding: 1.2rem;
+    font-family: 'Fira Code', 'Consolas', monospace; font-size: 0.9rem;
+    overflow-x: auto; margin: 0.8rem 0; line-height: 1.5; white-space: pre;
+  }
+  .code-block .kw { color: #569cd6; font-weight: bold; }
+  .code-block .fn { color: #dcdcaa; }
+  .code-block .cm { color: #6a9955; font-style: italic; }
+  .code-block .val { color: #b5cea8; }
+  .code-block .const { color: #4fc1ff; }
+  .info {
+    background: #e8f8f0; border-left: 4px solid #27ae60; padding: 1rem 1.2rem;
+    border-radius: 0 8px 8px 0; margin: 1rem 0;
+  }
+  .info strong { color: #27ae60; }
+  .warn {
+    background: #fdf3e7; border-left: 4px solid #e67e22; padding: 1rem 1.2rem;
+    border-radius: 0 8px 8px 0; margin: 1rem 0;
+  }
+  .warn strong { color: #d35400; }
+  table { border-collapse: collapse; margin: 0.8rem 0; width: 100%; }
+  th, td { border: 1px solid #ddd; padding: 0.5rem 0.8rem; text-align: left; }
+  th { background: #f0f0f0; }
+  code { background: #eef1f3; padding: 0.1rem 0.35rem; border-radius: 4px; font-size: 0.92em; }
+  .nav { display: flex; gap: 1rem; margin: 1.5rem 0; flex-wrap: wrap; }
+  .nav a {
+    background: #27ae60; color: white; padding: 0.5rem 1.2rem; border-radius: 6px;
+    text-decoration: none; font-size: 0.9rem; transition: background 0.2s;
+  }
+  .nav a:hover { background: #219a52; }
+  .nav a.outline { background: transparent; color: #27ae60; border: 2px solid #27ae60; }
+  .nav a.outline:hover { background: #e8f8f0; }
+  footer { text-align: center; padding: 2rem; color: #999; font-size: 0.85rem; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Lösung AB 7: Vom Schwimmer zur Anzeige</h1>
+  <p>Analog messen, digital anzeigen — der Füllstandsgeber</p>
+</header>
+<div class="container">
+
+<div class="nav">
+  <a href="AB7_Schwimmergeber_Fuellstand.pdf">📄 Arbeitsblatt (PDF)</a>
+  <a href="lsg5.html" class="outline">&larr; AB 5 (Poti, map)</a>
+  <a href="lsg4.html" class="outline">AB 4 (ADC)</a>
+  <a href="./" class="outline">&larr; Übersicht</a>
+</div>
+
+<h2>Teil 1 — Analog und digital ohne Bauteile</h2>
+
+<div class="info">
+  <strong>Aufgabe 1:</strong>
+  <table>
+    <tr><th>Kabelende an</th><th>Rohwert</th><th>Spannung an A0</th></tr>
+    <tr><td><code>5V</code></td><td>1023</td><td>5,00 V</td></tr>
+    <tr><td><code>GND</code></td><td>0</td><td>0,00 V</td></tr>
+    <tr><td>lose (offen)</td><td>schwankt, oft 150–600</td><td>—</td></tr>
+  </table>
+</div>
+
+<div class="info">
+  <strong>Aufgabe 2:</strong> &Delta;U = 5 V / 1024 = 0,00488 V = <strong>4,9 mV</strong> pro Stufe.
+</div>
+
+<div class="info">
+  <strong>Aufgabe 3 — warum schwankt das lose Kabel?</strong><br>
+  Der Analogeingang ist <strong>hochohmig</strong>: Es fließt praktisch kein Strom, der eine Spannung
+  festlegen würde. Der Eingang „floatet“. Das Kabel wirkt als <strong>Antenne</strong> — Streufelder
+  (v. a. 50 Hz aus der Netzverkabelung) laden die Eingangskapazität mit zufälligen Ladungen.
+  Fasst man das Kabelende an, ändert sich der Wert deutlich.
+  <br><em>Merke: Ein Eingang braucht immer eine definierte Spannung — genau das leistet der
+  Spannungsteiler in Teil 3.</em>
+</div>
+
+<div class="info">
+  <strong>Aufgabe 4 — analog ↔ digital:</strong><br>
+  <strong>Analog</strong> ist die Spannung am Pin: sie kann <em>jeden</em> Zwischenwert zwischen
+  0 V und 5 V annehmen, stufenlos.
+  <strong>Digital</strong> ist das Ergebnis: Der ADC ordnet jeder Spannung eine von nur
+  <strong>1024 Stufen</strong> zu. Zwischenwerte gehen dabei verloren.
+</div>
+
+<h2>Teil 2 — Die Physik des Schwimmers</h2>
+
+<div class="info">
+  <strong>Aufgabe 5 — Eintauchtiefe:</strong><br>
+  Gleichgewicht: F<sub>A</sub> = F<sub>G</sub> &nbsp;→&nbsp; &rho;<sub>W</sub> · V<sub>verdrängt</sub> · g = m · g<br>
+  V<sub>verdrängt</sub> = m / &rho;<sub>W</sub> = 12 g / (1 g/cm³) = <strong>12 cm³</strong><br>
+  Anteil = 12 cm³ / 40 cm³ = <strong>0,30 = 30 %</strong><br>
+  <em>(Der Schwimmer hat also die mittlere Dichte 0,3 g/cm³ — er schwimmt, und zwar immer mit
+  denselben 30 % unter Wasser. Deshalb folgt er der Oberfläche.)</em>
+</div>
+
+<div class="info">
+  <strong>Aufgabe 6 — h = L · sin &phi; mit L = 12 cm:</strong>
+  <table>
+    <tr><th>&phi;</th><th>−50°</th><th>−25°</th><th>0°</th><th>25°</th><th>50°</th></tr>
+    <tr><td>h in cm</td><td>−9,19</td><td>−5,07</td><td>0</td><td>5,07</td><td>9,19</td></tr>
+  </table>
+</div>
+
+<div class="warn">
+  <strong>Aufgabe 7 — der Kern des Blattes:</strong><br>
+  0° → 25°: &Delta;h = 5,07 cm − 0 = <strong>5,07 cm</strong><br>
+  25° → 50°: &Delta;h = 9,19 cm − 5,07 cm = <strong>4,12 cm</strong><br>
+  Gleicher Winkelzuwachs (25°), aber <strong>unterschiedlicher Höhenzuwachs</strong>. Der Hebel
+  überträgt gestaucht — das ist der Sinus.
+</div>
+
+<div class="info">
+  <strong>Aufgabe 8:</strong> Nicht linear ist die Übertragung <strong>Höhe → Winkel</strong> (der Hebel).<br>
+  Poti (Winkel → Spannung) und ADC (Spannung → Zahl) sind linear.
+  <br><em>Zusatz: Auch Volumen → Höhe ist nichtlinear, sobald der Behälter nicht quaderförmig ist.</em>
+</div>
+
+<h2>Teil 3 — Kennlinie</h2>
+
+<div class="info">
+  <strong>Aufgabe 10/11 — typische Messwerte</strong> (hängen vom eigenen Aufbau ab, L = 12 cm,
+  Nullpunkt in der Hebelmitte):
+  <table>
+    <tr><th>h in cm</th><td>0</td><td>2</td><td>4</td><td>6</td><td>8</td><td>10</td></tr>
+    <tr><th>Rohwert</th><td>≈ 512</td><td>≈ 570</td><td>≈ 630</td><td>≈ 695</td><td>≈ 770</td><td>≈ 870</td></tr>
+  </table>
+  Entscheidend ist nicht der exakte Wert, sondern die <strong>Form</strong> der Kurve.
+</div>
+
+<div class="warn">
+  <strong>Aufgabe 12 — ist die Kennlinie eine Gerade?</strong><br>
+  <strong>Nein.</strong> Der Poti-Rohwert ist proportional zum <em>Winkel</em>, und aus
+  h = L · sin &phi; folgt umgekehrt &phi; = arcsin(h / L).<br>
+  In der Mitte (kleine Winkel) verläuft die Kurve fast gerade — dort gilt näherungsweise
+  sin &phi; ≈ &phi;. Zu den Enden hin wird sie <strong>steiler</strong>: Für dieselbe Höhenänderung
+  braucht der Hebel dort einen viel größeren Winkel.<br>
+  Das passt genau zu Aufgabe 7: Dort war der Höhenzuwachs pro Winkel am Rand <em>kleiner</em> —
+  hier ist der Winkelzuwachs pro Höhe am Rand also <em>größer</em>. Zwei Sichtweisen auf dieselbe
+  Geometrie.
+</div>
+
+<h2>Teil 4 — Kalibrieren</h2>
+
+<div class="info">
+  <strong>Aufgabe 13:</strong> Typisch etwa <code>LEER ≈ 20…60</code> und <code>VOLL ≈ 960…1010</code> —
+  <strong>nicht</strong> exakt 0 und 1023. Ursachen: mechanische Anschläge des Potis, Übergangs-
+  und Zuleitungswiderstände.
+</div>
+
+<div class="info">
+  <strong>Aufgabe 14 — Lücken:</strong> <code>LEER</code> und <code>VOLL</code> mit den <em>eigenen</em>
+  gemessenen Werten füllen, und <code>map(roh, LEER, VOLL, 0, <strong>100</strong>)</code>.
+</div>
+
+<div class="code-block">
+<span class="kw">int</span> LEER = <span class="val">42</span>;    <span class="cm">// eigener Messwert!</span>
+<span class="kw">int</span> VOLL = <span class="val">978</span>;   <span class="cm">// eigener Messwert!</span>
+
+<span class="kw">void</span> <span class="fn">setup</span>() {
+  <span class="fn">Serial</span>.<span class="fn">begin</span>(<span class="val">9600</span>);
+}
+
+<span class="kw">void</span> <span class="fn">loop</span>() {
+  <span class="kw">int</span> roh     = <span class="fn">analogRead</span>(<span class="const">A0</span>);
+  <span class="kw">int</span> prozent = <span class="fn">map</span>(roh, LEER, VOLL, <span class="val">0</span>, <span class="val">100</span>);
+  prozent     = <span class="fn">constrain</span>(prozent, <span class="val">0</span>, <span class="val">100</span>);
+  <span class="fn">Serial</span>.<span class="fn">println</span>(prozent);
+  <span class="fn">delay</span>(<span class="val">100</span>);
+}
+</div>
+
+<div class="warn">
+  <strong>Aufgabe 15 — warum nicht <code>map(roh, 0, 1023, 0, 100)</code>?</strong><br>
+  Weil die Werte 0 und 1023 <strong>nie erreicht</strong> werden. Mit LEER = 42 zeigte die Anzeige
+  bei leerem Behälter schon 4 % statt 0 %, und bei vollem Behälter nur 96 % statt 100 % —
+  die Skala wäre gestaucht und verschoben.<br>
+  <em>Kalibrieren heißt: die tatsächlichen Endwerte messen statt sie anzunehmen.</em>
+</div>
+
+<h2>Teil 5 — Anzeigen</h2>
+
+<div class="info">
+  <strong>Aufgabe 16 — <code>setup()</code> mit Schleife:</strong>
+</div>
+<div class="code-block">
+<span class="kw">void</span> <span class="fn">setup</span>() {
+  <span class="fn">Serial</span>.<span class="fn">begin</span>(<span class="val">9600</span>);
+  <span class="kw">for</span> (<span class="kw">int</span> i = <span class="val">0</span>; i &lt; <span class="val">5</span>; i++) {
+    <span class="fn">pinMode</span>(<span class="val">2</span> + i, <span class="const">OUTPUT</span>);   <span class="cm">// Pins 2,3,4,5,6</span>
+  }
+}
+</div>
+
+<div class="info">
+  <strong>Aufgabe 17 — die zwei Auflösungen:</strong><br>
+  Eine LED = 100 % / 5 = <strong>20 %</strong>.<br>
+  Eine ADC-Stufe: Der nutzbare Bereich ist VOLL − LEER ≈ 936 Stufen für 100 %, also
+  100 % / 936 ≈ <strong>0,11 % pro Stufe</strong>.<br>
+  Die Messung ist damit rund <strong>180-mal feiner</strong> als die Anzeige.
+</div>
+
+<div class="warn">
+  <strong>Aufgabe 18 — wozu dann so fein messen?</strong><br>
+  Weil zwischen Messung und Anzeige noch <em>gerechnet</em> wird, und jeder Rechenschritt
+  Genauigkeit kostet:
+  <ul style="margin: 0.5rem 0 0.5rem 1.5rem;">
+    <li><strong>Mitteln:</strong> Rauschen unterdrücken — das geht nur, wenn man mehr Stufen hat,
+        als man am Ende braucht.</li>
+    <li><strong>Kalibrieren:</strong> Der nutzbare Bereich ist kleiner als der volle — Reserve nötig.</li>
+    <li><strong>Umrechnen/Linearisieren:</strong> Die Sinus-Korrektur verteilt die Stufen ungleichmäßig;
+        am steilen Kurvenende bleiben weniger übrig.</li>
+    <li><strong>Schwellen:</strong> Eine Überlaufwarnung bei 90 % (Aufgabe 20) ließe sich mit nur
+        5 Eingangsstufen gar nicht setzen.</li>
+  </ul>
+  Ohne diese Reserve würde der Balken bei jedem Rauschen zwischen zwei Segmenten flackern.
+</div>
+
+<div class="info">
+  <strong>Aufgabe 19 — Merksatz:</strong><br>
+  <strong>Die Messauflösung muss deutlich feiner sein als die Anzeigeauflösung — niemals umgekehrt.</strong>
+  Faustregel: mindestens Faktor 10.<br>
+  Eine Anzeige darf gröber sein als die Messung. Zeigt sie aber feiner an, als gemessen wurde,
+  täuscht sie eine Genauigkeit vor, die es nicht gibt (<em>Scheingenauigkeit</em>).
+</div>
+
+<h2>Zusatzaufgaben</h2>
+
+<h3>Aufgabe 20 — Überlaufwarnung (oberste LED blinkt)</h3>
+<div class="code-block">
+<span class="kw">void</span> <span class="fn">loop</span>() {
+  <span class="kw">int</span> roh     = <span class="fn">analogRead</span>(<span class="const">A0</span>);
+  <span class="kw">int</span> prozent = <span class="fn">constrain</span>(<span class="fn">map</span>(roh, LEER, VOLL, <span class="val">0</span>, <span class="val">100</span>), <span class="val">0</span>, <span class="val">100</span>);
+  <span class="kw">int</span> segmente = prozent / <span class="val">20</span>;
+
+  <span class="cm">// LEDs 1..4 wie bisher</span>
+  <span class="kw">for</span> (<span class="kw">int</span> i = <span class="val">0</span>; i &lt; <span class="val">4</span>; i++) {
+    <span class="fn">digitalWrite</span>(<span class="val">2</span> + i, i &lt; segmente ? <span class="const">HIGH</span> : <span class="const">LOW</span>);
+  }
+
+  <span class="cm">// oberste LED (Pin 6): blinkt ab 90 %</span>
+  <span class="kw">if</span> (prozent &gt; <span class="val">90</span>) {
+    <span class="fn">digitalWrite</span>(<span class="val">6</span>, (<span class="fn">millis</span>() / <span class="val">300</span>) % <span class="val">2</span>);   <span class="cm">// blinkt ohne delay()</span>
+  } <span class="kw">else</span> {
+    <span class="fn">digitalWrite</span>(<span class="val">6</span>, segmente &gt;= <span class="val">5</span> ? <span class="const">HIGH</span> : <span class="const">LOW</span>);
+  }
+  <span class="fn">delay</span>(<span class="val">50</span>);
+}
+</div>
+<div class="info">
+  <strong>Warum <code>millis()</code> und nicht <code>delay()</code>?</strong> Mit <code>delay()</code>
+  würde das ganze Programm stehen bleiben — auch die Messung. <code>millis()</code> lässt die
+  Messung weiterlaufen und blinkt „nebenbei“.
+</div>
+
+<h3>Aufgabe 21 — Servo als Zeigerinstrument</h3>
+<div class="info">
+  <code>winkel = map(prozent, 0, 100, 0, 180)</code> → 1,8° pro Prozent.<br>
+  Der Servo löst mit 180 Schritten <strong>feiner</strong> auf als 5 LED-Segmente.<br>
+  <strong>Aber:</strong> Feiner als die Messung ist wertlos. Wenn der Schwimmer selbst auf ±2 %
+  genau ist, ist eine Nadel, die 1 % ablesen lässt, <em>Scheingenauigkeit</em>. Und Servos zittern
+  bei verrauschtem Eingang sichtbar — genau deshalb wird vorher gemittelt.
+</div>
+
+<h3>Aufgabe 22 — Kalibriertabelle statt Formel</h3>
+<div class="info">
+  In der Praxis rechnet kein Steuergerät <code>arcsin()</code>. Stattdessen legt man
+  <strong>Stützstellen</strong> ab (ein „Kennfeld“) und interpoliert linear dazwischen:
+</div>
+<div class="code-block">
+<span class="cm">// Stützstellen aus der Kalibriermessung (Aufgabe 10)</span>
+<span class="kw">int</span> rohTab[]  = {<span class="val">512</span>, <span class="val">570</span>, <span class="val">630</span>, <span class="val">695</span>, <span class="val">770</span>, <span class="val">870</span>};
+<span class="kw">int</span> hoeheTab[] = {<span class="val">0</span>,   <span class="val">20</span>,  <span class="val">40</span>,  <span class="val">60</span>,  <span class="val">80</span>,  <span class="val">100</span>};   <span class="cm">// in mm</span>
+
+<span class="kw">int</span> <span class="fn">hoeheAusTabelle</span>(<span class="kw">int</span> roh) {
+  <span class="kw">for</span> (<span class="kw">int</span> i = <span class="val">0</span>; i &lt; <span class="val">5</span>; i++) {
+    <span class="kw">if</span> (roh &lt; rohTab[i + <span class="val">1</span>]) {
+      <span class="cm">// zwischen zwei Stuetzstellen linear interpolieren</span>
+      <span class="kw">return</span> <span class="fn">map</span>(roh, rohTab[i], rohTab[i+<span class="val">1</span>], hoeheTab[i], hoeheTab[i+<span class="val">1</span>]);
+    }
+  }
+  <span class="kw">return</span> hoeheTab[<span class="val">5</span>];
+}
+</div>
+<div class="info">
+  Vorteil: Die Tabelle korrigiert <strong>alle</strong> Nichtlinearitäten auf einmal — Hebel-Sinus
+  <em>und</em> Behälterform <em>und</em> Poti-Toleranzen. Sie muss nicht wissen, woher die Krümmung
+  kommt. Genau so arbeiten Motorsteuergeräte.
+</div>
+
+<h3>Aufgabe 23 — Warum steht die Tankanzeige ewig auf „voll“?</h3>
+<div class="warn">
+  Zwei Ursachen aus der Übertragungskette:
+  <ol style="margin: 0.5rem 0 0.5rem 1.5rem;">
+    <li><strong>Behälterform (V → h):</strong> Ein Autotank ist oben breiter und unten schmal
+        (er muss sich um Achse und Auspuff herumschmiegen). Oben bedeutet 1 cm Höhenverlust
+        viele Liter, unten wenige. Die Nadel fällt unten also schneller.</li>
+    <li><strong>Hebelgeometrie (h → &phi;):</strong> Wegen h = L · sin &phi; ist die Winkeländerung
+        pro Zentimeter dort am kleinsten, wo der Hebel waagerecht steht — die Anzeige reagiert
+        in diesem Bereich träge und wird zu den Anschlägen hin empfindlicher.</li>
+  </ol>
+  <em>Dazu kommt eine bewusste Bauart-Entscheidung: Hersteller legen oft eine Reserve so aus,
+  dass die Anzeige die ersten Liter gar nicht anzeigt.</em>
+</div>
+
+<div class="nav">
+  <a href="AB7_Schwimmergeber_Fuellstand.pdf">📄 Arbeitsblatt (PDF)</a>
+  <a href="./" class="outline">&larr; Übersicht</a>
+</div>
+
+</div>
+<footer>Fachpraxis 12NP &middot; Lore-Lorentz-Schule Düsseldorf</footer>
+</body>
+</html>
