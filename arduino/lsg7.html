@@ -143,15 +143,14 @@
 
 <div class="warn">
   <strong>📐 Messung am Prototyp — 12NP, 04.09.2026</strong><br>
-  Stativaufbau mit Schwimmerhebel auf der Poti-Achse (Poti 470 Ω linear, gemessen an
-  U<sub>max</sub> = 4,985 V):
+  Stativ mit Schwimmerhebel auf der Poti-Achse (470 Ω linear), Höhe an einer senkrechten
+  Nivellierlatte abgelesen (U<sub>max</sub> = 4,985 V):
   <table>
-    <tr><th></th><th>Spannung</th><th>Rohwert (ADC)</th></tr>
-    <tr><th>tiefste Hebelstellung („leer")</th><td>3,03 V</td><td><strong>620</strong></td></tr>
-    <tr><th>höchste Hebelstellung („voll")</th><td>4,85 V</td><td><strong>993</strong></td></tr>
-    <tr><th>Hub</th><td>1,82 V</td><td><strong>373 Stufen</strong></td></tr>
+    <tr><th>Messpunkt</th><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td></tr>
+    <tr><th>h in cm</th><td>0</td><td>7</td><td>17</td><td>27</td><td>37</td><td>47</td><td>53</td></tr>
+    <tr><th>Rohwert</th><td><strong>620</strong></td><td>660</td><td>730</td><td>810</td><td>890</td><td>960</td><td><strong>993</strong></td></tr>
   </table>
-  Von 1024 möglichen Stufen nutzt der Geber also nur <strong>373</strong> — rund 36 %.
+  LEER = 620, VOLL = 993 → Hub <strong>373 Stufen</strong> von 1024 (36 %).
 </div>
 
 <div class="info">
@@ -162,32 +161,50 @@
 </div>
 
 <div class="info">
-  <strong>Aufgabe 11 — Differenzen:</strong> Eure Zahlen hängen vom Prototyp ab. Entscheidend ist
-  das <strong>Muster</strong>: Die Differenzen werden von Messpunkt zu Messpunkt
-  <strong>größer</strong>. Bei einer Geraden müssten sie alle gleich sein.
+  <strong>Aufgabe 11 — Differenzen:</strong> Eure Zahlen hängen vom Aufbau ab. Entscheidend ist:
+  Die Differenzen sind <strong>nicht konstant</strong> — also ist die Kennlinie keine Gerade.
   <br><br>
-  <em>Referenzmessung an einem Geber mit L = 35 cm (zum Vergleich, falls eure Messung streut):</em>
+  <strong>Achtung, häufige Falle:</strong> Wenn die h-Schritte <em>ungleich</em> groß sind
+  (bei uns 7, 10, 10, 10, 10, 6 cm), darf man die rohen Differenzen nicht direkt vergleichen.
+  Man muss auf <strong>Stufen pro cm</strong> umrechnen:
   <table>
-    <tr><th>Pegel h in cm</th><td>0</td><td>5</td><td>10</td><td>15</td><td>20</td><td>25</td><td>30</td></tr>
-    <tr><th>Rohwert</th><td>512</td><td>543</td><td>575</td><td>608</td><td>644</td><td>685</td><td>736</td></tr>
-    <tr><th>&Delta;</th><td>—</td><td>31</td><td>32</td><td>33</td><td>36</td><td>41</td><td>51</td></tr>
+    <tr><th>Abschnitt</th><td>0→7</td><td>7→17</td><td>17→27</td><td>27→37</td><td>37→47</td><td>47→53</td></tr>
+    <tr><th>&Delta;Rohwert</th><td>40</td><td>70</td><td>80</td><td>80</td><td>70</td><td>33</td></tr>
+    <tr><th>Stufen je cm</th><td>5,7</td><td>7,0</td><td><strong>8,0</strong></td><td><strong>8,0</strong></td><td>7,0</td><td>5,5</td></tr>
   </table>
+  Ergebnis: In der <strong>Mitte</strong> am steilsten, zu beiden Enden flacher — eine S-Form.
 </div>
 
 <div class="warn">
   <strong>Aufgabe 12 — ist die Kennlinie eine Gerade?</strong><br>
-  <strong>Nein.</strong> Der Rohwert ist proportional zum <em>Winkel</em>, und aus
-  h = L · sin &phi; folgt umgekehrt &phi; = arcsin(h / L).<br>
-  Bei kleinem Pegel verläuft die Kurve fast gerade — dort gilt näherungsweise sin &phi; ≈ &phi;.
-  Zu höheren Pegeln wird sie <strong>steiler</strong>: Für dieselbe Höhenänderung braucht der Hebel
-  dort einen größeren Winkel.<br>
-  Das passt genau zu Aufgabe 7: Dort war der Höhenzuwachs pro Winkel am Rand <em>kleiner</em> —
-  hier ist der Winkelzuwachs pro Höhe am Rand also <em>größer</em>. Zwei Sichtweisen auf dieselbe
-  Geometrie.
+  <strong>Nein.</strong> Das Poti selbst ist linear (Rohwert &prop; Winkel &phi;) — die Krümmung
+  entsteht allein durch die <strong>Geometrie</strong> des Hebels.
   <br><br>
-  <em>Hinweis für die Praxis: Wenn eure Messpunkte streuen, liegt das an der Ablesegenauigkeit
-  des Pegels und am Spiel im Hebel — nicht an einem Fehler. Zeichnet eine Ausgleichskurve
-  „nach Augenmaß" durch die Punkte statt sie eckig zu verbinden.</em>
+  Dabei kommt es darauf an, <em>wo</em> die Höhe abgelesen wird. Das sind zwei verschiedene Fälle:
+  <table>
+    <tr><th></th><th>echter Tankgeber</th><th>unser Modellaufbau</th></tr>
+    <tr><th>Wo sitzt der Messpunkt?</th>
+        <td>Schwimmer <em>am Hebelende</em>, läuft auf dem Kreisbogen</td>
+        <td>Ablesung an der <em>festen senkrechten Latte</em></td></tr>
+    <tr><th>Zusammenhang</th><td>h = L · sin &phi;</td><td>h = d · tan &phi;</td></tr>
+    <tr><th>Umkehrung</th><td>&phi; = arcsin(h/L)</td><td>&phi; = arctan(h/d)</td></tr>
+    <tr><th>Kennlinie</th>
+        <td>zum Rand hin <strong>steiler</strong></td>
+        <td>in der Mitte am steilsten, zum Rand <strong>flacher</strong> (S-Form)</td></tr>
+  </table>
+  Unsere Messung zeigt die <strong>zweite</strong> Form — passend zur Latte. Mit d = 40 cm und dem
+  Drehpunkt auf Lattenhöhe 27 cm sagt das Modell 620 / 662 / 732 / 810 / 888 / 958 voraus; gemessen
+  wurden 620 / 660 / 730 / 810 / 890 / 960. Sechs Punkte auf höchstens 2 Stufen genau.
+</div>
+
+<div class="info">
+  <strong>Die eigentliche Lehre daraus:</strong> Beide Fälle sind nichtlinear, aber die Krümmung
+  geht in <em>entgegengesetzte</em> Richtungen. Ein Modell gilt also nie „allgemein", sondern immer
+  nur für eine bestimmte Messanordnung — wer die Geometrie ändert, ändert die Kennlinie.
+  <br><br>
+  Genau deshalb rechnet in der Praxis kein Steuergerät mit arcsin oder arctan, sondern benutzt eine
+  <strong>Kalibriertabelle</strong> (Zusatzaufgabe 23): Die funktioniert in beiden Fällen — und auch
+  dann, wenn die Geometrie so verwickelt ist, dass es gar keine geschlossene Formel gibt.
 </div>
 
 <h2>Teil 5 — Kalibrieren</h2>
@@ -350,8 +367,8 @@
 </div>
 <div class="code-block">
 <span class="cm">// Stuetzstellen direkt aus der Messreihe des Blattes</span>
-<span class="kw">int</span> rohTab[]   = {<span class="val">512</span>, <span class="val">543</span>, <span class="val">575</span>, <span class="val">608</span>, <span class="val">644</span>, <span class="val">685</span>, <span class="val">736</span>};
-<span class="kw">int</span> pegelTab[] = {<span class="val">0</span>,   <span class="val">5</span>,   <span class="val">10</span>,  <span class="val">15</span>,  <span class="val">20</span>,  <span class="val">25</span>,  <span class="val">30</span>};  <span class="cm">// Pegel in cm</span>
+<span class="kw">int</span> rohTab[]   = {<span class="val">620</span>, <span class="val">660</span>, <span class="val">730</span>, <span class="val">810</span>, <span class="val">890</span>, <span class="val">960</span>, <span class="val">993</span>};
+<span class="kw">int</span> pegelTab[] = {<span class="val">0</span>,   <span class="val">7</span>,   <span class="val">17</span>,  <span class="val">27</span>,  <span class="val">37</span>,  <span class="val">47</span>,  <span class="val">53</span>};  <span class="cm">// Pegel in cm (unsere Messung)</span>
 
 <span class="kw">int</span> <span class="fn">pegelAusTabelle</span>(<span class="kw">int</span> roh) {
   <span class="kw">for</span> (<span class="kw">int</span> i = <span class="val">0</span>; i &lt; <span class="val">6</span>; i++) {
