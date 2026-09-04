@@ -210,13 +210,19 @@
   <table>
     <tr><th>Modell</th><th>mittlere Abweichung</th><th>Restabweichungen</th></tr>
     <tr><td>Drehwinkel frei → <strong>230°</strong></td><td><strong>1,6 Stufen</strong></td><td>± 2,5, kein Trend</td></tr>
-    <tr><td>270° erzwungen</td><td>19,9 Stufen</td><td>+29 → −28, <em>monoton</em></td></tr>
+    <tr><td>270° erzwungen (Annahme)</td><td>19,9 Stufen</td><td>+29 → −28, <em>monoton</em></td></tr>
     <tr><td>sin-Modell (Schwimmer am Hebelende)</td><td>5,7 Stufen</td><td>W-förmig</td></tr>
   </table>
-  <strong>Ergebnis:</strong> Das Poti dreht <em>mechanisch</em> 270°, nutzt davon aber nur
-  <strong>≈ 230° elektrisch</strong>. Die fehlenden ~40° sind die Kontaktzonen an den beiden
-  Bahnenden, in denen sich der Widerstand nicht mehr ändert. Herstellerangaben zum Drehwinkel
-  meinen fast immer den mechanischen Weg.
+  <strong>Ergebnis:</strong> Das verbaute Poti ist <strong>kein 270°-Typ</strong>. Die Anpassung
+  sagt einen Drehwinkel von <strong>≈ 230°</strong> voraus — und die anschließende Prüfung an der
+  Achse bestätigt das: Der Drehbereich ist deutlich kleiner als 270°. Vermutlich handelt es sich um
+  eine 240°-Ausführung (ein gängiger Standardwert neben 270° und 300°); die restlichen wenigen Grad
+  sind die üblichen Kontaktzonen an den Bahnenden.
+  <br><br>
+  <strong>Das ist der bemerkenswerte Teil:</strong> Aus reinen Spannungsmessungen am Arduino ließ
+  sich eine <em>mechanische</em> Eigenschaft des Bauteils vorhersagen, die vorher niemand gemessen
+  hatte. Anschließend wurde sie überprüft — und stimmte. Genau dafür baut man Modelle: nicht nur um
+  vorhandene Daten zu beschreiben, sondern um <strong>überprüfbare Vorhersagen</strong> zu machen.
   <br><br>
   Zugleich ist damit die <strong>tan-Geometrie bestätigt</strong> (1,6 gegen 5,7 Stufen) und der
   Schwenkbereich des Hebels bestimmt: <strong>83°</strong>.
