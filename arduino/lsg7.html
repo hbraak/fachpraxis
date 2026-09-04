@@ -200,9 +200,15 @@
 
 <div class="info">
   <strong>Ein offener Punkt — für alle, die es genau wissen wollen:</strong><br>
-  Aus der Anpassung folgt eine Empfindlichkeit von rund <strong>5,5 ADC-Stufen pro Grad</strong>.
-  Bei einem Poti mit 270° Drehwinkel müssten es aber 1024/270 ≈ <strong>3,8 Stufen pro Grad</strong>
-  sein. Da fehlt etwas.
+  Passt man das Modell mit allen Parametern frei an, ergibt sich eine Empfindlichkeit von
+  <strong>5,0 ADC-Stufen pro Grad</strong> (Abstand d ≈ 35 cm) — das entspräche einem
+  Poti-Drehwinkel von rund <strong>204°</strong>. Laut Aufdruck hat das Poti aber <strong>270°</strong>,
+  also 1023/270 ≈ 3,8 Stufen pro Grad. Da fehlt etwas.
+  <br><br>
+  Erzwingt man die 270° im Modell, steigt die mittlere Abweichung von <strong>0,4</strong> auf
+  <strong>4,2</strong> Stufen — und, viel wichtiger, die Restabweichungen bilden ein
+  <em>systematisches Muster</em> (+5,5 / −1,7 / −5,7 / +0,5 / +5,9 / +0,3 / −4,7) statt zufällig zu
+  streuen. Das ist das typische Zeichen dafür, dass ein Modell die falsche <em>Form</em> hat.
   <br><br>
   Mögliche Erklärungen:
   <ul style="margin: 0.5rem 0 0.5rem 1.5rem;">
@@ -212,9 +218,14 @@
         sind Cermet-Bahnen oft nicht mehr streng linear — ein Teil der Abflachung am oberen Ende
         käme dann vom Poti, nicht von der Geometrie.</li>
   </ul>
-  <strong>So könnt ihr es entscheiden:</strong> Hebel waagerecht stellen, Rohwert ablesen; dann mit
-  einem Winkelmesser genau 45° schwenken und erneut ablesen. Eine Differenz von ≈ 171 Stufen
-  spricht für 270°, ≈ 250 Stufen für einen deutlich kleineren elektrischen Winkel.
+  <strong>So könnt ihr es entscheiden — mit dem Zollstock:</strong> Messt den waagerechten Abstand
+  d von der Poti-Achse zur Nivellierlatte.
+  <ul style="margin: 0.4rem 0 0.4rem 1.5rem;">
+    <li><strong>d ≈ 35 cm</strong> → das Poti liefert effektiv nur ~204°, nicht 270°.</li>
+    <li><strong>d ≈ 24 cm</strong> → die 270° stimmen, und die Abweichung kommt woanders her
+        (Bahnlinearität am Bahnende, Latte nicht exakt senkrecht, Hebel schwenkt nicht in der
+        Lattenebene).</li>
+  </ul>
   <br><em>Genau so arbeitet Messtechnik: Wenn Modell und Messung sich um 15 % unterscheiden, sucht
   man nicht den Schuldigen, sondern einen Versuch, der die Frage entscheidet.</em>
 </div>
