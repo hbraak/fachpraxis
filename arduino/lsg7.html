@@ -132,6 +132,13 @@
 <h2>Teil 3 — Kennlinie</h2>
 
 <div class="info">
+  <strong>Aufgabe 9 — Linearitätsprüfung:</strong> In Mittelstellung muss der Rohwert
+  <strong>≈ 512</strong> betragen. Weicht er stark ab (z. B. ~150 oder ~870), ist das Poti
+  <strong>logarithmisch</strong> — dann bringt es eine zusätzliche Krümmung in die Kennlinie
+  und ist als Winkelgeber unbrauchbar.
+</div>
+
+<div class="info">
   <strong>Aufgabe 10/11 — typische Messwerte</strong> (hängen vom eigenen Aufbau ab, L = 12 cm,
   Nullpunkt in der Hebelmitte):
   <table>
@@ -314,6 +321,36 @@
   </ol>
   <em>Dazu kommt eine bewusste Bauart-Entscheidung: Hersteller legen oft eine Reserve so aus,
   dass die Anzeige die ersten Liter gar nicht anzeigt.</em>
+</div>
+
+<h3>Aufgabe 24 — Spielt der Ohm-Wert eine Rolle?</h3>
+<div class="info">
+  <strong>Nein, für den Messwert nicht.</strong> Beim Spannungsteiler zählt nur das
+  <em>Verhältnis</em>. Steht der Schleifer beim Bruchteil x des Bahnwiderstands R, gilt:
+  <p style="margin:0.6rem 0; text-align:center;">
+    U<sub>aus</sub> = U<sub>ein</sub> · (x·R) / R = U<sub>ein</sub> · x
+  </p>
+  Das R kürzt sich heraus. Ein 470-Ω-Poti und ein 10-kΩ-Poti liefern in derselben Stellung
+  <strong>denselben Rohwert</strong>.
+</div>
+<div class="info">
+  <strong>Querstrom bei 5 V:</strong>
+  <table>
+    <tr><th>Poti</th><th>I = U/R</th><th>P = U·I</th><th>Quellimpedanz (max. R/4)</th></tr>
+    <tr><td>470 Ω</td><td>10,6 mA</td><td>53 mW</td><td>118 Ω</td></tr>
+    <tr><td>10 kΩ</td><td>0,5 mA</td><td>2,5 mW</td><td>2,5 kΩ</td></tr>
+  </table>
+  <strong>Sparsamer</strong> ist eindeutig das 10-kΩ-Poti — 21-mal weniger Querstrom. Bei
+  batteriebetriebenen Geräten ist das entscheidend, deshalb sitzen dort hochohmige Geber.
+</div>
+<div class="warn">
+  <strong>Aber Vorsicht — es gibt eine Gegenrichtung:</strong> Der ADC lädt bei jeder Messung
+  einen kleinen Kondensator über den Eingang auf. Je hochohmiger die Quelle, desto länger dauert
+  das. Das Atmega-Datenblatt fordert deshalb eine Quellimpedanz von <strong>höchstens 10 kΩ</strong>.
+  Das 470-Ω-Poti ist hier also im Vorteil (118 Ω statt 2,5 kΩ) — es liefert stabilere Werte,
+  besonders beim schnellen Wechsel zwischen mehreren Analogeingängen.
+  <br><em>Merke: „sparsam“ und „messtechnisch sauber“ zeigen hier in entgegengesetzte Richtungen —
+  man wählt den Wert je nach Anwendung.</em>
 </div>
 
 <div class="nav">
