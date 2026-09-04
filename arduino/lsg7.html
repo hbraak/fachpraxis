@@ -108,17 +108,17 @@
 </div>
 
 <div class="info">
-  <strong>Aufgabe 6 — h = L · sin &phi; mit L = 12 cm:</strong>
+  <strong>Aufgabe 6 — h = L · sin &phi; mit L = 35 cm:</strong>
   <table>
     <tr><th>&phi;</th><th>−50°</th><th>−25°</th><th>0°</th><th>25°</th><th>50°</th></tr>
-    <tr><td>h in cm</td><td>−9,19</td><td>−5,07</td><td>0</td><td>5,07</td><td>9,19</td></tr>
+    <tr><td>h in cm</td><td>−26,8</td><td>−14,8</td><td>0</td><td>14,8</td><td>26,8</td></tr>
   </table>
 </div>
 
 <div class="warn">
   <strong>Aufgabe 7 — der Kern des Blattes:</strong><br>
-  0° → 25°: &Delta;h = 5,07 cm − 0 = <strong>5,07 cm</strong><br>
-  25° → 50°: &Delta;h = 9,19 cm − 5,07 cm = <strong>4,12 cm</strong><br>
+  0° → 25°: &Delta;h = 14,8 cm − 0 = <strong>14,8 cm</strong><br>
+  25° → 50°: &Delta;h = 26,8 cm − 14,8 cm = <strong>12,0 cm</strong><br>
   Gleicher Winkelzuwachs (25°), aber <strong>unterschiedlicher Höhenzuwachs</strong>. Der Hebel
   überträgt gestaucht — das ist der Sinus.
 </div>
@@ -129,57 +129,67 @@
   <br><em>Zusatz: Auch Volumen → Höhe ist nichtlinear, sobald der Behälter nicht quaderförmig ist.</em>
 </div>
 
-<h2>Teil 3 — Kennlinie</h2>
+<h2>Teil 3 — Der Geber am Arduino</h2>
 
 <div class="info">
-  <strong>Aufgabe 9 — Linearitätsprüfung:</strong> In Mittelstellung muss der Rohwert
-  <strong>≈ 512</strong> betragen. Weicht er stark ab (z. B. ~150 oder ~870), ist das Poti
-  <strong>logarithmisch</strong> — dann bringt es eine zusätzliche Krümmung in die Kennlinie
-  und ist als Winkelgeber unbrauchbar.
+  <strong>Aufgabe 9 — Anschläge und Linearitätsprüfung:</strong><br>
+  Linker Anschlag ≈ <strong>0</strong>, rechter Anschlag ≈ <strong>1023</strong>.<br>
+  In Mittelstellung muss ungefähr <strong>512</strong> stehen. Weicht der Wert stark ab
+  (z. B. ~150 oder ~870), ist das Poti <strong>logarithmisch</strong> — dann bringt es eine
+  zusätzliche Krümmung in die Kennlinie und ist als Winkelgeber unbrauchbar.
 </div>
 
+<h2>Teil 4 — Die Kennlinie des echten Gebers</h2>
+
 <div class="info">
-  <strong>Aufgabe 10/11 — typische Messwerte</strong> (L = 12 cm, Nullpunkt in der Hebelmitte,
-  Poti mit ca. 270° Drehwinkel):
+  <strong>Aufgabe 11 — Differenzen:</strong>
   <table>
-    <tr><th>h in cm</th><td>0</td><td>2</td><td>4</td><td>6</td><td>8</td><td>10</td></tr>
-    <tr><th>φ = arcsin(h/L)</th><td>0°</td><td>9,6°</td><td>19,5°</td><td>30,0°</td><td>41,8°</td><td>56,4°</td></tr>
-    <tr><th>Rohwert</th><td>≈ 512</td><td>≈ 548</td><td>≈ 586</td><td>≈ 626</td><td>≈ 670</td><td>≈ 726</td></tr>
-    <tr><th>Differenz</th><td>—</td><td>36</td><td>38</td><td>40</td><td>44</td><td>56</td></tr>
+    <tr><th>Schritt</th><td>0→5</td><td>5→10</td><td>10→15</td><td>15→20</td><td>20→25</td><td>25→30</td></tr>
+    <tr><th>&Delta;Rohwert</th><td><strong>31</strong></td><td><strong>32</strong></td><td><strong>33</strong></td><td><strong>36</strong></td><td><strong>41</strong></td><td><strong>51</strong></td></tr>
   </table>
-  Entscheidend ist nicht der exakte Wert, sondern die <strong>Form</strong>: Die Differenzen werden
-  von Schritt zu Schritt <strong>größer</strong> — die Kurve wird steiler. Genau das sagt Aufgabe 12 voraus.
+  Die Differenzen werden von Schritt zu Schritt <strong>größer</strong> — die Kurve wird steiler.
+  Bei einer Geraden müssten sie alle gleich sein.
 </div>
 
 <div class="warn">
-  <strong>Wichtig für Aufgabe 17/18 — der genutzte Bereich ist klein:</strong><br>
-  Der Hebel schwenkt nur über etwa 56°, das Poti könnte aber 270°. Von den 1024 ADC-Stufen werden
-  also nur rund <strong>214 Stufen</strong> (≈ 20 %) tatsächlich genutzt.
+  <strong>Wichtig für Aufgabe 18/19 — der genutzte Bereich ist klein:</strong><br>
+  Der Geber liefert nur Rohwerte von 512 bis 736. Das sind <strong>224 Stufen</strong> von 1024 —
+  nur etwa <strong>22 %</strong> des ADC-Bereichs. Grund: Der Hebel schwenkt bei 30 cm Pegel nur
+  über arcsin(30/35) ≈ 59°, das Poti könnte aber 270°.
 </div>
 
 <div class="warn">
   <strong>Aufgabe 12 — ist die Kennlinie eine Gerade?</strong><br>
-  <strong>Nein.</strong> Der Poti-Rohwert ist proportional zum <em>Winkel</em>, und aus
+  <strong>Nein.</strong> Der Rohwert ist proportional zum <em>Winkel</em>, und aus
   h = L · sin &phi; folgt umgekehrt &phi; = arcsin(h / L).<br>
-  In der Mitte (kleine Winkel) verläuft die Kurve fast gerade — dort gilt näherungsweise
-  sin &phi; ≈ &phi;. Zu den Enden hin wird sie <strong>steiler</strong>: Für dieselbe Höhenänderung
-  braucht der Hebel dort einen viel größeren Winkel.<br>
+  Bei kleinem Pegel verläuft die Kurve fast gerade — dort gilt näherungsweise sin &phi; ≈ &phi;.
+  Zu höheren Pegeln wird sie <strong>steiler</strong>: Für dieselbe Höhenänderung braucht der Hebel
+  dort einen viel größeren Winkel.<br>
   Das passt genau zu Aufgabe 7: Dort war der Höhenzuwachs pro Winkel am Rand <em>kleiner</em> —
   hier ist der Winkelzuwachs pro Höhe am Rand also <em>größer</em>. Zwei Sichtweisen auf dieselbe
   Geometrie.
 </div>
 
-<h2>Teil 4 — Kalibrieren</h2>
+<h2>Teil 5 — Kalibrieren</h2>
 
 <div class="info">
-  <strong>Aufgabe 13:</strong> Typisch etwa <code>LEER ≈ 20…60</code> und <code>VOLL ≈ 960…1010</code> —
-  <strong>nicht</strong> exakt 0 und 1023. Ursachen: mechanische Anschläge des Potis, Übergangs-
-  und Zuleitungswiderstände.
+  <strong>Aufgabe 13 — aus der Messreihe abgelesen:</strong>
+  <code>LEER = 512</code> (Pegel 0 cm), <code>VOLL = 736</code> (Pegel 30 cm).
 </div>
 
 <div class="info">
-  <strong>Aufgabe 14 — Lücken:</strong> <code>LEER</code> und <code>VOLL</code> mit den <em>eigenen</em>
-  gemessenen Werten füllen, und <code>map(roh, LEER, VOLL, 0, <strong>100</strong>)</code>.
+  <strong>Aufgabe 14 — Lücken:</strong> <code>LEER = 512</code>, <code>VOLL = 736</code>, und
+  <code>map(roh, LEER, VOLL, 0, <strong>100</strong>)</code>.
+</div>
+
+<div class="info">
+  <strong>Aufgabe 15 — was tut <code>constrain()</code>?</strong><br>
+  Dreht man das Poti unter 512, rechnet <code>map()</code> <em>negative</em> Prozentwerte aus;
+  über 736 entsprechend über 100 %. <code>constrain(prozent, 0, 100)</code> schneidet das ab —
+  die Anzeige bleibt bei 0 % bzw. 100 % stehen.<br>
+  <em>Physikalisch sinnvoll: Ein Becken kann nicht −18 % voll sein. Der Geber liefert außerhalb
+  seines Messbereichs keine gültige Information mehr, und die Software gibt dann lieber den
+  Randwert aus als Unsinn.</em>
 </div>
 
 <div class="code-block">
@@ -200,17 +210,21 @@
 </div>
 
 <div class="warn">
-  <strong>Aufgabe 15 — warum nicht <code>map(roh, 0, 1023, 0, 100)</code>?</strong><br>
-  Weil die Werte 0 und 1023 <strong>nie erreicht</strong> werden. Mit LEER = 42 zeigte die Anzeige
-  bei leerem Behälter schon 4 % statt 0 %, und bei vollem Behälter nur 96 % statt 100 % —
-  die Skala wäre gestaucht und verschoben.<br>
-  <em>Kalibrieren heißt: die tatsächlichen Endwerte messen statt sie anzunehmen.</em>
+  <strong>Aufgabe 16 — warum nicht <code>map(roh, 0, 1023, 0, 100)</code>?</strong><br>
+  Weil der Geber diesen Bereich gar nicht ausnutzt. Nachgerechnet für das <em>leere</em> Becken
+  (Rohwert 512):
+  <p style="margin:0.6rem 0; text-align:center;">
+    map(512, 0, 1023, 0, 100) = 512 · 100 / 1023 ≈ <strong>50 %</strong>
+  </p>
+  Ein leeres Becken würde also als <strong>halb voll</strong> angezeigt! Und selbst randvoll
+  (736) käme die Anzeige nur auf 72 %. Die Skala wäre komplett verschoben und gestaucht.<br>
+  <em>Kalibrieren heißt: die tatsächlichen Endwerte des Gebers verwenden statt sie anzunehmen.</em>
 </div>
 
-<h2>Teil 5 — Anzeigen</h2>
+<h2>Teil 6 — Anzeigen</h2>
 
 <div class="info">
-  <strong>Aufgabe 16 — <code>setup()</code> mit Schleife:</strong>
+  <strong>Aufgabe 17 — <code>setup()</code> mit Schleife:</strong>
 </div>
 <div class="code-block">
 <span class="kw">void</span> <span class="fn">setup</span>() {
@@ -222,17 +236,17 @@
 </div>
 
 <div class="info">
-  <strong>Aufgabe 17 — die zwei Auflösungen:</strong><br>
+  <strong>Aufgabe 18 — die zwei Auflösungen:</strong><br>
   Eine LED = 100 % / 5 = <strong>20 %</strong>.<br>
   Eine ADC-Stufe: Maßgeblich ist der <em>tatsächlich genutzte</em> Bereich VOLL − LEER.
-  Beim Hebelmodell sind das rund 214 Stufen für 100 %, also
-  100 % / 214 ≈ <strong>0,47 % pro Stufe</strong>.<br>
-  Die Messung ist damit immer noch rund <strong>40-mal feiner</strong> als die Anzeige.<br>
+  Beim Geber sind das 736 − 512 = 224 Stufen für 100 %, also
+  100 % / 224 ≈ <strong>0,45 % pro Stufe</strong>.<br>
+  Die Messung ist damit immer noch rund <strong>45-mal feiner</strong> als die Anzeige.<br>
   <em>(Wer den vollen ADC-Bereich nutzen könnte, käme auf 0,1 % — aber genau das geht hier nicht.)</em>
 </div>
 
 <div class="warn">
-  <strong>Aufgabe 18 — wozu dann so fein messen?</strong><br>
+  <strong>Aufgabe 19 — wozu dann so fein messen?</strong><br>
   Weil zwischen Messung und Anzeige noch <em>gerechnet</em> wird, und jeder Rechenschritt
   Genauigkeit kostet:
   <ul style="margin: 0.5rem 0 0.5rem 1.5rem;">
@@ -241,19 +255,19 @@
     <li><strong>Kalibrieren:</strong> Der nutzbare Bereich ist kleiner als der volle — Reserve nötig.</li>
     <li><strong>Umrechnen/Linearisieren:</strong> Die Sinus-Korrektur verteilt die Stufen ungleichmäßig;
         am steilen Kurvenende bleiben weniger übrig.</li>
-    <li><strong>Schwellen:</strong> Eine Überlaufwarnung bei 90 % (Aufgabe 20) ließe sich mit nur
+    <li><strong>Schwellen:</strong> Eine Überlaufwarnung bei 90 % (Aufgabe 21) ließe sich mit nur
         5 Eingangsstufen gar nicht setzen.</li>
   </ul>
   Ohne diese Reserve würde der Balken bei jedem Rauschen zwischen zwei Segmenten flackern.
   <br><br>
-  <strong>Der Beweis steckt im eigenen Versuch:</strong> Von 1024 Stufen sind beim Hebelmodell nur
-  etwa 214 übrig geblieben — der Rest ging allein durch den begrenzten Schwenkbereich verloren.
+  <strong>Der Beweis steckt in der Messreihe:</strong> Von 1024 Stufen nutzt der Geber nur
+  224 — der Rest geht allein durch den begrenzten Schwenkbereich des Hebels verloren.
   Die Reserve wurde also nicht „gespart“, sondern <em>aufgebraucht</em>. Hätte der ADC nur
   8 Segmente aufgelöst, wäre nach dieser Einbuße nichts Brauchbares mehr übrig.
 </div>
 
 <div class="info">
-  <strong>Aufgabe 19 — Merksatz:</strong><br>
+  <strong>Aufgabe 20 — Merksatz:</strong><br>
   <strong>Die Messauflösung muss deutlich feiner sein als die Anzeigeauflösung — niemals umgekehrt.</strong>
   Faustregel: mindestens Faktor 10.<br>
   Eine Anzeige darf gröber sein als die Messung. Zeigt sie aber feiner an, als gemessen wurde,
@@ -262,7 +276,7 @@
 
 <h2>Zusatzaufgaben</h2>
 
-<h3>Aufgabe 20 — Überlaufwarnung (oberste LED blinkt)</h3>
+<h3>Aufgabe 21 — Überlaufwarnung (oberste LED blinkt)</h3>
 <div class="code-block">
 <span class="kw">void</span> <span class="fn">loop</span>() {
   <span class="kw">int</span> roh     = <span class="fn">analogRead</span>(<span class="const">A0</span>);
@@ -289,7 +303,7 @@
   Messung weiterlaufen und blinkt „nebenbei“.
 </div>
 
-<h3>Aufgabe 21 — Servo als Zeigerinstrument</h3>
+<h3>Aufgabe 22 — Servo als Zeigerinstrument</h3>
 <div class="info">
   <code>winkel = map(prozent, 0, 100, 0, 180)</code> → 1,8° pro Prozent.<br>
   Der Servo löst mit 180 Schritten <strong>feiner</strong> auf als 5 LED-Segmente.<br>
@@ -298,24 +312,24 @@
   bei verrauschtem Eingang sichtbar — genau deshalb wird vorher gemittelt.
 </div>
 
-<h3>Aufgabe 22 — Kalibriertabelle statt Formel</h3>
+<h3>Aufgabe 23 — Kalibriertabelle statt Formel</h3>
 <div class="info">
   In der Praxis rechnet kein Steuergerät <code>arcsin()</code>. Stattdessen legt man
   <strong>Stützstellen</strong> ab (ein „Kennfeld“) und interpoliert linear dazwischen:
 </div>
 <div class="code-block">
-<span class="cm">// Stützstellen aus der Kalibriermessung (Aufgabe 10)</span>
-<span class="kw">int</span> rohTab[]  = {<span class="val">512</span>, <span class="val">570</span>, <span class="val">630</span>, <span class="val">695</span>, <span class="val">770</span>, <span class="val">870</span>};
-<span class="kw">int</span> hoeheTab[] = {<span class="val">0</span>,   <span class="val">20</span>,  <span class="val">40</span>,  <span class="val">60</span>,  <span class="val">80</span>,  <span class="val">100</span>};   <span class="cm">// in mm</span>
+<span class="cm">// Stuetzstellen direkt aus der Messreihe des Blattes</span>
+<span class="kw">int</span> rohTab[]   = {<span class="val">512</span>, <span class="val">543</span>, <span class="val">575</span>, <span class="val">608</span>, <span class="val">644</span>, <span class="val">685</span>, <span class="val">736</span>};
+<span class="kw">int</span> pegelTab[] = {<span class="val">0</span>,   <span class="val">5</span>,   <span class="val">10</span>,  <span class="val">15</span>,  <span class="val">20</span>,  <span class="val">25</span>,  <span class="val">30</span>};  <span class="cm">// Pegel in cm</span>
 
-<span class="kw">int</span> <span class="fn">hoeheAusTabelle</span>(<span class="kw">int</span> roh) {
-  <span class="kw">for</span> (<span class="kw">int</span> i = <span class="val">0</span>; i &lt; <span class="val">5</span>; i++) {
+<span class="kw">int</span> <span class="fn">pegelAusTabelle</span>(<span class="kw">int</span> roh) {
+  <span class="kw">for</span> (<span class="kw">int</span> i = <span class="val">0</span>; i &lt; <span class="val">6</span>; i++) {
     <span class="kw">if</span> (roh &lt; rohTab[i + <span class="val">1</span>]) {
       <span class="cm">// zwischen zwei Stuetzstellen linear interpolieren</span>
-      <span class="kw">return</span> <span class="fn">map</span>(roh, rohTab[i], rohTab[i+<span class="val">1</span>], hoeheTab[i], hoeheTab[i+<span class="val">1</span>]);
+      <span class="kw">return</span> <span class="fn">map</span>(roh, rohTab[i], rohTab[i+<span class="val">1</span>], pegelTab[i], pegelTab[i+<span class="val">1</span>]);
     }
   }
-  <span class="kw">return</span> hoeheTab[<span class="val">5</span>];
+  <span class="kw">return</span> pegelTab[<span class="val">6</span>];
 }
 </div>
 <div class="info">
@@ -324,7 +338,7 @@
   kommt. Genau so arbeiten Motorsteuergeräte.
 </div>
 
-<h3>Aufgabe 23 — Warum steht die Tankanzeige ewig auf „voll“?</h3>
+<h3>Aufgabe 24 — Warum steht die Tankanzeige ewig auf „voll“?</h3>
 <div class="warn">
   Zwei Ursachen aus der Übertragungskette:
   <ol style="margin: 0.5rem 0 0.5rem 1.5rem;">
@@ -339,7 +353,7 @@
   dass die Anzeige die ersten Liter gar nicht anzeigt.</em>
 </div>
 
-<h3>Aufgabe 24 — Spielt der Ohm-Wert eine Rolle?</h3>
+<h3>Aufgabe 25 — Spielt der Ohm-Wert eine Rolle?</h3>
 <div class="info">
   <strong>Nein, für den Messwert nicht.</strong> Beim Spannungsteiler zählt nur das
   <em>Verhältnis</em>. Steht der Schleifer beim Bruchteil x des Bahnwiderstands R, gilt:
