@@ -139,23 +139,26 @@
   zusätzliche Krümmung in die Kennlinie und ist als Winkelgeber unbrauchbar.
 </div>
 
-<h2>Teil 4 — Die Kennlinie des echten Gebers</h2>
+<h2>Teil 4 — Die Kennlinie des Prototyps</h2>
 
 <div class="info">
-  <strong>Aufgabe 11 — Differenzen:</strong>
-  <table>
-    <tr><th>Schritt</th><td>0→5</td><td>5→10</td><td>10→15</td><td>15→20</td><td>20→25</td><td>25→30</td></tr>
-    <tr><th>&Delta;Rohwert</th><td><strong>31</strong></td><td><strong>32</strong></td><td><strong>33</strong></td><td><strong>36</strong></td><td><strong>41</strong></td><td><strong>51</strong></td></tr>
-  </table>
-  Die Differenzen werden von Schritt zu Schritt <strong>größer</strong> — die Kurve wird steiler.
-  Bei einer Geraden müssten sie alle gleich sein.
+  <strong>Aufgabe 10 — Skala wählen:</strong> Die y-Achse muss <em>nicht</em> bei 0 anfangen!
+  Sinnvoll ist ein Ausschnitt, der knapp unter dem Leer-Rohwert beginnt und knapp über dem
+  Voll-Rohwert endet — sonst quetscht sich die ganze Kurve in einen schmalen Streifen und die
+  Krümmung ist nicht mehr zu sehen.
 </div>
 
-<div class="warn">
-  <strong>Wichtig für Aufgabe 18/19 — der genutzte Bereich ist klein:</strong><br>
-  Der Geber liefert nur Rohwerte von 512 bis 736. Das sind <strong>224 Stufen</strong> von 1024 —
-  nur etwa <strong>22 %</strong> des ADC-Bereichs. Grund: Der Hebel schwenkt bei 30 cm Pegel nur
-  über arcsin(30/35) ≈ 59°, das Poti könnte aber 270°.
+<div class="info">
+  <strong>Aufgabe 11 — Differenzen:</strong> Eure Zahlen hängen vom Prototyp ab. Entscheidend ist
+  das <strong>Muster</strong>: Die Differenzen werden von Messpunkt zu Messpunkt
+  <strong>größer</strong>. Bei einer Geraden müssten sie alle gleich sein.
+  <br><br>
+  <em>Referenzmessung an einem Geber mit L = 35 cm (zum Vergleich, falls eure Messung streut):</em>
+  <table>
+    <tr><th>Pegel h in cm</th><td>0</td><td>5</td><td>10</td><td>15</td><td>20</td><td>25</td><td>30</td></tr>
+    <tr><th>Rohwert</th><td>512</td><td>543</td><td>575</td><td>608</td><td>644</td><td>685</td><td>736</td></tr>
+    <tr><th>&Delta;</th><td>—</td><td>31</td><td>32</td><td>33</td><td>36</td><td>41</td><td>51</td></tr>
+  </table>
 </div>
 
 <div class="warn">
@@ -164,28 +167,33 @@
   h = L · sin &phi; folgt umgekehrt &phi; = arcsin(h / L).<br>
   Bei kleinem Pegel verläuft die Kurve fast gerade — dort gilt näherungsweise sin &phi; ≈ &phi;.
   Zu höheren Pegeln wird sie <strong>steiler</strong>: Für dieselbe Höhenänderung braucht der Hebel
-  dort einen viel größeren Winkel.<br>
+  dort einen größeren Winkel.<br>
   Das passt genau zu Aufgabe 7: Dort war der Höhenzuwachs pro Winkel am Rand <em>kleiner</em> —
   hier ist der Winkelzuwachs pro Höhe am Rand also <em>größer</em>. Zwei Sichtweisen auf dieselbe
   Geometrie.
+  <br><br>
+  <em>Hinweis für die Praxis: Wenn eure Messpunkte streuen, liegt das an der Ablesegenauigkeit
+  des Pegels und am Spiel im Hebel — nicht an einem Fehler. Zeichnet eine Ausgleichskurve
+  „nach Augenmaß" durch die Punkte statt sie eckig zu verbinden.</em>
 </div>
 
 <h2>Teil 5 — Kalibrieren</h2>
 
 <div class="info">
-  <strong>Aufgabe 13 — aus der Messreihe abgelesen:</strong>
-  <code>LEER = 512</code> (Pegel 0 cm), <code>VOLL = 736</code> (Pegel 30 cm).
+  <strong>Aufgabe 13 — aus der eigenen Messreihe abgelesen:</strong>
+  <code>LEER</code> = Rohwert beim niedrigsten gemessenen Pegel, <code>VOLL</code> = Rohwert beim
+  höchsten. In der Referenzmessung oben wären das 512 und 736.
 </div>
 
 <div class="info">
-  <strong>Aufgabe 14 — Lücken:</strong> <code>LEER = 512</code>, <code>VOLL = 736</code>, und
-  <code>map(roh, LEER, VOLL, 0, <strong>100</strong>)</code>.
+  <strong>Aufgabe 14 — Lücken:</strong> <code>LEER</code> und <code>VOLL</code> mit den
+  <em>eigenen</em> Messwerten füllen, und <code>map(roh, LEER, VOLL, 0, <strong>100</strong>)</code>.
 </div>
 
 <div class="info">
   <strong>Aufgabe 15 — was tut <code>constrain()</code>?</strong><br>
-  Dreht man das Poti unter 512, rechnet <code>map()</code> <em>negative</em> Prozentwerte aus;
-  über 736 entsprechend über 100 %. <code>constrain(prozent, 0, 100)</code> schneidet das ab —
+  Dreht man das Poti unter den LEER-Wert, rechnet <code>map()</code> <em>negative</em>
+  Prozentwerte aus; über den VOLL-Wert entsprechend über 100 %. <code>constrain(prozent, 0, 100)</code> schneidet das ab —
   die Anzeige bleibt bei 0 % bzw. 100 % stehen.<br>
   <em>Physikalisch sinnvoll: Ein Becken kann nicht −18 % voll sein. Der Geber liefert außerhalb
   seines Messbereichs keine gültige Information mehr, und die Software gibt dann lieber den
@@ -211,13 +219,15 @@
 
 <div class="warn">
   <strong>Aufgabe 16 — warum nicht <code>map(roh, 0, 1023, 0, 100)</code>?</strong><br>
-  Weil der Geber diesen Bereich gar nicht ausnutzt. Nachgerechnet für das <em>leere</em> Becken
-  (Rohwert 512):
+  Weil der Geber den Bereich 0…1023 gar nicht ausnutzt. Der Schwimmer steht schon bei
+  <em>leerem</em> Becken irgendwo in der Mitte des Poti-Wegs. Mit der Referenzmessung:
   <p style="margin:0.6rem 0; text-align:center;">
     map(512, 0, 1023, 0, 100) = 512 · 100 / 1023 ≈ <strong>50 %</strong>
   </p>
-  Ein leeres Becken würde also als <strong>halb voll</strong> angezeigt! Und selbst randvoll
-  (736) käme die Anzeige nur auf 72 %. Die Skala wäre komplett verschoben und gestaucht.<br>
+  <strong>Das Fatale:</strong> Ein leeres Becken würde als halb voll angezeigt — die Pumpe liefe
+  nicht an, obwohl sie müsste. Und selbst randvoll käme die Anzeige nur auf 72 %, die
+  Überlaufwarnung bei 90 % würde also <em>nie</em> auslösen. Ein Kalibrierfehler ist hier kein
+  Schönheitsfehler, sondern ein Sicherheitsproblem.<br>
   <em>Kalibrieren heißt: die tatsächlichen Endwerte des Gebers verwenden statt sie anzunehmen.</em>
 </div>
 
@@ -238,9 +248,9 @@
 <div class="info">
   <strong>Aufgabe 18 — die zwei Auflösungen:</strong><br>
   Eine LED = 100 % / 5 = <strong>20 %</strong>.<br>
-  Eine ADC-Stufe: Maßgeblich ist der <em>tatsächlich genutzte</em> Bereich VOLL − LEER.
-  Beim Geber sind das 736 − 512 = 224 Stufen für 100 %, also
-  100 % / 224 ≈ <strong>0,45 % pro Stufe</strong>.<br>
+  Eine ADC-Stufe: Maßgeblich ist der <em>tatsächlich genutzte</em> Bereich VOLL − LEER —
+  also euer eigener Messwert, <strong>nicht</strong> 1024. Mit der Referenzmessung:
+  736 − 512 = 224 Stufen für 100 %, also 100 % / 224 ≈ <strong>0,45 % pro Stufe</strong>.<br>
   Die Messung ist damit immer noch rund <strong>45-mal feiner</strong> als die Anzeige.<br>
   <em>(Wer den vollen ADC-Bereich nutzen könnte, käme auf 0,1 % — aber genau das geht hier nicht.)</em>
 </div>
@@ -260,8 +270,9 @@
   </ul>
   Ohne diese Reserve würde der Balken bei jedem Rauschen zwischen zwei Segmenten flackern.
   <br><br>
-  <strong>Der Beweis steckt in der Messreihe:</strong> Von 1024 Stufen nutzt der Geber nur
-  224 — der Rest geht allein durch den begrenzten Schwenkbereich des Hebels verloren.
+  <strong>Der Beweis steckt in eurer eigenen Messreihe:</strong> Rechnet VOLL − LEER aus — von
+  1024 Stufen bleibt nur ein Bruchteil übrig (in der Referenzmessung 224, also gut ein Fünftel).
+  Der Rest geht allein durch den begrenzten Schwenkbereich des Hebels verloren.
   Die Reserve wurde also nicht „gespart“, sondern <em>aufgebraucht</em>. Hätte der ADC nur
   8 Segmente aufgelöst, wäre nach dieser Einbuße nichts Brauchbares mehr übrig.
 </div>
