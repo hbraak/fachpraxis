@@ -71,5 +71,5 @@ void loop() {
   Serial.print('\t');
   Serial.println(winkel);
 
-  delay(50);                         // 20 Hz reichen fuer eine Anzeige voellig
+  delay(50);                         // zusammen mit der Mittelung rund 14 Werte/s - reicht fuer eine Anzeige
 }
