@@ -14,6 +14,7 @@
 \usepackage{xcolor}
 \usepackage{scrlayer-scrpage}
 \usepackage{qrcode}
+\usepackage{microtype}
 \usepackage[hidelinks]{hyperref}
 \usetikzlibrary{arrows.meta,positioning}
 \sisetup{locale=DE, per-mode=fraction, output-decimal-marker={,}}
@@ -74,56 +75,66 @@
 \small\textbf{Der Sketch zum Herunterladen} -- diesmal wird nicht getippt:\\
 \texttt{tinyurl.com/ab8-rc-sketch}\\[2pt]
 Datei speichern, in der Arduino-IDE öffnen, hochladen. Lesen müssen Sie ihn trotzdem --
-eine Zeile darin müssen Sie bei jeder Messung selbst anpassen.
+in Teil 2 prüfen Sie nach, ob die eingestellten Zeiten zu Ihrer Rechnung passen.
 \end{minipage}
 
 \vspace{8pt}
 
 \noindent In Physik hängen Sie den Kondensator an das CASSY und bekommen die Kurve geschenkt.
 Hier drehen wir das um: \textbf{Das Messgerät ist die Aufgabe, der Kondensator nur der Prüfling.}
-Am Ende soll Ihr Aufbau aus Arduino, einem Widerstand und einem Kondensator die Kapazität
-bestimmen -- und Sie sollen sagen können, wo die Grenzen Ihres Geräts liegen.
+Und Sie messen etwas, das mit Stoppuhr und Zeigerinstrument \emph{prinzipiell} nicht mehr geht.
 
-\subsection*{Material}
+\subsection*{Teil 1 -- Vorüberlegung: erst rechnen, dann aufbauen}
 
-\begin{center}
-\begin{tabular}{p{5.0cm} c p{5.0cm} c}
-\toprule
-\textbf{Bauteil} & \textbf{vorh.} & \textbf{Bauteil} & \textbf{vorh.} \\
-\midrule
-Arduino Uno + USB-Kabel & $\square$ & Kondensator \SI{100}{\nano\farad} (Folie) & $\square$ \\
-Steckbrett, Steckdraht & $\square$ & Widerstände \SI{47}{\kilo\ohm}, \SI{470}{\kilo\ohm}, \SI{4{,}7}{\mega\ohm} & $\square$ \\
-Multimeter & $\square$ & PC mit Arduino-IDE + Tabellenkalkulation & $\square$ \\
-\bottomrule
-\end{tabular}
-\end{center}
+\noindent Gemessen wird ein Folienkondensator mit $C=\SI{100}{\nano\farad}$ über einen Widerstand
+$R=\SI{47}{\kilo\ohm}$. Für Laden und Entladen gilt
+\[
+  \text{laden: } u(t) = U_0\left(1-e^{-t/\tau}\right), \qquad
+  \text{entladen: } u(t) = U_0\,e^{-t/\tau}, \qquad \tau = R\cdot C .
+\]
 
-\subsection*{Teil 1 -- Das Gerät aufbauen und in Betrieb nehmen}
+\aufg{Aufgabe 1 -- Wann ist der Kondensator voll, wann leer?}
+Berechnen Sie $\tau$. Berechnen Sie dann, welcher Anteil von $U_0$ beim \emph{Laden} nach
+$1\tau$, $3\tau$, $5\tau$ und $7\tau$ erreicht ist, und welcher Anteil beim \emph{Entladen}
+jeweils noch übrig ist. \\
+Legen Sie damit fest, ab wann Sie den Kondensator „voll geladen“ nennen -- und begründen Sie
+Ihr Kriterium mit der Auflösung des Wandlers aus Arbeitsblatt 4: Was ist die kleinste Spannung,
+die der Arduino überhaupt noch von „ganz voll“ unterscheiden kann?
+
+\aufg{Aufgabe 2 -- Wie lange muss das Gerät messen, wie schnell muss es abtasten?}
+Berechnen Sie die Halbwertszeit $t_{1/2}=\tau\cdot\ln 2$.
+Die Messung soll etwa $4\tau$ lang sein und dabei $N=100$ Messpunkte aufnehmen
+(das sind 99 Zeitintervalle). Berechnen Sie den nötigen Punktabstand \texttt{DT}
+und runden Sie auf einen glatten Wert.
+Rechnen Sie außerdem nach, ob die im Sketch eingestellte Ladezeit von \SI{500}{\milli\second}
+nach Ihrem Kriterium aus Aufgabe 1 ausreicht.
+
+\aufg{Aufgabe 3 -- Warum überhaupt ein Gerät?}
+Im Physik-Praktikum messen Sie dieselbe Kurve mit $C=\SI{100}{\micro\farad}$ und demselben
+Widerstand. Berechnen Sie $\tau$ und $t_{1/2}$ für diesen Fall und vergleichen Sie mit Ihren
+Werten aus Aufgabe 2. Eine Reaktionszeit beim Drücken der Stoppuhr beträgt etwa
+\SI{0{,}2}{\second}. Beurteilen Sie damit beide Fälle: Wo ist Handmessung möglich, wo nicht?
+
+\subsection*{Teil 2 -- Das Gerät aufbauen und prüfen}
 
 \noindent
 \begin{minipage}[c]{9.2cm}
 \begin{center}
 \begin{tikzpicture}[line width=0.9pt, scale=1.0]
-  % Arduino
   \draw (0,0) rectangle (2.5,3.2);
   \node[align=center] at (1.25,1.6) {Arduino\\Uno};
-  % Leitungen
   \draw (2.5,2.7) -- (4.0,2.7);
   \draw (5.2,2.7) -- (6.6,2.7) -- (6.6,1.7);
   \draw (2.5,1.7) -- (6.6,1.7);
   \draw (6.6,1.7) -- (6.6,1.15);
   \draw (6.6,0.55) -- (6.6,0.4) -- (2.5,0.4);
-  % Widerstand
   \draw[fill=white] (4.0,2.45) rectangle (5.2,2.95);
   \node at (4.6,2.7) {$R$};
-  % Kondensator
   \draw (6.25,1.15) -- (6.95,1.15);
   \draw (6.25,0.85) -- (6.95,0.85);
   \draw (6.6,0.85) -- (6.6,0.55);
   \node[left] at (6.15,1.0) {$C=\SI{100}{\nano\farad}$};
-  % Knoten
   \fill (6.6,1.7) circle (2.2pt);
-  % Pin-Labels
   \node[above] at (3.1,2.7) {\small D2};
   \node[above] at (3.1,1.7) {\small A0};
   \node[above] at (3.1,0.4) {\small GND};
@@ -135,114 +146,71 @@ Multimeter & $\square$ & PC mit Arduino-IDE + Tabellenkalkulation & $\square$ \\
 \small Der Arduino macht hier \emph{beides}: Über \texttt{D2} lädt und entlädt er den Kondensator,
 über \texttt{A0} misst er dessen Spannung. Er weiß deshalb \textbf{exakt}, wann $t=0$ ist --
 er hat den Moment ja selbst ausgelöst. Ein Startsignal von außen braucht er nicht.
+
+\smallskip
+Material: Arduino Uno, Steckbrett, $C=\SI{100}{\nano\farad}$ Folie,
+$R=\SI{47}{\kilo\ohm}$, Multimeter.
 \end{minipage}
 
-\aufg{Aufgabe 1} Bauen Sie die Schaltung mit $R=\SI{470}{\kilo\ohm}$ auf. Messen Sie den
-Widerstand vor dem Einbau mit dem Multimeter nach und notieren Sie den \emph{Istwert} --
-mit dem rechnen Sie später, nicht mit dem Aufdruck.
+\aufg{Aufgabe 4 -- Aufbauen, messen, Zeitbasis prüfen}
+Messen Sie den Widerstand vor dem Einbau mit dem Multimeter nach und notieren Sie den
+\textbf{Istwert} -- mit dem rechnen Sie später, nicht mit dem Aufdruck. Bauen Sie die Schaltung
+auf, laden Sie den Sketch hoch und öffnen Sie den Seriellen Monitor mit \textbf{115200\,Baud}.\\
+Vergleichen Sie den eingestellten Takt \texttt{DT} mit Ihrem Ergebnis aus Aufgabe 2.
+Notieren Sie aus der Kopfzeile die \emph{Soll-} und die \emph{Ist-Messdauer} und erklären Sie
+die Abweichung. Was würde eine stark anwachsende Ist-Dauer bedeuten?
 
-\aufg{Aufgabe 2} Laden Sie den Sketch herunter und auf den Arduino. Öffnen Sie den
-Seriellen Monitor und stellen Sie ihn auf \textbf{115200 Baud}. Sie erhalten eine Kopfzeile
-und danach Wertepaare. Notieren Sie aus der Kopfzeile die \emph{Soll-} und die
-\emph{Ist-Messdauer}. Was sagt die Abweichung über die Zeitbasis Ihres Geräts aus?
-Woher könnte sie kommen?
-
-\aufg{Aufgabe 3} Die Spalte \texttt{adc} enthält rohe Wandlerwerte von 0 bis 1023,
-keine Volt. Messen Sie die tatsächliche Spannung am \texttt{5V}-Pin und geben Sie die
-Umrechnung $u(\text{adc})$ an. Berechnen Sie, welche Spannung \emph{einer} Wandlerstufe
-entspricht.
-
-\subsection*{Teil 2 -- Warum das Gerät erst speichert und dann sendet}
-
-\noindent Im Sketch werden alle Messwerte zuerst in ein Feld \texttt{werte[200]} geschrieben
-und erst nach der Messung gesendet. Das ist kein Umweg, sondern notwendig.
-
-\aufg{Aufgabe 4} Eine Messzeile wie \texttt{19000;137} ist etwa 10~Zeichen lang. Bei der
-seriellen Übertragung braucht ein Zeichen 10~Bit. Berechnen Sie die Übertragungsdauer
-\emph{einer} Zeile bei \SI{9600}{Baud} und bei \SI{115200}{Baud}. Vergleichen Sie mit dem
-Messpunktabstand \texttt{DT}${}=\SI{1000}{\micro\second}$ und begründen Sie damit, warum
-während der Messung nicht gesendet werden darf.
-
-\aufg{Aufgabe 5} Ein \texttt{int} belegt 2~Byte, der Uno hat \SI{2048}{Byte}
-Arbeitsspeicher (SRAM). Wie viel Speicher belegen die 200 Messwerte? Wie viele Messpunkte
-könnte man höchstens speichern -- und warum sollte man den Speicher nicht ganz ausreizen?
-
-\subsection*{Teil 3 -- Die Entladekurve auswerten}
-
-\noindent Für die Entladung gilt
-\[
-  u(t) = U_0 \cdot e^{-t/\tau}, \qquad \tau = R\cdot C .
-\]
-
-\aufg{Aufgabe 6} Kopieren Sie die Messwerte in die Tabellenkalkulation und zeichnen Sie
-$u$ über $t$. Lesen Sie die \textbf{Halbwertszeit} $t_{1/2}$ ab (Zeit bis auf die halbe
-Anfangsspannung) und schätzen Sie damit $\tau = t_{1/2}/\ln 2$ ab. Diese Abschätzung
-dient nur der Plausibilitätskontrolle für Aufgabe 7.
-
-\aufg{Aufgabe 7} Legen Sie eine Hilfsspalte $\ln u$ an und tragen Sie $\ln u$ über $t$ in
-ein \textbf{normales, linear geteiltes} Achsenkreuz ein. Zeichnen Sie die Ausgleichsgerade
-und bestimmen Sie ihre Steigung mit einem Steigungsdreieck. Begründen Sie, warum sich
-daraus $\tau = -1/m$ ergibt.
-
-\aufg{Aufgabe 8} Berechnen Sie $C=\tau/R$ mit dem gemessenen Widerstandswert. Vergleichen
-Sie mit dem Aufdruck \SI{100}{\nano\farad} und geben Sie die Abweichung in Prozent an.
-Entscheiden Sie: liegt sie in der Bauteiltoleranz, oder messen Sie falsch?
-
-\aufg{Aufgabe 9} Für die Steigung der Geraden ist es gleichgültig, ob Sie $\ln u$ oder
-$\ln(\text{adc})$ auftragen. Zeigen Sie das rechnerisch. Welche überraschende Folgerung
-ergibt sich daraus für Ihr Messgerät -- im Unterschied zum Füllstandsgeber aus
-Arbeitsblatt 7?
-
-\subsection*{Teil 4 -- Die Grenzen des eigenen Geräts}
-
-\noindent Jetzt wird derselbe Kondensator mit anderen Widerständen gemessen. Dabei muss
-im Sketch die Zeile
-
-\begin{center}
-\texttt{const unsigned long DT = 1000;}
-\end{center}
-
-\noindent angepasst werden: Die gesamte Messdauer $(N-1)\cdot\texttt{DT}$ soll etwa $4\tau$
-betragen, damit die Kurve weit genug abfällt.
-
-\aufg{Aufgabe 10} Füllen Sie die Tabelle aus. Legen Sie sie in Ihrem Heft an und rechnen
-Sie \texttt{DT} jeweils aus, bevor Sie messen.
-
-\begin{center}
-\begin{tabular}{m{2.0cm}m{1.8cm}m{2.6cm}m{2.6cm}>{\raggedright\arraybackslash}m{5.2cm}}
-\toprule
-$R$ & $\tau = RC$ & \texttt{DT} berechnet & \texttt{DT} gewählt & Beobachtung bei der Messung \\
-\midrule
-\SI{47}{\kilo\ohm}   & & & & \\
-\SI{470}{\kilo\ohm}  & & \SI{1000}{\micro\second} & \SI{1000}{\micro\second} & \\
-\SI{4{,}7}{\mega\ohm}& & & & \\
-\bottomrule
-\end{tabular}
-\end{center}
-
-\aufg{Aufgabe 11} Eine einzelne Wandlung mit \texttt{analogRead()} dauert etwa
-\SI{112}{\micro\second}. Vergleichen Sie das mit dem rechnerischen \texttt{DT} für
-\SI{47}{\kilo\ohm}. Welches \texttt{DT} müssen Sie stattdessen wählen? Welche Folge hat
-das für die Messreihe -- und bis zu welcher Kapazität könnte Ihr Gerät einen
-\SI{47}{\kilo\ohm}-Widerstand überhaupt noch sinnvoll vermessen?
-
-\aufg{Aufgabe 12} Messen Sie mit $R=\SI{4{,}7}{\mega\ohm}$. Prüfen Sie zuerst rechnerisch,
-ob die eingestellte Ladezeit von \SI{3000}{\milli\second} für eine vollständige Ladung
-noch ausreicht. Sie werden zwei Auffälligkeiten finden:
-
-\begin{enumerate}[label=(\alph*), leftmargin=2em, itemsep=1pt]
-  \item Der Anfangswert der Entladung erreicht die \SI{5}{\volt} nicht.
-  \item Das gemessene $\tau$ fällt kleiner aus als $R\cdot C$.
+\aufg{Aufgabe 5 -- Zwei Grenzen des Geräts}
+\begin{enumerate}[label=(\alph*), leftmargin=2em, itemsep=2pt, topsep=2pt, partopsep=0pt, parsep=0pt]
+  \item Eine einzelne Wandlung mit \texttt{analogRead()} dauert \SI{112}{\micro\second}.
+        Prüfen Sie, ob der eingestellte Takt zulässig ist. Berechnen Sie dann, welche
+        Kapazität Sie mit $R=\SI{47}{\kilo\ohm}$ mindestens brauchen, damit noch
+        40~Messpunkte auf die Kurve passen. Wäre ein \SI{10}{\nano\farad}-Kondensator
+        noch messbar?
+  \item Das Gerät speichert alle Werte erst und sendet danach. Eine Messzeile ist etwa
+        10~Zeichen lang, pro Zeichen werden 10~Bit übertragen. Berechnen Sie die Sendedauer
+        \emph{einer} Zeile bei 115200\,Baud und vergleichen Sie sie mit dem Messtakt.
+        Begründen Sie damit die Reihenfolge „erst messen, dann senden“.
 \end{enumerate}
 
-\noindent Beide haben dieselbe Ursache. Erklären Sie sie mit Hilfe des
-\textbf{Eingangswiderstands} des Wandlers, der parallel zum Kondensator liegt, und
-berechnen Sie diesen Eingangswiderstand aus dem Anfangswert mit der Spannungsteilerregel.
+\subsection*{Teil 3 -- Auswerten}
 
-\aufg{Aufgabe 13 (Zusatz)} Das Sensor-CASSY aus dem Physik-Praktikum hat einen
-Eingangswiderstand von \SI{1}{\mega\ohm}. Berechnen Sie, um wie viel Prozent es $\tau$ bei
-$R=\SI{47}{\kilo\ohm}$ und bei $R=\SI{4{,}7}{\mega\ohm}$ verfälschen würde. Stellen Sie
-gegenüber: In welchem Punkt ist Ihr \mbox{5-Euro-Gerät} dem CASSY überlegen,
-in welchen Punkten ist es ihm klar unterlegen?
+\aufg{Aufgabe 6 -- Kurve und Schnellschätzung}
+Messen Sie die Spannung am \texttt{5V}-Pin und geben Sie die Umrechnung $u(\text{adc})$ an.
+Übertragen Sie die Messwerte in die Tabellenkalkulation und zeichnen Sie $u$ über $t$.
+Lesen Sie die Halbwertszeit ab und vergleichen Sie mit Ihrer Rechnung aus Aufgabe 2.
+
+\aufg{Aufgabe 7 -- Linearisierung}
+Legen Sie eine Hilfsspalte $\ln u$ an und tragen Sie $\ln u$ über $t$ in ein
+\textbf{normales, linear geteiltes} Achsenkreuz ein. Begründen Sie mit der Entladeformel,
+warum sich eine Gerade mit der Steigung $m=-1/\tau$ ergeben muss.
+Entscheiden Sie \emph{vor} dem Zeichnen der Ausgleichsgeraden, welche Messpunkte Sie
+verwenden -- schauen Sie sich dazu die letzten Zeilen Ihrer Messreihe an.
+Bestimmen Sie $\tau$ mit einem Steigungsdreieck.
+
+\aufg{Aufgabe 8 -- Kapazität}
+Berechnen Sie $C=\tau/R$ mit dem gemessenen Widerstandswert und geben Sie die Abweichung
+vom Aufdruck \SI{100}{\nano\farad} in Prozent an.
+
+\subsection*{Teil 4 -- Wie gut ist unser Messgerät?}
+
+\aufg{Aufgabe 9 -- Fehlerbilanz}
+\begin{enumerate}[label=(\alph*), leftmargin=2em, itemsep=2pt, topsep=2pt, partopsep=0pt, parsep=0pt]
+  \item Zeigen Sie rechnerisch: Für die \emph{Steigung} der Geraden ist es gleichgültig, ob
+        Sie $\ln u$ oder $\ln(\text{adc})$ auftragen. Welche überraschende Folgerung ergibt
+        sich daraus für Ihr Messgerät -- im Unterschied zum Füllstandsgeber aus Arbeitsblatt 7?
+  \item Die Zeitachse des Arduino ist in Schritten von \SI{4}{\micro\second} aufgelöst, der
+        Taktgeber des Boards geht aber nur auf \SI{0{,}5}{\percent} genau. Rechnen Sie beide
+        Beiträge in einen Fehler von $\tau$ um. Vergleichen Sie mit der Genauigkeit, mit der
+        Sie den Widerstand gemessen haben.
+  \item Beurteilen Sie damit: Ist die Abweichung aus Aufgabe 8 ein Messfehler Ihres Geräts
+        oder eine Eigenschaft des Kondensators?
+\end{enumerate}
+
+\aufg{Aufgabe 10 (Zusatz) -- Probe mit einem anderen Widerstand}
+Wiederholen Sie die Messung mit $R=\SI{470}{\kilo\ohm}$. Berechnen Sie vorher das neue $\tau$
+und das passende \texttt{DT} und ändern Sie im Sketch \emph{nur diese eine Zeile}; prüfen Sie
+auch, ob die Ladezeit noch reicht. Sie erhalten eine ganz andere Kurve -- aber dieselbe
+Kapazität. Erklären Sie, warum das eine starke Bestätigung der Methode ist.
 
 \end{document}

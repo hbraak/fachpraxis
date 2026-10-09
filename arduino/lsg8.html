@@ -65,219 +65,201 @@
 
 <div class="info">
   <strong>Die Leitidee:</strong> In Physik liefert das CASSY die Kurve, das Thema ist der Kondensator.
-  Hier ist es umgekehrt — der Kondensator ist nur der Prüfling, <strong>das Messgerät ist das Thema</strong>.
-  Alle Zahlen unten gelten für <code>C = 100 nF</code>; Ihre eigenen Werte dürfen abweichen.
+  Hier ist es umgekehrt &mdash; der Kondensator ist nur der Prüfling, <strong>das Messgerät ist das Thema</strong>.
+  Hauptmessung: <code>C = 100 nF</code>, <code>R = 47 k&Omega;</code>. Alle Zahlen unten sind Richtwerte;
+  die Schülerwerte dürfen abweichen.
 </div>
 
-<h2>Teil 1 — Das Gerät in Betrieb nehmen</h2>
+<h2>Teil 1 &mdash; Vorüberlegung</h2>
 
-<h3>Aufgabe 1 — Widerstand nachmessen</h3>
-<p>Aufdruck 470 kΩ, gemessen z.&nbsp;B. 468 kΩ. Gerechnet wird mit dem <strong>Istwert</strong>.
-Ein Widerstand der Reihe E12 hat typisch ±5 % Toleranz — das sind bei 470 kΩ schon ±23 kΩ und geht
-in <code>C = τ/R</code> voll ins Ergebnis ein. Nachmessen kostet 20 Sekunden und spart 5 % Fehler.</p>
-
-<h3>Aufgabe 2 — Soll- und Ist-Messdauer</h3>
-<p>Soll: <code>(N−1)·DT = 199 · 1000 µs = 199 000 µs</code>. Ist: typisch ca. <code>199 100 µs</code>,
-also rund 100 µs mehr.</p>
+<h3>Aufgabe 1 &mdash; Wann ist der Kondensator voll, wann leer?</h3>
+<div class="code-block">&tau; = R · C = 47 k&Omega; · 100 nF = 47·10³ &Omega; · 100·10⁻⁹ F = 4,7·10⁻³ s = 4,7 ms</div>
 <table>
-<tr><th>Ursache</th><th>Größenordnung</th></tr>
-<tr><td>Der letzte <code>analogRead()</code> läuft noch, bevor <code>micros()</code> gelesen wird</td><td>ca. 112 µs</td></tr>
-<tr><td>Auflösung von <code>micros()</code> (zählt in 4-µs-Schritten)</td><td>4 µs</td></tr>
+<tr><th>Zeit</th><th>Laden: u/U₀ erreicht</th><th>Entladen: u/U₀ übrig</th></tr>
+<tr><td>1&tau; = 4,7 ms</td><td>63,2 %</td><td>36,8 %</td></tr>
+<tr><td>3&tau; = 14,1 ms</td><td>95,0 %</td><td>4,98 %</td></tr>
+<tr><td>5&tau; = 23,5 ms</td><td>99,33 %</td><td>0,67 %</td></tr>
+<tr><td>7&tau; = 32,9 ms</td><td>99,91 %</td><td>0,09 %</td></tr>
 </table>
 <div class="info">
-  <strong>Das Entscheidende:</strong> Die Abweichung ist <em>klein und konstant</em> — die Zeitbasis
-  stimmt also. Würde sie stark anwachsen, hieße das: das Gerät kommt mit dem eingestellten Takt nicht
-  mehr mit und die ganze Zeitachse ist falsch. Diese zwei Zahlen in der Kopfzeile sind der
-  <strong>Selbsttest Ihres Messgeräts</strong>. In Teil 4 werden Sie ihn brauchen.
+  <strong>Das Kriterium kommt vom Wandler, nicht vom Gefühl.</strong> Eine ADC-Stufe ist
+  1/1023 = 0,098 % von U₀ (4,87 mV). Der Kondensator ist also genau dann „voll“, wenn der
+  fehlende Rest kleiner als eine Stufe ist:
 </div>
+<div class="code-block">e^(−n) &lt; 1/1023   &rArr;   n &gt; ln 1023 = 6,93   &rArr;   <strong>7&tau; = 32,9 ms</strong></div>
+<p>Ab 7&tau; kann der Arduino „voll“ und „fast voll“ gar nicht mehr unterscheiden &mdash; länger laden
+ist für <em>dieses</em> Messgerät sinnlos. Das Messgerät definiert damit selbst, was „voll“ heißt.</p>
 
-<h3>Aufgabe 3 — Kalibrierung</h3>
-<p>Am 5-V-Pin gemessen z.&nbsp;B. <code>U<sub>ref</sub> = 4,985 V</code> (der USB-Port liefert selten
-genau 5,000 V).</p>
-<div class="code-block">u = adc / 1023 · 4,985 V
+<h3>Aufgabe 2 &mdash; Messdauer und Takt</h3>
+<div class="code-block">t½ = &tau; · ln 2 = 4,7 ms · 0,693 = 3,26 ms
 
-eine Wandlerstufe:  4,985 V / 1023 = 4,87 mV</div>
-<p>1023, nicht 1024: der Wert 1023 steht für die volle Referenzspannung.</p>
+Messdauer 4&tau; = 18,8 ms,  bei N = 100 Punkten also 99 Intervalle:
+DT = 18,8 ms / 99 = 190 µs      &rarr;   gewählt: DT = 200 µs
 
-<h2>Teil 2 — Warum erst gespeichert und dann gesendet wird</h2>
-
-<h3>Aufgabe 4 — Wie lange dauert eine Messzeile?</h3>
-<div class="code-block">10 Zeichen · 10 Bit = 100 Bit pro Zeile
-
-  9600 Baud:  100 Bit / 9600 Bit/s  = 10,4 ms
-115200 Baud:  100 Bit / 115200 Bit/s = 0,87 ms
-
-Messtakt DT = 1,0 ms</div>
-<p>Bei 9600 Baud bräuchte das Senden <strong>zehnmal länger als der ganze Messtakt</strong> — jeder
-Messpunkt käme viel zu spät, die Zeitachse wäre frei erfunden. Auch 115200 Baud reicht nicht:
-0,87 ms von 1,0 ms gehen fürs Senden weg, für die Wandlung (0,112 ms) bleibt nichts übrig. Und bei
-<code>DT = 200 µs</code> (Teil 4) ist es völlig aussichtslos.</p>
+Damit: Messdauer = 99 · 200 µs = 19,8 ms = 4,21 &tau;
+Endwert: e^(−4,21) = 1,49 %  von 4,985 V = 74 mV = 15 ADC-Stufen</div>
 <div class="info">
-  <strong>Deshalb die Reihenfolge: erst messen, dann reden.</strong> Genau so arbeitet auch das CASSY —
-  es sammelt im Gerät und überträgt hinterher an den PC. Wer während der Messung sendet, baut kein
-  Messgerät, sondern einen Zufallsgenerator.
+  <strong>Ladezeit-Probe:</strong> 500 ms / 4,7 ms = 106 &tau; &mdash; das ist weit mehr als die
+  nach Aufgabe 1 nötigen 7&tau; = 33 ms. Die eingestellte Ladezeit reicht also bequem.
+  (Sie ist bewusst großzügig, damit sie auch für den Zusatz mit 470 k&Omega; noch passt.)
 </div>
 
-<h3>Aufgabe 5 — Speicherbedarf</h3>
-<div class="code-block">200 Werte · 2 Byte = 400 Byte   von 2048 Byte  =  19,5 %
-rein rechnerisch maximal: 2048 / 2 = 1024 Werte</div>
-<p>Ausreizen darf man das nicht. Es brauchen außerdem Platz: die übrigen Variablen, der serielle
-Sendepuffer (64 Byte) und vor allem der <strong>Stack</strong>, der vom anderen Ende des Speichers
-nach unten wächst. Treffen beide zusammen, überschreiben sie sich gegenseitig: der Arduino rechnet
-dann falsch oder startet dauernd neu — <strong>ohne jede Fehlermeldung</strong>, denn es gibt kein
-Betriebssystem, das eingreift. Faustregel: höchstens etwa 75 % belegen, also ca. 700–800 Messwerte.</p>
+<h3>Aufgabe 3 &mdash; Warum überhaupt ein Gerät?</h3>
+<div class="code-block">Physik-Praktikum:  &tau; = 47 k&Omega; · 100 µF = 4,7 s        t½ = 3,26 s
+Dieses Blatt:      &tau; = 47 k&Omega; · 100 nF = 4,7 ms       t½ = 3,26 ms
+                                        Faktor 1000 schneller</div>
+<table>
+<tr><th>Fall</th><th>t½</th><th>Stoppuhr-Reaktion 0,2 s</th><th>Urteil</th></tr>
+<tr><td>100 µF (Physik)</td><td>3,26 s</td><td>&asymp; 6 % Fehler</td><td>per Hand gut messbar</td></tr>
+<tr><td>100 nF (hier)</td><td>3,26 ms</td><td>&asymp; 6000 % Fehler</td><td>per Hand unmöglich</td></tr>
+</table>
+<div class="info">
+  <strong>Das ist die Begründung für das ganze Blatt.</strong> Im Physik-Praktikum ist
+  &tau; = 4,7 s <em>absichtlich</em> so gewählt, dass die Stoppuhr mitkommt. Hier ist die Kurve
+  1000-mal schneller: Die ganze Entladung ist vorbei, bevor ein Mensch den Daumen bewegt hat.
+  Unser Gerät erschließt einen Bereich, der der Handmessung <strong>prinzipiell</strong>
+  verschlossen ist &mdash; nicht nur „genauer“, sondern überhaupt erst möglich.
+</div>
 
-<h2>Teil 3 — Die Entladekurve auswerten</h2>
+<h2>Teil 2 &mdash; Aufbauen und prüfen</h2>
 
-<h3>Aufgabe 6 — Halbwertszeit als Schnellschätzung</h3>
-<div class="code-block">abgelesen:  t½ ≈ 33 ms
-τ = t½ / ln 2 = 33 ms / 0,693 = 47,6 ms</div>
-<p>Zum Vergleich: <code>R·C = 468 kΩ · 100 nF = 46,8 ms</code>. Die Abschätzung dient nur dazu,
-einen groben Erwartungswert zu haben — wer in Aufgabe 7 auf 4,7 ms oder 470 ms kommt, hat sich um
-eine Zehnerpotenz vertan und merkt es sofort.</p>
+<h3>Aufgabe 4 &mdash; Zeitbasis prüfen</h3>
+<p>Der Widerstands-Istwert liegt typisch 0,5 % neben dem Aufdruck, z.&nbsp;B.
+<code>R = 46,8 k&Omega;</code>. Mit <em>diesem</em> Wert wird später gerechnet.
+Der Sketch hat <code>DT = 200 µs</code> eingestellt &mdash; genau der in Aufgabe 2 berechnete Wert.</p>
+<div class="code-block"># Punkte: 100  Takt: 200 us  Messdauer soll: 19800 us  ist: 19912 us</div>
+<table>
+<tr><th>Beitrag</th><th>Betrag</th><th>Ursache</th></tr>
+<tr><td>letzte Wandlung</td><td>+112 µs</td><td><code>dauer</code> wird <em>nach</em> dem 100. <code>analogRead()</code> gelesen</td></tr>
+<tr><td>Takt-Quantisierung</td><td>+0&hellip;4 µs</td><td><code>micros()</code> zählt in 4-µs-Schritten</td></tr>
+</table>
+<p>Die Abweichung ist also <strong>erklärbar und konstant</strong>, rund +0,6 %. Das ist ein
+<em>Selbsttest</em>: Würde die Ist-Dauer stark anwachsen (etwa 50 ms statt 20 ms), dann käme der
+Prozessor dem Takt nicht nach &mdash; die Zeitachse wäre gestreckt und alle &tau;-Werte zu groß.
+Jede Messung bringt ihre eigene Plausibilitätsprüfung mit.</p>
 
-<h3>Aufgabe 7 — Linearisierung</h3>
-<div class="code-block">u(t) = U₀ · e^(−t/τ)        | logarithmieren
-ln u = ln U₀ − t/τ
+<h3>Aufgabe 5 &mdash; Zwei Grenzen des Geräts</h3>
+<p><strong>(a) Abtastgrenze.</strong></p>
+<div class="code-block">DT = 200 µs  >  Wandlungsdauer 112 µs      &rarr; zulässig
+Maximal möglich: 1 &tau; / 112 µs = 4,7 ms / 112 µs = 42 Punkte pro &tau;
 
-also eine Gerade  y = m·t + b   mit   m = −1/τ   und   b = ln U₀
-                                      τ = −1/m</div>
-<p>Beispiel: Steigungsdreieck ergibt <code>m = −21,0 1/s</code> → <code>τ = 47,6 ms</code>.
-Aufgetragen wird in ein <strong>normales, linear geteiltes Achsenkreuz</strong> — die Hilfsspalte
-<code>ln u</code> erledigt das Logarithmieren schon, logarithmisches Papier würde doppelt
-logarithmieren.</p>
+Mindestens 40 Punkte auf 4&tau;:
+4&tau; &ge; 40 · 112 µs = 4,48 ms   &rArr;   &tau; &ge; 1,12 ms
+C &ge; 1,12 ms / 47 k&Omega; = 24 nF</div>
 <div class="warn">
-  <strong>Welche Punkte darf man benutzen?</strong> Die letzten Messwerte liegen bei 2, 1, 0
-  Wandlerstufen. Dort ist der Quantisierungsfehler von ±1 Stufe größer als der Messwert selbst, und
-  <code>ln 0</code> ist gar nicht definiert. Werten Sie nur Punkte oberhalb von etwa 20 Stufen
-  (≈ 0,1 V) aus — bei den kleinen Werten biegt die Gerade sonst sichtbar weg.
+  <strong>10 nF wäre nicht mehr messbar:</strong> &tau; = 0,47 ms, die ganze Entladung
+  (4&tau; = 1,9 ms) passt in nur 17 Wandlungen. Zu wenige Punkte für eine Ausgleichsgerade.
+  Jedes Messgerät hat eine untere Grenze &mdash; unsere liegt bei etwa 24 nF, und wir können sie
+  <em>berechnen</em>, statt sie auszuprobieren.
 </div>
+<p><strong>(b) Warum erst speichern, dann senden.</strong></p>
+<div class="code-block">eine Zeile = 10 Zeichen · 10 Bit = 100 Bit
+bei 115200 Baud:  100 / 115200 = 0,87 ms  =  4,3 Messtakte
+bei   9600 Baud:  100 /   9600 = 10,4 ms  =   52 Messtakte
 
-<h3>Aufgabe 8 — Kapazität</h3>
-<div class="code-block">C = τ / R = 47,6 ms / 468 kΩ = 101,7 nF
-Abweichung vom Aufdruck 100 nF:  +1,7 %</div>
-<p>Folienkondensatoren sind meist mit ±5 % oder ±10 % angegeben. 1,7 % liegen klar in der Toleranz —
-das ist <strong>kein Messfehler, sondern das Bauteil</strong>. Verdacht auf einen echten Messfehler
-besteht erst, wenn die Abweichung deutlich über der Toleranz liegt und bei allen Gruppen in
-<em>dieselbe</em> Richtung zeigt. Dann suchen Sie eine systematische Ursache — siehe Aufgabe 12.</p>
-
-<h3>Aufgabe 9 — Die Pointe: dieses Gerät braucht keine Kalibrierung</h3>
-<div class="code-block">ln u = ln(k · adc) = ln(adc) + ln k        mit k = U_ref / 1023
-
-ln k ist eine KONSTANTE  ⇒  nur der Achsenabschnitt verschiebt sich,
-                            die STEIGUNG bleibt unverändert</div>
-<p>Die gesuchte Größe steckt also allein in der <strong>Zeit</strong>, und die Zeit beherrscht der
-Arduino sehr gut: sein Quarz geht auf etwa ±50 ppm genau, das sind 0,005 %. Die Spannung kann er nur
-auf ±2 Stufen (≈ 0,2 %) — aber sie fällt aus dem Ergebnis heraus.</p>
+Speicherbedarf: 100 Werte · 2 Byte = 200 Byte von 2048 Byte = 9,8 %</div>
 <div class="info">
-  <strong>Vergleich mit AB 7:</strong> Beim Schwimmergeber ging die Spannung <em>direkt</em> ins
-  Ergebnis, dort war die Kalibrierung die ganze Arbeit. Hier ist sie für <code>τ</code> und
-  <code>C</code> schlicht überflüssig (für die hübsche Kurve in Volt brauchen Sie sie trotzdem).
-  <br><em>Merksatz: Ein gutes Messgerät wird so gebaut, dass das Ergebnis an der Größe hängt, die man
-  am besten beherrscht.</em>
+  <strong>Senden ist 4-mal langsamer als Messen.</strong> Würde das Gerät jede Zeile sofort
+  ausgeben, wären nur noch alle 0,87 ms Messwerte möglich &mdash; die Zeitachse wäre nicht
+  nur grob, sondern auch <em>unregelmäßig</em>. Deshalb: messen in den RAM, danach senden.
+  Genau so arbeitet jedes echte Messgerät (auch das CASSY), und 200 Byte sind der Preis dafür.
 </div>
 
-<h2>Teil 4 — Die Grenzen des eigenen Geräts</h2>
+<h2>Teil 3 &mdash; Auswerten</h2>
 
-<h3>Aufgabe 10 — Die Tabelle</h3>
-<p>Ziel: Messdauer <code>(N−1)·DT ≈ 4τ</code>, also <code>DT = 4τ / 199</code>.</p>
-<table>
-<tr><th>R</th><th>τ = R·C</th><th>DT berechnet</th><th>DT gewählt</th><th>Beobachtung</th></tr>
-<tr><td>47 kΩ</td><td>4,7 ms</td><td>94 µs</td><td><strong>200 µs</strong></td>
-    <td>Takt zu schnell für den Wandler (Aufgabe 11). Mit 200 µs dauert die Messung 39,8 ms = 8,5 τ — die zweite Hälfte der Werte ist 0 und unbrauchbar.</td></tr>
-<tr><td>470 kΩ</td><td>47 ms</td><td>945 µs</td><td>1000 µs</td>
-    <td>Der bequeme Fall. Kurve füllt den Bereich gut aus.</td></tr>
-<tr><td>4,7 MΩ</td><td>470 ms</td><td>9447 µs</td><td>10000 µs</td>
-    <td>Startwert erreicht die 5 V nicht, τ fällt zu klein aus (Aufgabe 12).</td></tr>
-</table>
-<p>Die Ladezeit <code>LADEZEIT = 3000</code> passt für alle drei und muss nicht angefasst werden —
-nachgerechnet in Aufgabe 12.</p>
+<h3>Aufgabe 6 &mdash; Kurve und Schnellschätzung</h3>
+<div class="code-block">u = adc / 1023 · 4,985 V        (4,87 mV pro Stufe)</div>
+<p>Die Kurve fällt von 1023 auf etwa 15 Stufen. Halbwertszeit abgelesen: <code>t½ &asymp; 3,3 ms</code>
+&mdash; passt zu den 3,26 ms aus Aufgabe 2. Die Vorhersage <em>vor</em> der Messung bestätigt sich,
+damit ist der Aufbau als funktionierend abgesichert.</p>
 
-<h3>Aufgabe 11 — Die obere Grenze: der Wandler</h3>
-<div class="code-block">DT berechnet = 94 µs   <   Wandlungsdauer 112 µs</div>
-<p>Dann wartet die <code>while</code>-Schleife überhaupt nicht mehr — das Gerät läuft, so schnell es
-kann, und der tatsächliche Abstand ist 112 µs statt der im Sketch eingetragenen 94 µs. Die Zeitachse
-in der Tabelle wäre also <strong>falsch, ohne dass man es an der Kurve sieht</strong>. Verraten wird
-es nur von der Kopfzeile: die Ist-Dauer ist deutlich größer als die Soll-Dauer. Genau dafür ist sie da.</p>
-<p>Kleinstes brauchbares <code>DT</code>: etwa <strong>200 µs</strong> — Faktor 2 Reserve, denn auch
-die Schleife selbst, der Vergleich und das Abspeichern brauchen Zeit.</p>
-<p><strong>Untere Kapazitätsgrenze bei 47 kΩ:</strong> Für eine vernünftige Ausgleichsgerade braucht
-man etwa 20 Punkte in den ersten 2 τ:</p>
-<div class="code-block">2τ ≥ 20 · 200 µs = 4 ms   ⇒   τ ≥ 2 ms   ⇒   C ≥ 2 ms / 47 kΩ = 43 nF</div>
-<p>Mit 100 nF liegen Sie also nur knapp über der Gerätegrenze. Ein 10-nF-Kondensator (τ = 470 µs)
-wäre mit diesem Gerät an 47 kΩ <strong>nicht mehr messbar</strong> — eine Zehnerpotenz weiter und das
-5-Euro-CASSY ist am Ende. Abhilfe: größerer Widerstand (dann aber Aufgabe 12 beachten) oder ein
-schnellerer Wandler.</p>
-
-<h3>Aufgabe 12 — Die untere Grenze: das Gerät verfälscht</h3>
-<p><strong>Reicht die Ladezeit?</strong></p>
-<div class="code-block">3000 ms / 470 ms = 6,4 τ   ⇒   u = (1 − e^(−6,4)) · U₀ = 99,83 % von U₀</div>
-<p>Ja, das genügt (die fehlenden 0,17 % sind weniger als eine Wandlerstufe).</p>
-<p><strong>Die gemeinsame Ursache beider Auffälligkeiten:</strong> Der Analogeingang ist kein perfekter
-Spannungsmesser — er hat einen endlichen Eingangswiderstand <code>R<sub>e</sub></code> (Datenblatt:
-Größenordnung 100 MΩ), und der liegt <strong>parallel zum Kondensator</strong>.</p>
-<table>
-<tr><th>Beim Laden</th><th>Beim Entladen</th></tr>
-<tr><td>R und R<sub>e</sub> bilden einen Spannungsteiler, es fließt ein Dauerstrom. Der Kondensator
-erreicht nur <code>U₀ · R<sub>e</sub>/(R + R<sub>e</sub>)</code>.</td>
-<td>R<sub>e</sub> liegt parallel zu R, der Kondensator entlädt sich über <em>beide</em> — also
-schneller. <code>τ = (R ∥ R<sub>e</sub>) · C</code>.</td></tr>
-</table>
-<div class="code-block">Zahlenbeispiel (R = 4,7 MΩ, R_e = 100 MΩ, U₀ = 4,985 V):
-
-Startwert:  U_C = 4,985 V · 100/(4,7+100) = 4,76 V     (95,5 %)
-            → fehlen 0,22 V, das sind 46 Wandlerstufen — gut sichtbar
-
-R ∥ R_e  =  (4,7 · 100)/(4,7 + 100) MΩ = 4,49 MΩ
-τ        =  4,49 MΩ · 100 nF = 449 ms   statt   470 ms   →  4,5 % zu klein</div>
-<p><strong>Eingangswiderstand aus dem Startwert:</strong> Spannungsteiler umstellen —</p>
-<div class="code-block">R_e = R · U_C / (U₀ − U_C) = 4,7 MΩ · 4,76/(4,985 − 4,76) = 99 MΩ</div>
+<h3>Aufgabe 7 &mdash; Linearisierung</h3>
+<div class="code-block">u(t) = U₀ · e^(−t/&tau;)          | logarithmieren
+ln u = ln U₀ − t/&tau;            &rarr;  Gerade mit m = −1/&tau;</div>
+<p>Hilfsspalte <code>ln u</code>, eingetragen in ein <strong>normales lineares</strong> Achsenkreuz
+(kein logarithmisches Papier &mdash; sonst wird zweimal logarithmiert).</p>
 <div class="warn">
-  <strong>Wenn Ihr Wert viel kleiner herauskommt:</strong> Das ist kein Rechenfehler. Bei 100 MΩ
-  messen Sie nicht mehr nur den Chip, sondern auch Ihr Steckbrett — Fingerfeuchtigkeit,
-  Flussmittelreste und Staub zwischen den Kontakten bilden Nebenschlusswiderstände in ebendieser
-  Größenordnung. Auch das ist ein echtes Messergebnis: <em>bei sehr hochohmigen Messungen ist der
-  Aufbau Teil des Messgeräts.</em>
+  <strong>Welche Punkte darf man nehmen?</strong> Nur die mit genügend großem adc-Wert.
+  Am Ende der Messreihe stehen Werte wie 18, 16, 15 &mdash; dort ist eine Quantisierungsstufe
+  schon über 6 % des Messwerts, und <code>ln 0</code> ist gar nicht definiert. Praxisregel:
+  Punkte unter etwa 20 Stufen weglassen. Das ist kein Tricksen, sondern die Auflösungsgrenze
+  des eigenen Geräts &mdash; man muss sie nur benennen.
 </div>
-<p>Schön ist: Sie haben mit <em>einer</em> Messreihe zwei Dinge bestimmt — die Kapazität (aus dem
-kleinen Widerstand) und den Eingangswiderstand Ihres eigenen Geräts (aus dem großen). Die
-Bauteiltoleranz des Kondensators fällt dabei heraus, weil es immer derselbe Kondensator ist.</p>
+<div class="code-block">Steigungsdreieck:  m &asymp; −214 1/s
+&tau; = −1/m = 1/214 1/s = 4,67 ms</div>
 
-<h3>Aufgabe 13 (Zusatz) — Gegenüberstellung mit dem Sensor-CASSY</h3>
-<p>Das Sensor-CASSY hat <strong>1 MΩ</strong> Eingangswiderstand, also hundertmal weniger:</p>
-<table>
-<tr><th>R</th><th>CASSY: R ∥ 1 MΩ</th><th>Fehler in τ</th><th>Unser Gerät: R ∥ 100 MΩ</th><th>Fehler in τ</th></tr>
-<tr><td>47 kΩ</td><td>44,9 kΩ</td><td>−4,5 %</td><td>46,98 kΩ</td><td>−0,05 %</td></tr>
-<tr><td>4,7 MΩ</td><td>825 kΩ</td><td>−82,5 %</td><td>4,49 MΩ</td><td>−4,5 %</td></tr>
-</table>
-<p>Bei 4,7 MΩ würde das CASSY ein τ anzeigen, das nur noch ein Sechstel des wahren Wertes beträgt —
-die Messung wäre wertlos. Genau diesen Fehler haben Sie in Physik beim 47-kΩ-Versuch, in kleiner
-Dosis, auch schon drin.</p>
-<table>
-<tr><th>Darin ist unser Gerät besser</th><th>Darin ist das CASSY klar besser</th></tr>
-<tr><td>
-  <ul style="margin-left:1.2rem">
-    <li>100 MΩ statt 1 MΩ Eingangswiderstand → 100-fach geringere Rückwirkung</li>
-    <li>t = 0 ist exakt bekannt, weil das Gerät selbst schaltet — kein Trigger, kein Handschalter</li>
-    <li>Kosten: etwa 5 € gegen etwa 500 €</li>
-    <li>Der Messablauf ist vollständig einsehbar und änderbar</li>
-  </ul>
-</td><td>
-  <ul style="margin-left:1.2rem">
-    <li>12 Bit statt 10 Bit, Messbereiche von ±0,1 V bis ±250 V statt starr 0…5 V</li>
-    <li>bis 1 MHz statt ~9 kHz Abtastrate</li>
-    <li>Speicher für sehr lange Messreihen statt ~800 Werte</li>
-    <li>galvanisch getrennte Eingänge — unser Aufbau liegt auf der USB-Masse des PCs
-        (<strong>niemals an Netzspannung!</strong>)</li>
-    <li>kalibrierte Messbereiche, mehrere Kanäle, Auswertesoftware</li>
-  </ul>
-</td></tr>
-</table>
+<h3>Aufgabe 8 &mdash; Kapazität</h3>
+<div class="code-block">C = &tau; / R = 4,67 ms / 46,8 k&Omega; = 99,8 nF
+Abweichung vom Aufdruck: (99,8 − 100)/100 = −0,2 %</div>
+<p>Folienkondensatoren haben typisch ±5 % (teils ±10 %) Toleranz. Der gemessene Wert liegt
+also klar innerhalb der Toleranz &mdash; und zwar deutlich besser als nötig.</p>
+
+<h2>Teil 4 &mdash; Wie gut ist unser Messgerät?</h2>
+
+<h3>Aufgabe 9 &mdash; Fehlerbilanz</h3>
+<p><strong>(a) Die Spannungskalibrierung ist egal.</strong></p>
+<div class="code-block">u = k · adc        mit k = U_ref / 1023
+ln u = ln(k · adc) = ln(adc) + ln k
+
+ln k ist eine KONSTANTE  &rarr;  verschiebt die Gerade nur nach oben/unten,
+                                die STEIGUNG bleibt unverändert</div>
 <div class="info">
-  <strong>Das ist die eigentliche Erkenntnis des Blattes:</strong> Ein Messgerät ist nie „gut" oder
-  „schlecht". Es hat Eigenschaften, und man muss sie <em>kennen</em>, um zu wissen, bei welcher Messung
-  man ihm glauben darf. Unser Nachbau ist dem CASSY in genau einem Punkt überlegen — und das reicht,
-  um einen Versuch zu finden, bei dem er die besseren Werte liefert.
+  <strong>Überraschende Folgerung:</strong> Für die Bestimmung von C braucht man die
+  Referenzspannung <em>überhaupt nicht</em> zu kennen. Man kann die rohen adc-Werte
+  logarithmieren und erhält dasselbe &tau;. Beim Füllstandsgeber aus AB 7 war es genau
+  umgekehrt: Dort steckte die gesuchte Größe im <em>Absolutwert</em>, und ohne Kalibrierung
+  war jede Zahl wertlos. Was ein Gerät kalibriert haben muss, hängt nicht am Gerät,
+  sondern an der <em>Frage</em>.
+</div>
+<p><strong>(b) Was bleibt dann übrig?</strong></p>
+<table>
+<tr><th>Fehlerquelle</th><th>Beitrag auf &tau;</th><th>Bewertung</th></tr>
+<tr><td>Zeitauflösung <code>micros()</code> 4 µs</td><td>4 µs / 19800 µs = 0,02 %</td><td>belanglos</td></tr>
+<tr><td>Taktgeber des Boards</td><td>0,5 %</td><td><strong>dominiert die Zeitachse</strong></td></tr>
+<tr><td>Widerstandsmessung (Multimeter)</td><td>&asymp; 1 %</td><td><strong>dominiert insgesamt</strong></td></tr>
+<tr><td>ADC-Rauschen ±1 Stufe</td><td>mittelt sich über 80 Punkte heraus</td><td>klein</td></tr>
+<tr><td>Rückwirkung 47 k&Omega; ∥ 100 M&Omega;</td><td>0,05 %</td><td>belanglos</td></tr>
+</table>
+<div class="warn">
+  <strong>Auflösung ist nicht Genauigkeit</strong> &mdash; dieselbe Einsicht wie in AB 4,
+  nur für die Zeitachse: Der Arduino zeigt die Zeit in 4-µs-Schritten <em>an</em> (Auflösung
+  0,02 %), aber sein Taktgeber ist ein <strong>Keramikresonator</strong> mit ±0,5 % Toleranz
+  (kein Quarz &mdash; der sitzt auf dem Board nur beim USB-Chip). Die Anzeige ist also
+  25-mal feiner als der Wert stimmt. Nebenbei erklärt das, warum manche Uno-Nachbauten bei
+  115200 Baud nur Buchstabensalat liefern und 57600 brauchen.
+</div>
+<p><strong>(c) Ist die Abweichung echt?</strong></p>
+<div class="info">
+  Die Gesamtunsicherheit des Messgeräts liegt bei etwa <strong>1 %</strong>, die Bauteiltoleranz
+  des Kondensators bei <strong>5 %</strong>. Das Gerät ist also <em>fünfmal genauer als der
+  Prüfling</em>. Damit ist die gemessene Abweichung keine Messunsicherheit, sondern eine
+  <strong>Eigenschaft dieses Kondensators</strong> &mdash; die Messung ist gut genug, um
+  Exemplare voneinander zu unterscheiden. Das ist die Antwort auf die Frage, ob der
+  Eigenbau etwas taugt: Für diese Aufgabe ja.
+</div>
+
+<h3>Aufgabe 10 (Zusatz) &mdash; Probe mit 470 k&Omega;</h3>
+<div class="code-block">&tau; = 470 k&Omega; · 100 nF = 47 ms          (Faktor 10 langsamer)
+Messdauer 4&tau; = 188 ms  &rarr;  DT = 188 ms / 99 = 1,9 ms  &rarr;  DT = 2000 µs
+Ladezeit-Probe: 500 ms / 47 ms = 10,6 &tau;  >  7&tau;      &rarr; reicht noch
+
+Ergebnis: &tau; = 46,9 ms  &rarr;  C = 46,9 ms / 471 k&Omega; = 99,6 nF</div>
+<div class="info">
+  <strong>Warum das eine starke Bestätigung ist:</strong> Die zweite Kurve sieht völlig anders
+  aus &mdash; zehnmal langsamer, anderer Widerstand, anderer Takt &mdash; und liefert trotzdem
+  dieselbe Kapazität. Ein systematischer Fehler des Geräts (falsche Zeitbasis, zu langsame
+  Wandlung) müsste sich bei zehnfach anderer Zeitskala <em>anders</em> auswirken. Dass er das
+  nicht tut, ist der Beweis, dass gemessen wird, was gemessen werden soll. Zwei Messungen mit
+  verschiedenen Bedingungen sind mehr wert als zehn Wiederholungen derselben.
+</div>
+<div class="warn">
+  <strong>Ausblick &mdash; wo das Gerät sichtbar lügt:</strong> Mit <code>R = 4,7 M&Omega;</code>
+  (&tau; = 470 ms, dann <code>LADEZEIT = 3500 ms</code> nötig) kommt der Eingangswiderstand
+  des Wandlers ins Spiel: Die Kurve startet nur bei 4,76 V statt 4,985 V (95,5 %), und &tau;
+  fällt 4,5 % zu klein aus. Aus dem Spannungsteiler lässt sich der Eingangswiderstand
+  bestimmen: R_e = R · U_C/(U₀ − U_C) = 4,7 M&Omega; · 4,76/0,225 &asymp; 99 M&Omega;.
+  Wichtig: Dieser Effekt hängt <em>nur</em> an R &mdash; eine größere Kapazität macht die Kurve
+  langsamer, aber den Fehler nicht sichtbar.
 </div>
 
 <div class="nav">

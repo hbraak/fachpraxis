@@ -152,13 +152,13 @@
 
   <div class="card" style="border-left: 4px solid #8e44ad;">
     <h2>AB 8: Wir bauen uns ein CASSY <span class="badge">Jg. 12</span></h2>
-    <p>Eigenes Messgerät für die Entladekurve: Zeitbasis im Arduino, Messwerte puffern statt senden, ln-Linearisierung &rarr; &tau; und C — und die Grenzen des Geräts (Wandlungszeit, SRAM, Eingangswiderstand)</p>
+    <p>Eigenes Messgerät für die Entladekurve: erst &tau; berechnen und Lade-/Messzeiten festlegen, dann messen — Zeitbasis im Arduino, Messwerte puffern statt senden, ln-Linearisierung &rarr; &tau; und C, dazu die Grenzen des Geräts (Wandlungszeit, Baudrate, Taktgenauigkeit)</p>
     <div class="links">
       <a href="AB8_RC_Messung.pdf" class="btn-pdf">📄 Arbeitsblatt (PDF)</a>
       <a href="AB8_RC_Messung.ino" class="btn-pdf">💾 Sketch: RC-Messgerät (.ino)</a>
       <a href="lsg8.html" class="btn-lsg">✅ Lösung</a>
     </div>
-    <p style="font-size:0.9em;color:#555;margin-top:0.6em;">Der Arduino lädt und entlädt den Kondensator selbst über einen Pin und kennt t = 0 deshalb exakt — kein Trigger nötig. Gemessen wird immer derselbe 100-nF-Folienkondensator, &tau; wird über den Widerstand gestaffelt (47 k&Omega; / 470 k&Omega; / 4,7 M&Omega;). Eine Messreihe, zwei Ergebnisse: die Kapazität aus dem kleinen Widerstand, der Eingangswiderstand des Wandlers aus dem großen. Sketch-Kurzlink für die SuS: <code>tinyurl.com/ab8-rc-sketch</code></p>
+    <p style="font-size:0.9em;color:#555;margin-top:0.6em;">Hauptmessung: 100-nF-Folie an 47 k&Omega; &rarr; &tau; = 4,7 ms — genau 1000-mal schneller als dieselbe Kurve im Physik-Praktikum (100 µF, &tau; = 4,7 s) und mit der Stoppuhr prinzipiell nicht mehr erreichbar. Das ist die Begründung für den Eigenbau. Die SuS rechnen zuerst ohne Hardware: &tau;, Ladezeit (7&tau;, weil der Rest dann unter einer Wandlerstufe liegt), Messdauer und Takt — danach wird aufgebaut. Der Arduino lädt und entlädt selbst über einen Pin und kennt t = 0 deshalb exakt, kein Trigger nötig. Zusatz: dieselbe Messung mit 470 k&Omega; liefert dieselbe Kapazität. Sketch-Kurzlink für die SuS: <code>tinyurl.com/ab8-rc-sketch</code></p>
   </div>
 
   <a href="../" class="back">&larr; Zurück zur Übersicht</a>

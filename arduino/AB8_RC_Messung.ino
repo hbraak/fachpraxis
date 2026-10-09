@@ -1,5 +1,5 @@
 /* =====================================================================
-   Arbeitsblatt 8  --  "Wir bauen ein CASSY nach"
+   Arbeitsblatt 8  --  "Wir bauen uns ein CASSY"
    Messgeraet fuer die Entladekurve eines Kondensators
    Fachpraxis 12NP, Lore-Lorentz-Schule Duesseldorf
 
@@ -17,15 +17,20 @@
      3. Die Messwerte werden ERST im Speicher gesammelt und
         DANACH als CSV gesendet. Senden waehrend der Messung
         wuerde die Zeitbasis zerstoeren.
+
+   Eingestellt ist die Hauptmessung mit R = 47 kOhm:
+        tau = 4,7 ms,  Messdauer 99 * 200 us = 19,8 ms = 4,2 tau
+   Fuer einen anderen Widerstand wird nur DT geaendert.
    ===================================================================== */
 
 const int PIN_RC   = 2;      // laedt und entlaedt
 const int PIN_MESS = A0;     // misst die Kondensatorspannung
 
 /* --- DT muss zum verwendeten Widerstand passen ---------------------- */
-const int           N          = 200;    // Anzahl der Messpunkte
-const unsigned long DT         = 1000;   // Abstand der Messpunkte in us
-const unsigned long LADEZEIT   = 3000;   // Ladedauer in ms (>= 5*tau)
+const int           N        = 100;    // Anzahl der Messpunkte
+const unsigned long DT       = 200;    // Abstand der Messpunkte in us
+const unsigned long LADEZEIT = 500;    // Ladedauer in ms  (>= 7*tau)
+const unsigned long PAUSE    = 3000;   // Wartezeit bis zur naechsten Messung
 /* -------------------------------------------------------------------- */
 
 int werte[N];                // der Messwertspeicher
@@ -54,10 +59,11 @@ void loop() {
 
   /* 3. Erst jetzt senden ------------------------------------------- */
   Serial.println();
-  Serial.print(F("# Punkte: "));          Serial.print(N);
-  Serial.print(F("  Sollintervall: "));   Serial.print(DT);
-  Serial.print(F(" us  Messdauer soll: ")); Serial.print((unsigned long)(N - 1) * DT);
-  Serial.print(F(" us  ist: "));          Serial.print(dauer);
+  Serial.print(F("# Punkte: "));            Serial.print(N);
+  Serial.print(F("  Takt: "));              Serial.print(DT);
+  Serial.print(F(" us  Messdauer soll: "));
+  Serial.print((unsigned long)(N - 1) * DT);
+  Serial.print(F(" us  ist: "));            Serial.print(dauer);
   Serial.println(F(" us"));
   Serial.println(F("t_us;adc"));
 
@@ -67,5 +73,5 @@ void loop() {
     Serial.println(werte[i]);
   }
 
-  delay(5000);              // Pause, dann misst das Geraet erneut
+  delay(PAUSE);             // Pause, dann misst das Geraet erneut
 }
