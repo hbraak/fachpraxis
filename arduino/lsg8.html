@@ -22,10 +22,6 @@
   .code-block .fn { color: #dcdcaa; }
   .code-block .cm { color: #6a9955; font-style: italic; }
   .code-block .val { color: #b5cea8; }
-  .code-block .kw { color: #569cd6; font-weight: bold; }
-  .code-block .fn { color: #dcdcaa; }
-  .code-block .cm { color: #6a9955; font-style: italic; }
-  .code-block .val { color: #b5cea8; }
   .code-block .const { color: #4fc1ff; }
   .info {
     background: #e8f8f0; border-left: 4px solid #27ae60; padding: 1rem 1.2rem;
@@ -81,80 +77,100 @@
   Fast jede Entscheidung im Code ist eine Messgeräte-Entscheidung.
 </div>
 
-<h3>1. Die Konstanten &mdash; alles, was ihr anfassen müsst</h3>
+<h3>1. Der Schalter <code>BALKEN</code> &mdash; ein Gerät, zwei Betriebsarten</h3>
+<div class="code-block"><span class="kw">const</span> <span class="kw">bool</span> BALKEN = <span class="kw">true</span>;    <span class="cm">// true = sehen,  false = messen</span></div>
+<p>Dasselbe Programm kann die Kurve <em>zeigen</em> (grobe Balken, langsamer Takt, Laden und
+Entladen) oder sie <em>messen</em> (100 Zahlen, feiner Takt, nur Entladen). Eine Zeile ändern,
+neu hochladen &mdash; fertig. Genau das ist bei einem echten Messgerät der Unterschied zwischen
+der Anzeige am Bildschirm und dem Datenexport: Beide stammen aus derselben Messung, aber sie
+haben verschiedene Aufgaben. Die Anzeige soll man <em>verstehen</em>, die Datei soll man
+<em>auswerten</em>.</p>
+
+<h3>2. Die Konstanten &mdash; alles, was ihr anfassen müsst</h3>
 <div class="code-block"><span class="kw">const</span> <span class="kw">int</span> PIN_RC   = <span class="val">2</span>;      <span class="cm">// laedt und entlaedt</span>
 <span class="kw">const</span> <span class="kw">int</span> PIN_MESS = A0;     <span class="cm">// misst die Kondensatorspannung</span>
 
-<span class="kw">const</span> <span class="kw">int</span>           N        = <span class="val">100</span>;    <span class="cm">// Anzahl der Messpunkte</span>
-<span class="kw">const</span> <span class="kw">unsigned</span> <span class="kw">long</span> DT       = <span class="val">200</span>;    <span class="cm">// Abstand der Messpunkte in us</span>
-<span class="kw">const</span> <span class="kw">unsigned</span> <span class="kw">long</span> LADEZEIT = <span class="val">500</span>;    <span class="cm">// Ladedauer in ms</span>
-<span class="kw">const</span> <span class="kw">unsigned</span> <span class="kw">long</span> PAUSE    = <span class="val">3000</span>;   <span class="cm">// Wartezeit bis zur naechsten Messung</span></div>
-<p>Das ist die komplette „Bedienoberfläche“ des Geräts. <code>DT</code> und <code>LADEZEIT</code>
-sind genau die beiden Werte, die ihr in Aufgabe 1 und 2 selbst ausgerechnet habt &mdash; der Sketch
-nimmt euch die Physik nicht ab, er führt sie nur aus. Für den Zusatz mit 470 k&Omega; ändert ihr
-<em>eine</em> Zahl.</p>
+<span class="kw">const</span> <span class="kw">int</span>           N_SEHEN   = <span class="val">20</span>;     <span class="cm">// Balkenmodus: wenige Punkte ...</span>
+<span class="kw">const</span> <span class="kw">unsigned</span> <span class="kw">long</span> DT_SEHEN  = <span class="val">2000</span>;   <span class="cm">// ... im groben Takt (2 ms)</span>
+<span class="kw">const</span> <span class="kw">int</span>           N_MESSEN  = <span class="val">100</span>;    <span class="cm">// Messmodus: viele Punkte ...</span>
+<span class="kw">const</span> <span class="kw">unsigned</span> <span class="kw">long</span> DT_MESSEN = <span class="val">200</span>;    <span class="cm">// ... im feinen Takt (200 us)</span>
+<span class="kw">const</span> <span class="kw">unsigned</span> <span class="kw">long</span> LADEZEIT  = <span class="val">500</span>;    <span class="cm">// Ladedauer in ms</span>
+<span class="kw">const</span> <span class="kw">unsigned</span> <span class="kw">long</span> PAUSE     = <span class="val">3000</span>;   <span class="cm">// Wartezeit bis zur naechsten Messung</span></div>
+<p>Das ist die komplette „Bedienoberfläche“ des Geräts. <code>DT_MESSEN</code> und
+<code>LADEZEIT</code> sind genau die Werte, die ihr in Aufgabe&nbsp;3 und Aufgabe&nbsp;5
+nachgerechnet habt &mdash; der Sketch nimmt euch die Physik nicht ab, er führt sie nur aus.
+Für den Zusatz mit 470 k&Omega; ändert ihr <em>eine</em> Zahl.</p>
 <p><code>const</code> heißt: Der Compiler darf den Wert fest in den Code einbauen, statt RAM dafür
 zu reservieren. <code>unsigned long</code> ist nötig, weil Zeiten in µs schnell große Zahlen werden
 (siehe unten beim Cast) &mdash; ein <code>int</code> kann auf dem Uno nur bis 32767 zählen.</p>
 
-<h3>2. Der Messwertspeicher</h3>
-<div class="code-block"><span class="kw">int</span> werte[N];                <span class="cm">// der Messwertspeicher</span></div>
-<p>100 Zahlen zu je 2 Byte = 200 Byte von 2048 Byte SRAM (9,8 %). Hier liegt die eigentliche
-Grenze des Geräts: <strong>Mehr Messpunkte kosten RAM, nicht Rechenzeit.</strong> Mit
-<code>N = 900</code> wäre der Uno voll und würde abstürzen &mdash; ohne Fehlermeldung, er läuft
-einfach wirr weiter. Genau deshalb hat auch ein echtes CASSY eine maximale Messpunktzahl.</p>
+<h3>3. Der Messwertspeicher</h3>
+<div class="code-block"><span class="kw">int</span> werte[N_MESSEN];          <span class="cm">// der Messwertspeicher (fuer den groesseren Fall)</span></div>
+<p>Das Array wird für den <em>größeren</em> der beiden Fälle angelegt, also 100 Zahlen zu je
+2 Byte = 200 Byte von 2048 Byte SRAM (9,8 %). Hier liegt die eigentliche Grenze des Geräts:
+<strong>Mehr Messpunkte kosten RAM, nicht Rechenzeit.</strong> Mit <code>N_MESSEN = 900</code>
+wäre der Uno voll und würde abstürzen &mdash; ohne Fehlermeldung, er läuft einfach wirr weiter.
+Genau deshalb hat auch ein echtes CASSY eine maximale Messpunktzahl.</p>
 
-<h3>3. setup() &mdash; einmalig</h3>
+<h3>4. setup() &mdash; einmalig</h3>
 <div class="code-block"><span class="kw">void</span> <span class="fn">setup</span>() {
   Serial.<span class="fn">begin</span>(<span class="val">115200</span>);
   <span class="fn">pinMode</span>(PIN_RC, OUTPUT);
+  <span class="fn">digitalWrite</span>(PIN_RC, LOW);
+  anzahl = BALKEN ? N_SEHEN  : N_MESSEN;     <span class="cm">// Betriebsart einstellen</span>
+  dt     = BALKEN ? DT_SEHEN : DT_MESSEN;
+  <span class="fn">delay</span>(<span class="val">500</span>);                       <span class="cm">// Kondensator sicher leer</span>
 }</div>
-<p>115200 statt der gewohnten 9600 Baud &mdash; 12-mal schneller. Das ist keine Kosmetik: Bei 9600
-Baud dauert das Ausgeben der 100 Zeilen über eine Sekunde. <code>A0</code> braucht <em>kein</em>
-<code>pinMode</code>, Analogeingänge sind immer Eingänge.</p>
+<p>115200 statt der gewohnten 9600 Baud &mdash; 12-mal schneller. Das ist keine Kosmetik, siehe
+Aufgabe&nbsp;10. <code>A0</code> braucht <em>kein</em> <code>pinMode</code>, Analogeingänge sind
+immer Eingänge. Die beiden Fragezeichen-Zeilen übersetzen den Schalter in die zwei Zahlen, mit
+denen das Programm danach überall arbeitet: <code>anzahl</code> und <code>dt</code>. So steht die
+Messschleife nur <em>einmal</em> im Code &mdash; zwei Kopien würden irgendwann auseinanderlaufen.</p>
 
-<h3>4. Laden &mdash; der Pin ist die Spannungsquelle</h3>
-<div class="code-block"><span class="fn">digitalWrite</span>(PIN_RC, HIGH);
-<span class="fn">delay</span>(LADEZEIT);</div>
+<h3>5. Laden &mdash; der Pin ist die Spannungsquelle</h3>
+<div class="code-block"><span class="fn">digitalWrite</span>(PIN_RC, HIGH);</div>
 <div class="info">
   <strong>Der Trick des ganzen Aufbaus:</strong> <code>D2</code> ist nicht nur ein Schalter, sondern
   die <em>Spannungsquelle</em>. Bei <code>HIGH</code> liegen 5 V am Pin, der Kondensator lädt über
   R. Der Strom ist 5 V / 47 k&Omega; = 0,11 mA &mdash; ein Ausgangspin darf 40 mA, also völlig
   unkritisch. Deshalb braucht die Schaltung kein Netzteil und keinen zweiten Widerstand.
+  Im Balkenmodus wird direkt <em>nach</em> dem <code>HIGH</code> aufgezeichnet &mdash; so sieht man
+  die Ladekurve. Im Messmodus wird erst <code>LADEZEIT</code> lang geladen und dann die
+  Entladekurve aufgenommen.
 </div>
 
-<h3>5. Entladen &mdash; und warum LOW nicht „aus“ heißt</h3>
-<div class="code-block"><span class="fn">digitalWrite</span>(PIN_RC, LOW);
-<span class="kw">unsigned</span> <span class="kw">long</span> t0 = <span class="fn">micros</span>();          <span class="cm">// t = 0 ist uns exakt bekannt</span></div>
+<h3>6. Entladen &mdash; und warum LOW nicht „aus“ heißt</h3>
+<div class="code-block"><span class="fn">digitalWrite</span>(PIN_RC, LOW);</div>
 <p><code>LOW</code> bedeutet <strong>nicht</strong> „Pin abgeschaltet“, sondern „Pin aktiv auf 0 V“.
 Der Ausgang wird zum GND-Anschluss, und der Kondensator entlädt sich über <em>denselben</em>
-Widerstand. Deshalb ist &tau; beim Laden und Entladen identisch &mdash; ein Bauteil, zwei Funktionen.</p>
+Widerstand. Deshalb ist &tau; beim Laden und Entladen identisch &mdash; ein Bauteil, zwei Funktionen.
+Im Balkenmodus sieht man das direkt: Beide Kurven sind gleich schnell, nur spiegelbildlich.</p>
 <div class="warn">
   <strong>Wollte man den Kondensator stattdessen sich selbst überlassen</strong>, müsste man den Pin
   mit <code>pinMode(PIN_RC, INPUT)</code> hochohmig schalten. Dann würde der Kondensator nur noch
   über den Eingangswiderstand des Wandlers entladen &mdash; &tau; wäre Minuten statt Millisekunden.
-  Probiert es ruhig aus, es ist eine schöne Demonstration von Aufgabe 9.
+  Probiert es ruhig aus, es ist eine schöne Demonstration zu Aufgabe&nbsp;12.
 </div>
-<p><code>micros()</code> liefert die Zeit seit dem Einschalten in Mikrosekunden &mdash; allerdings
-in <strong>4-µs-Schritten</strong> (daher der Auflösungswert aus Aufgabe 9). Dass der Zähler nach
-etwa 71 Minuten überläuft, stört hier nicht: Weil mit <code>unsigned long</code> gerechnet wird,
-kommt bei <code>micros() - t0</code> auch über den Überlauf hinweg die richtige Differenz heraus.</p>
 
-<h3>6. Die Messschleife &mdash; die wichtigsten vier Zeilen</h3>
-<div class="code-block"><span class="kw">for</span> (<span class="kw">int</span> i = <span class="val">0</span>; i &lt; N; i++) {
-  <span class="kw">while</span> (<span class="fn">micros</span>() - t0 &lt; (<span class="kw">unsigned</span> <span class="kw">long</span>)i * DT) { ; }   <span class="cm">// auf den Takt warten</span>
-  werte[i] = <span class="fn">analogRead</span>(PIN_MESS);    <span class="cm">// nur messen, NICHT senden</span>
+<h3>7. aufnehmen() &mdash; die wichtigsten vier Zeilen</h3>
+<div class="code-block"><span class="kw">void</span> <span class="fn">aufnehmen</span>() {
+  <span class="kw">unsigned</span> <span class="kw">long</span> t0 = <span class="fn">micros</span>();        <span class="cm">// t = 0 ist uns exakt bekannt</span>
+  <span class="kw">for</span> (<span class="kw">int</span> i = <span class="val">0</span>; i &lt; anzahl; i++) {
+    <span class="kw">while</span> (<span class="fn">micros</span>() - t0 &lt; (<span class="kw">unsigned</span> <span class="kw">long</span>)i * dt) { ; }   <span class="cm">// auf den Takt warten</span>
+    werte[i] = <span class="fn">analogRead</span>(PIN_MESS);  <span class="cm">// nur messen, NICHT senden</span>
+  }
+  dauer = <span class="fn">micros</span>() - t0;              <span class="cm">// Selbsttest: Ist-Dauer merken</span>
 }</div>
-<p><strong>Warum nicht einfach <code>delay(DT)</code>?</strong> Weil sich Fehler dann
-<em>aufaddieren</em>: Jeder Durchlauf bräuchte DT <em>plus</em> die Zeit für
+<p><strong>Warum nicht einfach <code>delay(dt)</code>?</strong> Weil sich Fehler dann
+<em>aufaddieren</em>: Jeder Durchlauf bräuchte dt <em>plus</em> die Zeit für
 <code>analogRead()</code> plus den Schleifenaufwand. Nach 100 Punkten wäre die Zeitachse um über
 11 ms zu lang &mdash; und zwar ungleichmäßig. Hier wird stattdessen jeder Messpunkt gegen den
 <strong>festen Startzeitpunkt</strong> <code>t0</code> terminiert: Messpunkt <em>i</em> gehört zur
-Zeit <em>i</em>&nbsp;·&nbsp;DT, basta. Verzögerungen können sich nicht summieren.</p>
+Zeit <em>i</em>&nbsp;·&nbsp;dt, basta. Verzögerungen können sich nicht summieren.</p>
 <div class="warn">
   <strong>Der Cast <code>(unsigned long)</code> ist kein Schönheitsfehler.</strong> Ohne ihn würde
-  <code>i * DT</code> als <code>int</code> gerechnet &mdash; und <code>int</code> endet auf dem Uno
-  bei 32767. Beim Zusatz mit <code>DT = 2000</code> wäre schon bei i = 17 Schluss, danach kämen
+  <code>i * dt</code> als <code>int</code> gerechnet &mdash; und <code>int</code> endet auf dem Uno
+  bei 32767. Schon im Balkenmodus (<code>dt = 2000</code>) wäre bei i = 17 Schluss, danach kämen
   negative Zeiten heraus und die Schleife würde gar nicht mehr warten. Die Messung sähe aus wie ein
   senkrechter Absturz. Solche Überläufe sind der häufigste schwer findbare Fehler in
   Mikrocontroller-Programmen, weil nichts abstürzt &mdash; es kommen nur falsche Zahlen heraus.
@@ -162,23 +178,33 @@ Zeit <em>i</em>&nbsp;·&nbsp;DT, basta. Verzögerungen können sich nicht summie
 <p>Gespeichert wird der <strong>Rohwert</strong> 0&hellip;1023, nicht die Spannung. Eine
 Umrechnung in Volt bräuchte Fließkommarechnung, und die kostet auf dem Uno Hunderte von
 Mikrosekunden &mdash; mitten im Messtakt. <em>Rechnen wird nach hinten verschoben, gemessen wird
-sofort.</em> Das ist ein Grundprinzip jedes Messgeräts (und nach Aufgabe 9a für das Ergebnis
+sofort.</em> Das ist ein Grundprinzip jedes Messgeräts (und nach Aufgabe&nbsp;12a für das Ergebnis
 sowieso egal).</p>
+<p>Die letzte Zeile ist der <strong>eingebaute Selbsttest</strong>: Das Gerät misst, wie lange es
+selbst gebraucht hat. Weicht die Ist- stark von der Soll-Dauer ab, kommt der Prozessor dem Takt
+nicht nach &mdash; dann ist die Zeitachse gestreckt und <em>alle</em> &tau;-Werte sind falsch
+(Aufgabe&nbsp;9).</p>
 
-<h3>7. Der eingebaute Selbsttest</h3>
-<div class="code-block"><span class="kw">unsigned</span> <span class="kw">long</span> dauer = <span class="fn">micros</span>() - t0;  <span class="cm">// zur Kontrolle der Zeitbasis</span></div>
-<p>Das Gerät misst, wie lange es selbst gebraucht hat, und gibt es in der Kopfzeile aus. Weicht die
-Ist- stark von der Soll-Dauer ab, kommt der Prozessor dem Takt nicht nach &mdash; dann ist die
-Zeitachse gestreckt und <em>alle</em> &tau;-Werte sind falsch. Ein Messgerät, das seine eigene
-Funktion prüft, ist mehr wert als eines, das nur Zahlen ausspuckt (vgl. Aufgabe 4).</p>
+<h3>8. balken_ausgeben() &mdash; die Anzeige</h3>
+<div class="code-block"><span class="kw">for</span> (<span class="kw">int</span> i = <span class="val">0</span>; i &lt; anzahl; i++) {
+  <span class="kw">int</span> adc = werte[i];        <span class="cm">// Zahl rechtsbuendig, dann " |", dann adc/20 Balken</span>
+  Serial.<span class="fn">print</span>(adc);
+  Serial.<span class="fn">print</span>(F(<span class="cm">" |"</span>));
+  <span class="kw">for</span> (<span class="kw">int</span> k = <span class="val">0</span>; k &lt; adc / <span class="val">20</span>; k++) Serial.<span class="fn">print</span>(<span class="cm">'#'</span>);
+  Serial.<span class="fn">println</span>();
+}</div>
+<p>Ein Zeichen steht für 20 Wandlerstufen, der volle Balken ist also 1023/20 = 51 Zeichen lang.
+Das ist absichtlich grob: Eine Anzeige muss man auf einen Blick erfassen können. Dass die Zahl
+<em>zusätzlich</em> dasteht, ist der Übergang zu Teil&nbsp;2 &mdash; man sieht die Kurve und hat
+gleichzeitig die Zahlen vor sich, mit denen später gerechnet wird.</p>
 
-<h3>8. Ausgabe &mdash; erst jetzt</h3>
-<div class="code-block">Serial.<span class="fn">print</span>(F(<span class="cm">"# Punkte: "</span>));  Serial.<span class="fn">print</span>(N);
+<h3>9. csv_ausgeben() &mdash; der Datenexport</h3>
+<div class="code-block">Serial.<span class="fn">print</span>(F(<span class="cm">"# Punkte: "</span>));  Serial.<span class="fn">print</span>(anzahl);
 &hellip;
 Serial.<span class="fn">println</span>(F(<span class="cm">"t_us;adc"</span>));
 
-<span class="kw">for</span> (<span class="kw">int</span> i = <span class="val">0</span>; i &lt; N; i++) {
-  Serial.<span class="fn">print</span>((<span class="kw">unsigned</span> <span class="kw">long</span>)i * DT);
+<span class="kw">for</span> (<span class="kw">int</span> i = <span class="val">0</span>; i &lt; anzahl; i++) {
+  Serial.<span class="fn">print</span>((<span class="kw">unsigned</span> <span class="kw">long</span>)i * dt);
   Serial.<span class="fn">print</span>(<span class="cm">';'</span>);
   Serial.<span class="fn">println</span>(werte[i]);
 }</div>
@@ -187,54 +213,94 @@ Serial.<span class="fn">println</span>(F(<span class="cm">"t_us;adc"</span>));
       die Überschriften rund 100 Byte des knappen Speichers belegen &mdash; neben dem 200-Byte-Array
       spürbar.</li>
   <li><strong>Semikolon als Trennzeichen</strong>, weil das deutsche Excel/LibreOffice das Komma für
-      Dezimalstellen braucht. Die Zeitspalte wird hier <em>berechnet</em> (<code>i · DT</code>) und
+      Dezimalstellen braucht. Die Zeitspalte wird hier <em>berechnet</em> (<code>i · dt</code>) und
       nicht gemessen &mdash; sie ist per Konstruktion exakt gleichmäßig.</li>
   <li><strong>Die Kopfzeile beginnt mit <code>#</code></strong>, damit man sie beim Import leicht
-      erkennt und überspringt.</li>
+      erkennt und überspringt. Sie enthält auch Soll- und Ist-Dauer des Selbsttests &mdash; die
+      Messung dokumentiert sich selbst.</li>
 </ul>
 
-<h3>9. Und dann von vorn</h3>
+<h3>10. Und dann von vorn</h3>
 <div class="code-block"><span class="fn">delay</span>(PAUSE);             <span class="cm">// Pause, dann misst das Geraet erneut</span></div>
-<p><code>loop()</code> läuft endlos, das Gerät misst also alle 3,5 s eine neue Kurve. Praktisch:
-Ihr könnt am Aufbau wackeln, den Widerstand tauschen oder den Kondensator entfernen und seht sofort,
-was passiert &mdash; ohne neu hochzuladen. Für die Auswertung nehmt ihr einfach einen vollständigen
-Block zwischen zwei Kopfzeilen.</p>
+<p><code>loop()</code> läuft endlos, das Gerät misst also alle drei Sekunden eine neue Kurve.
+Praktisch: Ihr könnt am Aufbau wackeln, den Widerstand tauschen oder den Kondensator entfernen und
+seht sofort, was passiert &mdash; ohne neu hochzuladen. Für die Auswertung nehmt ihr einfach einen
+vollständigen Block zwischen zwei Kopfzeilen.</p>
 
-<h2>Teil 1 &mdash; Vorüberlegung</h2>
+<h2>Teil 1 &mdash; Hinsehen: das Gerät in Betrieb nehmen</h2>
 
-<h3>Aufgabe 1 &mdash; Wann ist der Kondensator voll, wann leer?</h3>
-<div class="code-block">&tau; = R · C = 47 k&Omega; · 100 nF = 47·10³ &Omega; · 100·10⁻⁹ F = 4,7·10⁻³ s = 4,7 ms</div>
-<table>
-<tr><th>Zeit</th><th>Laden: u/U₀ erreicht</th><th>Entladen: u/U₀ übrig</th></tr>
-<tr><td>1&tau; = 4,7 ms</td><td>63,2 %</td><td>36,8 %</td></tr>
-<tr><td>3&tau; = 14,1 ms</td><td>95,0 %</td><td>4,98 %</td></tr>
-<tr><td>5&tau; = 23,5 ms</td><td>99,33 %</td><td>0,67 %</td></tr>
-<tr><td>7&tau; = 32,9 ms</td><td>99,91 %</td><td>0,09 %</td></tr>
-</table>
+<h3>Aufgabe 1 &mdash; Aufbauen und starten</h3>
+<p>Der Widerstands-Istwert liegt typisch 0,5 % neben dem Aufdruck, z.&nbsp;B.
+<code>R = 46,6 k&Omega;</code> (am Lehreraufbau nachgemessen). Mit <em>diesem</em> Wert wird
+später gerechnet, nicht mit dem Aufdruck.</p>
+<p><strong>Was man auf dem Monitor sieht:</strong> Zwei Blöcke, die sich endlos abwechseln.
+Im ersten werden die Balken von Zeile zu Zeile <em>länger</em>, im zweiten <em>kürzer</em>.
+Beide Male ändert sich am Anfang viel und am Ende fast nichts mehr &mdash; die Zeilenabstände
+sind ja immer gleich, die Sprünge werden aber kleiner.</p>
 <div class="info">
-  <strong>Das Kriterium kommt vom Wandler, nicht vom Gefühl.</strong> Eine ADC-Stufe ist
-  1/1023 = 0,098 % von U₀ (4,87 mV). Der Kondensator ist also genau dann „voll“, wenn der
-  fehlende Rest kleiner als eine Stufe ist:
+  <strong>Woran man Laden und Entladen ohne die Überschrift erkennt:</strong>
+  <ul>
+    <li>Laden beginnt bei 0 und wächst auf den Maximalwert zu &mdash; die Kurve <em>nähert sich</em>
+        von unten einer Grenze und wird dabei immer flacher.</li>
+    <li>Entladen beginnt beim Maximalwert und fällt auf 0 &mdash; der <em>größte</em> Sprung steht
+        gleich am Anfang.</li>
+    <li>Entscheidend ist also die <strong>Richtung des ersten Sprungs</strong>, nicht der Endwert:
+        Beide Verläufe enden „langweilig“.</li>
+  </ul>
+  Die Handskizze soll genau das zeigen: eine Sättigungskurve nach oben und eine Zerfallskurve nach
+  unten, beide mit <em>derselben</em> Krümmung &mdash; es ist ja derselbe Widerstand und derselbe
+  Kondensator (siehe Sketch, Abschnitt 6).
 </div>
-<div class="code-block">e^(−n) &lt; 1/1023   &rArr;   n &gt; ln 1023 = 6,93   &rArr;   <strong>7&tau; = 32,9 ms</strong></div>
-<p>Ab 7&tau; kann der Arduino „voll“ und „fast voll“ gar nicht mehr unterscheiden &mdash; länger laden
-ist für <em>dieses</em> Messgerät sinnlos. Das Messgerät definiert damit selbst, was „voll“ heißt.</p>
-
-<h3>Aufgabe 2 &mdash; Messdauer und Takt</h3>
-<div class="code-block">t½ = &tau; · ln 2 = 4,7 ms · 0,693 = 3,26 ms
-
-Messdauer 4&tau; = 18,8 ms,  bei N = 100 Punkten also 99 Intervalle:
-DT = 18,8 ms / 99 = 190 µs      &rarr;   gewählt: DT = 200 µs
-
-Damit: Messdauer = 99 · 200 µs = 19,8 ms = 4,21 &tau;
-Endwert: e^(−4,21) = 1,49 %  von 4,985 V = 74 mV = 15 ADC-Stufen</div>
-<div class="info">
-  <strong>Ladezeit-Probe:</strong> 500 ms / 4,7 ms = 106 &tau; &mdash; das ist weit mehr als die
-  nach Aufgabe 1 nötigen 7&tau; = 33 ms. Die eingestellte Ladezeit reicht also bequem.
-  (Sie ist bewusst großzügig, damit sie auch für den Zusatz mit 470 k&Omega; noch passt.)
+<div class="warn">
+  <strong>Häufige Beobachtung, die kein Fehler ist:</strong> Die erste Zeile der Entladephase zeigt
+  oft 1018 oder 1019, die letzte Zeile der Ladephase nur 1017. Dazwischen liegt kein Vorgang,
+  sondern nur das Rauschen der letzten Stufe &mdash; der Wandler löst 4,9 mV auf, und so genau
+  ist nichts an diesem Aufbau. Wer hier eine Erklärung sucht, sucht zu genau.
 </div>
 
-<h3>Aufgabe 3 &mdash; Warum reicht hier keine Stoppuhr?</h3>
+<h3>Aufgabe 2 &mdash; Was bedeutet die Zahl?</h3>
+<div class="code-block">kleinster Wert: 0        groesster Wert: 1023      (10 Bit = 2^10 = 1024 Stufen)
+eine Stufe = 1/1023 von U_0 = 4,985 V / 1023 = 4,87 mV</div>
+<p><strong>Der Widerspruch:</strong> Die Formel u(t) = U₀·(1 − e^(−t/&tau;)) wird tatsächlich
+niemals fertig &mdash; mathematisch bleibt immer ein Rest. Das Messgerät kann diesen Rest aber
+nur erkennen, solange er <em>größer als eine Stufe</em> ist. Darunter liefert der Wandler
+zwangsläufig immer dieselbe Zahl.</p>
+<div class="info">
+  <strong>Das Kriterium kommt vom Wandler, nicht vom Gefühl:</strong>
+</div>
+<div class="code-block">e^(−n) &lt; 1/1023   &rArr;   n &gt; ln 1023 = 6,93   &rArr;   <strong>7&tau;</strong></div>
+<p>Ab 7&tau; kann <em>dieser</em> Arduino „voll“ und „fast voll“ gar nicht mehr unterscheiden
+&mdash; länger laden ist für ihn sinnlos. Die Antwort auf die Schlussfrage lautet deshalb:
+Nicht die Physik legt fest, wann „voll“ ist, sondern <strong>das Messgerät</strong>. Ein Gerät
+mit 16 Bit käme auf ln 65535 = 11&tau;, ein Zeigerinstrument mit 1 % Ablesegenauigkeit schon auf
+4,6&tau;. „Voll“ ist keine Eigenschaft des Kondensators, sondern eine Aussage über den Beobachter.</p>
+<div class="warn">
+  Dieselbe Zahl 6,93 kommt in Aufgabe&nbsp;11b <em>noch einmal</em> vor &mdash; dort als Grenze,
+  ab der das Gerät beim Entladen nur noch Nullen liefert. Das ist kein Zufall: Der Dynamikbereich
+  eines 10-Bit-Wandlers ist 1024:1, und in einem Exponentialvorgang sind das rund sieben
+  Zeitkonstanten. <em>Mehr Fenster hat das Gerät nicht.</em>
+</div>
+
+<h3>Aufgabe 3 &mdash; Wie schnell läuft das ab?</h3>
+<div class="code-block">gezaehlt: etwa 15 bis 16 Zeilen, bis sich nichts mehr aendert
+Dauer:    15 · 2 ms = 30 ms       (der Balkenmodus nimmt 20 Punkte ueber 38 ms auf)
+
+tau = R · C = 46,6 kOhm · 100 nF = 4,66 ms
+
+30 ms / 4,66 ms = 6,4 tau</div>
+<div class="info">
+  <strong>Die Probe geht auf:</strong> Nach Aufgabe&nbsp;2 ist bei 6,9&tau; eine Stufe erreicht
+  &mdash; und genau dort, nach etwa 6,4&tau;, hört die Anzeige auf, sich zu ändern. Die gezählten
+  Zeilen und die gerechnete Zeitkonstante sagen dasselbe. Das ist der erste Moment, in dem das
+  selbstgebaute Gerät und die Theorie sich bestätigen, und er kostet nur eine Multiplikation.
+</div>
+<div class="code-block">Ladezeit-Probe:  500 ms / 4,66 ms = 107 tau   >>   7 tau   &rarr; reicht bequem</div>
+<p>Die Ladezeit ist bewusst großzügig gewählt: Nötig sind hier 7&tau; = 33 ms, die
+500 ms sind also das Fünfzehnfache davon &mdash; und reichen damit auch für den Zusatz mit
+470 k&Omega; (&tau; = 47 ms, 500 ms = 10,6&tau;) noch bequem aus. An dieser Zahl muss man
+nichts drehen.</p>
+
+<h3>Aufgabe 4 &mdash; Warum reicht hier keine Stoppuhr?</h3>
 <div class="code-block">Physik-Praktikum:  &tau; = 47 k&Omega; · 100 µF = 4,7 s        t½ = 3,26 s
 Dieses Blatt:      &tau; = 47 k&Omega; · 100 nF = 4,7 ms       t½ = 3,26 ms
                                         Faktor 1000 schneller</div>
@@ -251,66 +317,41 @@ Dieses Blatt:      &tau; = 47 k&Omega; · 100 nF = 4,7 ms       t½ = 3,26 ms
   verschlossen ist &mdash; nicht nur „genauer“, sondern überhaupt erst möglich.
 </div>
 
-<h2>Teil 2 &mdash; Aufbauen und prüfen</h2>
+<h2>Teil 2 &mdash; Messen: von Balken zu Zahlen</h2>
 
-<h3>Aufgabe 4 &mdash; Zeitbasis prüfen</h3>
-<p>Der Widerstands-Istwert liegt typisch 0,5 % neben dem Aufdruck, z.&nbsp;B.
-<code>R = 46,6 k&Omega;</code> (am Lehreraufbau nachgemessen). Mit <em>diesem</em> Wert wird später gerechnet.
-Der Sketch hat <code>DT = 200 µs</code> eingestellt &mdash; genau der in Aufgabe 2 berechnete Wert.</p>
-<div class="code-block"># Punkte: 100  Takt: 200 us  Messdauer soll: 19800 us  ist: 19912 us</div>
-<table>
-<tr><th>Beitrag</th><th>Betrag</th><th>Ursache</th></tr>
-<tr><td>letzte Wandlung</td><td>+112 µs</td><td><code>dauer</code> wird <em>nach</em> dem 100. <code>analogRead()</code> gelesen</td></tr>
-<tr><td>Takt-Quantisierung</td><td>+0&hellip;4 µs</td><td><code>micros()</code> zählt in 4-µs-Schritten</td></tr>
-</table>
-<p>Die Abweichung ist also <strong>erklärbar und konstant</strong>, rund +0,6 %. Das ist ein
-<em>Selbsttest</em>: Würde die Ist-Dauer stark anwachsen (etwa 50 ms statt 20 ms), dann käme der
-Prozessor dem Takt nicht nach &mdash; die Zeitachse wäre gestreckt und alle &tau;-Werte zu groß.
-Jede Messung bringt ihre eigene Plausibilitätsprüfung mit.</p>
+<h3>Aufgabe 5 &mdash; Das Gerät umschalten</h3>
+<div class="code-block"># Punkte: 100  Takt: 200 us  Messdauer soll: 19800 us  ist: 19912 us
 
-<h3>Aufgabe 5 &mdash; Zwei Grenzen des Geräts</h3>
-<p><strong>(a) Abtastgrenze.</strong></p>
-<div class="code-block">DT = 200 µs  >  Wandlungsdauer 112 µs      &rarr; zulässig
-Maximal möglich: 1 &tau; / 112 µs = 4,7 ms / 112 µs = 42 Punkte pro &tau;
-
-Mindestens 40 Punkte auf 4&tau;:
-4&tau; &ge; 40 · 112 µs = 4,48 ms   &rArr;   &tau; &ge; 1,12 ms
-C &ge; 1,12 ms / 47 k&Omega; = 24 nF</div>
-<div class="warn">
-  <strong>10 nF wäre nicht mehr messbar:</strong> &tau; = 0,47 ms, die ganze Entladung
-  (4&tau; = 1,9 ms) passt in nur 17 Wandlungen. Zu wenige Punkte für eine Ausgleichsgerade.
-  Jedes Messgerät hat eine untere Grenze &mdash; unsere liegt bei etwa 24 nF, und wir können sie
-  <em>berechnen</em>, statt sie auszuprobieren.
-</div>
-<p><strong>(b) Warum erst speichern, dann senden.</strong></p>
-<div class="code-block">eine Zeile = 10 Zeichen · 10 Bit = 100 Bit
-bei 115200 Baud:  100 / 115200 = 0,87 ms  =  4,3 Messtakte
-bei   9600 Baud:  100 /   9600 = 10,4 ms  =   52 Messtakte
-
-Speicherbedarf: 100 Werte · 2 Byte = 200 Byte von 2048 Byte = 9,8 %</div>
+Messdauer = (100 − 1) · 200 µs = 19800 µs = 19,8 ms = 4,2 tau</div>
+<p>Im Balkenmodus waren es 38 ms über 20 Punkte, jetzt 19,8 ms über 100 Punkte. Die Messung ist
+also <em>kürzer</em> und trotzdem viel feiner.</p>
 <div class="info">
-  <strong>Senden ist 4-mal langsamer als Messen.</strong> Würde das Gerät jede Zeile sofort
-  ausgeben, wären nur noch alle 0,87 ms Messwerte möglich &mdash; die Zeitachse wäre nicht
-  nur grob, sondern auch <em>unregelmäßig</em>. Deshalb: messen in den RAM, danach senden.
-  Genau so arbeitet jedes echte Messgerät (auch das CASSY), und 200 Byte sind der Preis dafür.
+  <strong>Warum ein zehnmal feinerer Takt?</strong> Für eine Ausgleichsgerade braucht man viele
+  Punkte <em>im brauchbaren Bereich</em> der Kurve, und brauchbar ist nur der Anfang: Dort ist die
+  Kurve steil und die Werte sind groß (siehe Aufgabe&nbsp;7). Im Balkenmodus lägen auf den ersten
+  2&tau; gerade fünf Punkte &mdash; damit kann man keine Steigung bestimmen. Mit 200 µs liegen
+  dort 47 Punkte. Umgekehrt wäre der feine Takt für die <em>Anzeige</em> unbrauchbar: 100 Zeilen
+  rauschen in einer Fünftelsekunde durch, da sieht man nichts.
+  <br>Dass die Messung dafür nur noch 4,2&tau; statt 6,4&tau; abdeckt, ist kein Verlust &mdash;
+  der Rest der Kurve liegt ohnehin unter der Auflösungsgrenze (Aufgabe&nbsp;11b).
 </div>
-
-<h2>Teil 3 &mdash; Auswerten</h2>
 
 <h3>Aufgabe 6 &mdash; Kurve und Schnellschätzung</h3>
 <div class="code-block">u = adc / 1023 · 4,985 V        (4,87 mV pro Stufe)</div>
 <p>Die Kurve fällt von 1017 auf 14 Stufen. Halbwertszeit abgelesen: <code>t½ = 3,24 ms</code>
-&mdash; die Vorhersage aus Aufgabe 2 lautete 3,26 ms. Die Rechnung <em>vor</em> der Messung
+&mdash; die Vorhersage aus Aufgabe 3 lautete 3,26 ms. Die Rechnung <em>vor</em> der Messung
 bestätigt sich auf unter 1 %, damit ist der Aufbau abgesichert.</p>
 <div class="info">
   <strong>Referenzmessung am Lehreraufbau (09.10.2026), 100 Punkte, DT = 200 µs:</strong>
-  Startwert 1017, Endwert 14 (vorhergesagt: 15), Selbsttest <code>soll 19800 µs / ist 19916 µs</code>
+  Startwert 1017, Endwert 14 (vorhergesagt: 15), Selbsttest <code>soll 19800 µs / ist 19912 µs</code>
   &mdash; 0,6 % Überhang, das ist der Overhead der letzten Wandlung.
   Auswertung siehe unten: &tau; = 4,670 ms, C = 100,2 nF.
   Abweichungen von diesen Zahlen sind normal: Der Endwert hängt <em>exponentiell</em> von &tau; ab,
   aus 10 % Bauteiltoleranz wird dort schnell ein Faktor 2. Ein Endwert zwischen 8 und 25 ist
   unauffällig &mdash; nicht „passend“ rechnen, das ist das Messergebnis.
 </div>
+
+<h2>Teil 3 &mdash; Auswerten: wie groß ist C wirklich?</h2>
 
 <h3>Aufgabe 7 &mdash; Linearisierung</h3>
 <div class="code-block">u(t) = U₀ · e^(−t/&tau;)          | logarithmieren
@@ -329,7 +370,7 @@ ln u = ln U₀ − t/&tau;            &rarr;  Gerade mit m = −1/&tau;</div>
   55 Punkte bis t = 10,8 ms. Das deckt 90 % des Spannungsabfalls ab und lässt immer noch 55 Punkte
   für die Ausgleichsgerade übrig &mdash; mehr als genug.
   Man sieht die Grenze den Rohdaten direkt an: am Ende steht mehrfach derselbe Wert, dann springt es
-  um ganze Stufen, und bei t = 18,8 ms geht der Wert sogar wieder <em>hoch</em> (18 nach 17).
+  um ganze Stufen, und bei t = 18,8 ms geht der Wert sogar wieder <em>hoch</em> (17 nach 18).
   Das ist kein Tricksen, sondern die Auflösungsgrenze des eigenen Geräts &mdash; man muss sie nur benennen.
 </div>
 <div class="info">
@@ -357,7 +398,124 @@ also klar innerhalb der Toleranz &mdash; und zwar deutlich besser als nötig.</p
 
 <h2>Teil 4 &mdash; Wie gut ist unser Messgerät?</h2>
 
-<h3>Aufgabe 9 &mdash; Fehlerbilanz</h3>
+<h3>Aufgabe 9 &mdash; Der Selbsttest des Geräts</h3>
+<div class="code-block"># Punkte: 100  Takt: 200 us  Messdauer soll: 19800 us  ist: 19912 us</div>
+<table>
+<tr><th>Beitrag</th><th>Betrag</th><th>Ursache</th></tr>
+<tr><td>letzte Wandlung</td><td>+112 µs</td><td><code>dauer</code> wird <em>nach</em> dem 100. <code>analogRead()</code> gelesen</td></tr>
+<tr><td>Takt-Quantisierung</td><td>+0&hellip;4 µs</td><td><code>micros()</code> zählt in 4-µs-Schritten</td></tr>
+</table>
+<p>Die Abweichung ist also <strong>erklärbar und konstant</strong>, rund +0,6 %. Würde die
+Ist-Dauer dagegen <em>stark</em> anwachsen (etwa 50 ms statt 20 ms), dann käme der Prozessor dem
+Takt nicht nach: Die <code>while</code>-Schleife hätte nichts mehr zu warten, weil
+<code>analogRead()</code> allein schon länger dauert als <code>dt</code>. Die Zeitachse in der
+CSV-Datei wäre dann <em>erfunden</em> &mdash; sie steht ja als <code>i · dt</code> darin, egal wie
+lange es wirklich gedauert hat. Alle &tau;-Werte kämen zu klein heraus.</p>
+<p><strong>Und jetzt der Nachweis, warum man das nicht sehen kann:</strong></p>
+<div class="code-block">Annahme: alle Zeiten sind um den Faktor k falsch,  t' = k · t
+
+ln u = ln U_0 − t/tau          | t = t'/k einsetzen
+ln u = ln U_0 − t'/(k·tau)     &rarr;  wieder eine GERADE,
+                                   nur mit der Steigung −1/(k·tau)</div>
+<div class="warn">
+  <strong>Die unangenehme Folgerung:</strong> Ein Zeitbasisfehler ist ein reiner
+  <em>Streckungsfaktor</em>. Er krümmt nichts, er streut nichts, er verschlechtert das
+  Bestimmtheitsmaß nicht um ein Tausendstel. Die Gerade aus Aufgabe&nbsp;7 bleibt
+  <strong>perfekt gerade</strong> &mdash; nur dass das abgelesene &tau; um genau diesen Faktor k
+  daneben liegt und damit auch C.
+  <br>Also: <em>Ein schönes Diagramm beweist nicht, dass die Messung stimmt.</em> Es beweist nur,
+  dass das Modell (Exponentialfunktion) passt. Ob die Achsen richtig <em>skaliert</em> sind, kann
+  die Linearisierung grundsätzlich nicht verraten &mdash; das kann nur ein Vergleich mit einer
+  <strong>unabhängigen</strong> Quelle: hier die Soll/Ist-Kontrolle des Geräts, in
+  Aufgabe&nbsp;13 die Messung mit einem völlig anderen Widerstand.
+  <br>Das ist der Grund, warum der Selbsttest in der Kopfzeile steht und nicht im Handbuch.
+  Jede Messung bringt ihre eigene Plausibilitätsprüfung mit.
+</div>
+
+<h3>Aufgabe 10 &mdash; Erst messen, dann senden</h3>
+<p><strong>(a) Die CSV-Zeile.</strong></p>
+<div class="code-block">eine Zeile = 10 Zeichen · 10 Bit = 100 Bit
+bei 115200 Baud:  100 / 115200 = 0,87 ms  =  4,3 Messtakte (200 µs)
+bei   9600 Baud:  100 /   9600 = 10,4 ms  =   52 Messtakte
+
+Speicherbedarf: 100 Werte · 2 Byte = 200 Byte von 2048 Byte = 9,8 %</div>
+<div class="info">
+  <strong>Senden ist 4-mal langsamer als Messen.</strong> Würde das Gerät jede Zeile sofort
+  ausgeben, wären nur noch alle 0,87 ms Messwerte möglich &mdash; die Zeitachse wäre nicht
+  nur grob, sondern auch <em>unregelmäßig</em>, weil die Sendedauer von der Anzahl der Ziffern
+  abhängt (1017 ist länger als 14). Deshalb: messen in den RAM, danach senden. Genau so arbeitet
+  jedes echte Messgerät (auch das CASSY), und 200 Byte sind der Preis dafür.
+</div>
+<p><strong>(b) Die Balkenzeile &mdash; und die Überraschung.</strong></p>
+<div class="code-block">volle Balkenzeile: 4 Ziffern + " |" + 51 Balken = 57 Zeichen
+57 · 10 Bit = 570 Bit  /  115200 Baud = 4,95 ms
+
+Vergleich:  tau = 4,66 ms      &rArr;   eine Zeile dauert laenger als 1 tau !</div>
+<div class="warn">
+  <strong>Das Ausgeben <em>einer</em> Anzeigezeile kostet mehr Zeit als die ganze Kurve an
+  Charakter hat.</strong> Würde der Balkenmodus live drucken, wäre die Entladung nach drei
+  Zeilen vorbei &mdash; man sähe 1018, dann etwa 360, dann 130, dann Nullen. Kein Verlauf,
+  nur Trümmer. Die Anzeige würde die Kurve, die sie zeigen soll, selbst zerstören.
+  <br>Deshalb muss <strong>auch der Balkenmodus zuerst speichern</strong>, obwohl es dort
+  überhaupt nicht auf Genauigkeit ankommt. Der Grund ist nicht Präzision, sondern
+  <em>Vollständigkeit</em>: Man kann einen Vorgang nicht gleichzeitig beobachten und berichten,
+  wenn das Berichten länger dauert als der Vorgang. Messen und Darstellen sind zwei getrennte
+  Arbeitsschritte &mdash; das ist die eigentliche Lehre dieses Arbeitsblattes über Messgeräte.
+  <br>Nebenbei: Bei 9600 Baud bräuchte dieselbe Zeile 59 ms &mdash; mehr als 12&tau;. Dann wäre
+  die Kurve schon vollständig abgelaufen, bevor die <em>erste</em> Zeile fertig gedruckt ist.
+</div>
+
+<h3>Aufgabe 11 &mdash; Zwei harte Grenzen</h3>
+<p><strong>(a) Nach oben: die Abtastgrenze.</strong></p>
+<div class="code-block">DT = 200 µs  >  Wandlungsdauer 112 µs      &rarr; zulässig
+Maximal möglich: 1 &tau; / 112 µs = 4,7 ms / 112 µs = 42 Punkte pro &tau;
+
+Mindestens 40 Punkte auf 4&tau;:
+4&tau; &ge; 40 · 112 µs = 4,48 ms   &rArr;   &tau; &ge; 1,12 ms
+C &ge; 1,12 ms / 47 k&Omega; = 24 nF</div>
+<div class="warn">
+  <strong>10 nF wäre nicht mehr messbar:</strong> &tau; = 0,47 ms, die ganze Entladung
+  (4&tau; = 1,9 ms) passt in nur 17 Wandlungen. Zu wenige Punkte für eine Ausgleichsgerade.
+  Jedes Messgerät hat eine untere Grenze &mdash; unsere liegt bei etwa 24 nF, und wir können sie
+  <em>berechnen</em>, statt sie auszuprobieren. (Abhilfe wäre nicht ein schnellerer Takt, sondern
+  ein größerer Widerstand: 470 k&Omega; macht aus 10 nF wieder ein messbares &tau; = 4,7 ms.)
+</div>
+<p><strong>(b) Nach unten: wo das Gerät aufhört zu messen.</strong></p>
+
+<p>Die lange Messreihe über 59,8&nbsp;ms (&asymp;&nbsp;12,8&nbsp;&tau;) zeigt es direkt: Ab
+<code>t = 30,0 ms</code> liefert der Wandler nur noch <strong>Null</strong> &mdash; 149 der 300
+Punkte sind leer, nur 151 tragen überhaupt Information (ein einzelner Nachzügler bei 30,2 ms
+zeigt noch einmal die 1: an der Grenze zittert der Wandler zwischen 0 und 1). Das ist <code>6,4 &tau;</code>, und es ist genau dasselbe Kriterium wie beim
+Ladevorgang aus Aufgabe 2, nur rückwärts gelesen:</p>
+<div class="code-block">blind, sobald  u &lt; 1 Stufe:   1018 · e^(−t/&tau;) &lt; 1
+                               t &gt; &tau; · ln 1018 = 6,93 &tau; = 32,3 ms
+gemessen:                      ab 30,0 ms = 6,43 &tau;</div>
+<p>Dieselbe Zahl 6,93, die in Aufgabe 2 die Ladezeit festgelegt hat, begrenzt auch das Messfenster.
+Der Dynamikbereich eines 10-Bit-Wandlers ist nun einmal 1024:1 &mdash; und in einem
+Exponentialvorgang sind das rund sieben Zeitkonstanten, mehr nicht. <em>Wer länger misst, misst nichts.</em></p>
+<div class="warn">
+  <strong>Und hier lügt der ADC nicht zufällig, sondern systematisch:</strong> Ein Wandler
+  <em>schneidet ab</em>, er rundet nicht &mdash; er liefert im Mittel eine halbe Stufe zu wenig.
+  Oben ist das belanglos (bei adc 1000 sind 0,5 Stufen 0,05 %), unten ist es verheerend: bei
+  adc 2 fehlen 25 %. In <code>ln u</code> zieht dieser Fehler die Punkte am Ende systematisch
+  nach unten, die Gerade wird <em>zu steil</em>, und &tau; kommt <em>zu klein</em> heraus.
+  Die Zahlen aus der 300-Punkte-Reihe:
+  <table>
+    <tr><th>verwendete Punkte</th><th>n</th><th>&tau;</th><th>C</th><th>R²</th></tr>
+    <tr><td>adc &ge; 100 (Empfehlung)</td><td>55</td><td>4,663 ms</td><td>100,1 nF</td><td>0,99998</td></tr>
+    <tr><td>alle Punkte &gt; 0</td><td>151</td><td>4,35 ms</td><td>93 nF</td><td>0,99533</td></tr>
+    <tr><td>nur 1 &le; adc &lt; 20</td><td>59</td><td>3,70 ms</td><td>79 nF</td><td>0,97921</td></tr>
+  </table>
+  Der Schwanz-Fit liegt <strong>21 % daneben</strong> &mdash; weit außerhalb der 5 %
+  Bauteiltoleranz. Man würde den Kondensator fälschlich für Ausschuss erklären.
+  <strong>Die Probe aufs Exempel:</strong> Rechnet man die halbe Stufe heraus und fittet
+  <code>ln(adc + 0,5)</code>, springt der Schwanz-Fit von 3,70 ms auf 4,25 ms &mdash; während
+  sich der gute Bereich praktisch nicht rührt (4,670 → 4,671 ms). Genau so unterscheidet man
+  einen systematischen von einem zufälligen Fehler: Eine Korrektur, die den Verdacht trifft,
+  verändert nur die verdächtigen Daten.
+</div>
+
+<h3>Aufgabe 12 &mdash; Fehlerbilanz</h3>
 <p><strong>(a) Die Spannungskalibrierung ist egal.</strong></p>
 <div class="code-block">u = k · adc        mit k = U_ref / 1023
 ln u = ln(k · adc) = ln(adc) + ln k
@@ -429,45 +587,14 @@ Die Einzelwerte unterscheiden sich um <strong>höchstens eine Stufe</strong> (Mi
 Differenz &minus;0,05 Stufen, kein Trend über die Zeit). Das Rauschen des Wandlers ist also
 tatsächlich zufällig &mdash; und genau deshalb mittelt es sich im Fit über 55 Punkte fast
 vollständig heraus. Dass <em>beide</em> langen Reihen ab exakt <code>t = 30,0 ms</code> blind
-werden, ist ebenfalls reproduzierbar: Es ist keine Zufälligkeit, sondern die Grenze des
-Wandlers.</p>
+werden (149 bzw. 150 leere Punkte &mdash; der Unterschied ist genau dieses eine Zittern an der
+letzten Stufe), ist ebenfalls reproduzierbar: Es ist keine Zufälligkeit, sondern die Grenze
+des Wandlers.</p>
 
-<p><strong>(d) Wo genau hört das Gerät auf zu messen?</strong></p>
-<p>Die lange Messreihe über 59,8&nbsp;ms (&asymp;&nbsp;12,8&nbsp;&tau;) zeigt es direkt: Ab
-<code>t = 30,0 ms</code> liefert der Wandler nur noch <strong>Null</strong> &mdash; 149 der 300
-Punkte sind leer. Das ist <code>6,4 &tau;</code>, und es ist genau dasselbe Kriterium wie beim
-Ladevorgang aus Aufgabe 1, nur rückwärts gelesen:</p>
-<div class="code-block">blind, sobald  u &lt; 1 Stufe:   1018 · e^(−t/&tau;) &lt; 1
-                               t &gt; &tau; · ln 1018 = 6,93 &tau; = 32,3 ms
-gemessen:                      ab 30,0 ms = 6,43 &tau;</div>
-<p>Dieselbe Zahl 6,93, die in Aufgabe 1 die Ladezeit festgelegt hat, begrenzt auch das Messfenster.
-Der Dynamikbereich eines 10-Bit-Wandlers ist nun einmal 1024:1 &mdash; und in einem
-Exponentialvorgang sind das rund sieben Zeitkonstanten, mehr nicht. <em>Wer länger misst, misst nichts.</em></p>
-<div class="warn">
-  <strong>Und hier lügt der ADC nicht zufällig, sondern systematisch:</strong> Ein Wandler
-  <em>schneidet ab</em>, er rundet nicht &mdash; er liefert im Mittel eine halbe Stufe zu wenig.
-  Oben ist das belanglos (bei adc 1000 sind 0,5 Stufen 0,05 %), unten ist es verheerend: bei
-  adc 2 fehlen 25 %. In <code>ln u</code> zieht dieser Fehler die Punkte am Ende systematisch
-  nach unten, die Gerade wird <em>zu steil</em>, und &tau; kommt <em>zu klein</em> heraus.
-  Die Zahlen aus der 300-Punkte-Reihe:
-  <table>
-    <tr><th>verwendete Punkte</th><th>n</th><th>&tau;</th><th>C</th><th>R²</th></tr>
-    <tr><td>adc &ge; 100 (Empfehlung)</td><td>55</td><td>4,663 ms</td><td>100,1 nF</td><td>0,99998</td></tr>
-    <tr><td>alle Punkte &gt; 0</td><td>151</td><td>4,35 ms</td><td>93 nF</td><td>0,99533</td></tr>
-    <tr><td>nur 1 &le; adc &lt; 20</td><td>59</td><td>3,70 ms</td><td>79 nF</td><td>0,97921</td></tr>
-  </table>
-  Der Schwanz-Fit liegt <strong>21 % daneben</strong> &mdash; weit außerhalb der 5 %
-  Bauteiltoleranz. Man würde den Kondensator fälschlich für Ausschuss erklären.
-  <strong>Die Probe aufs Exempel:</strong> Rechnet man die halbe Stufe heraus und fittet
-  <code>ln(adc + 0,5)</code>, springt der Schwanz-Fit von 3,70 ms auf 4,25 ms &mdash; während
-  sich der gute Bereich praktisch nicht rührt (4,670 → 4,671 ms). Genau so unterscheidet man
-  einen systematischen von einem zufälligen Fehler: Eine Korrektur, die den Verdacht trifft,
-  verändert nur die verdächtigen Daten.
-</div>
-
-<h3>Aufgabe 10 (Zusatz) &mdash; Probe mit 470 k&Omega;</h3>
+<h3>Aufgabe 13 (Zusatz) &mdash; Probe mit 470 k&Omega;</h3>
 <div class="code-block">&tau; = 470 k&Omega; · 100 nF = 47 ms          (Faktor 10 langsamer)
-Messdauer 4&tau; = 188 ms  &rarr;  DT = 188 ms / 99 = 1,9 ms  &rarr;  DT = 2000 µs
+Messdauer 4&tau; = 188 ms  &rarr;  DT = 188 ms / 99 = 1,9 ms  &rarr;  DT_MESSEN = 2000 µs
+                                        (zufaellig derselbe Wert wie DT_SEHEN)
 Ladezeit-Probe: 500 ms / 47 ms = 10,6 &tau;  >  7&tau;      &rarr; reicht noch
 
 Ergebnis: &tau; = 46,9 ms  &rarr;  C = 46,9 ms / 471 k&Omega; = 99,6 nF</div>
