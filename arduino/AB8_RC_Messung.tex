@@ -88,7 +88,8 @@
 \raggedright\small\textbf{Lösungen \& Erklärungen:}\\
 \texttt{hbraak.github.io/fachpraxis/}\\
 \texttt{arduino/lsg8.html}\\[2pt]
-\emph{Erst selbst versuchen.}
+\emph{Erst selbst versuchen.} Dort steht\\
+auch der Sketch Zeile für Zeile erklärt.
 \end{minipage}
 \end{center}
 
@@ -196,7 +197,8 @@ er hat den Moment ja selbst ausgelöst. Ein Startsignal von außen braucht er ni
 \end{minipage}
 
 \vspace{9pt}
-\noindent Das ist das Herzstück des Sketches -- lest es, bevor ihr ihn hochladet:
+\noindent Das ist das Herzstück des Sketches -- lest es, bevor ihr ihn hochladet (den ganzen
+Sketch erklärt die Lösungsseite Zeile für Zeile):
 
 \begin{lstlisting}[style=arduino]
 digitalWrite(PIN_RC, LOW);            // Entladung startet JETZT
@@ -217,8 +219,9 @@ Vergleicht den eingestellten Takt \texttt{DT} mit eurem Ergebnis aus Aufgabe 2. 
 Kopfzeile die \emph{Soll-} und die \emph{Ist-Messdauer} und erklärt die Abweichung. Was würde eine
 stark anwachsende Ist-Dauer bedeuten?
 
+\newpage
 \item \textbf{Zwei Grenzen des Geräts.}
-  \begin{enumerate}[label=(\alph*), leftmargin=2em, itemsep=10pt, topsep=8pt]
+  \begin{enumerate}[label=(\alph*), leftmargin=2em, itemsep=8pt, topsep=6pt]
   \item Eine einzelne Wandlung mit \texttt{analogRead()} dauert \SI{112}{\micro\second}. Prüft, ob
         der eingestellte Takt zulässig ist. Berechnet dann, welche Kapazität ihr mit
         $R=\SI{47}{\kilo\ohm}$ mindestens braucht, damit noch 40 Messpunkte auf die Kurve passen.
@@ -232,7 +235,7 @@ stark anwachsende Ist-Dauer bedeuten?
 
 \subsection*{Teil 3 -- Auswerten}
 
-\begin{enumerate}[leftmargin=2em, resume, itemsep=15pt, topsep=9pt]
+\begin{enumerate}[leftmargin=2em, resume, itemsep=11pt, topsep=7pt]
 \item \textbf{Kurve und Schnellschätzung.} Messt die Spannung am \texttt{5V}-Pin und gebt die
 Umrechnung $u(\text{adc})$ an. Übertragt die Messwerte in die Tabellenkalkulation und zeichnet $u$
 über $t$. Lest die Halbwertszeit ab und vergleicht mit eurer Rechnung aus Aufgabe 2.
@@ -249,9 +252,9 @@ Abweichung vom Aufdruck \SI{100}{\nano\farad} in Prozent an.
 
 \subsection*{Teil 4 -- Wie gut ist unser Messgerät?}
 
-\begin{enumerate}[leftmargin=2em, resume, itemsep=15pt, topsep=9pt]
+\begin{enumerate}[leftmargin=2em, resume, itemsep=11pt, topsep=7pt]
 \item \textbf{Fehlerbilanz.}
-  \begin{enumerate}[label=(\alph*), leftmargin=2em, itemsep=10pt, topsep=8pt]
+  \begin{enumerate}[label=(\alph*), leftmargin=2em, itemsep=8pt, topsep=6pt]
   \item Zeigt rechnerisch: Für die \emph{Steigung} der Geraden ist es gleichgültig, ob ihr $\ln u$
         oder $\ln(\text{adc})$ auftragt. Welche überraschende Folgerung ergibt sich daraus für euer
         Messgerät -- im Unterschied zum Füllstandsgeber aus Arbeitsblatt 7?
@@ -266,7 +269,7 @@ Abweichung vom Aufdruck \SI{100}{\nano\farad} in Prozent an.
 
 \subsection*{Zusatzaufgabe}
 
-\begin{enumerate}[leftmargin=2em, resume, itemsep=15pt, topsep=9pt]
+\begin{enumerate}[leftmargin=2em, resume, itemsep=11pt, topsep=7pt]
 \item \textbf{Probe mit einem anderen Widerstand.} Wiederholt die Messung mit
 $R=\SI{470}{\kilo\ohm}$. Berechnet vorher das neue $\tau$ und das passende \texttt{DT} und ändert
 im Sketch \emph{nur diese eine Zeile}; prüft auch, ob die Ladezeit noch reicht. Ihr erhaltet eine

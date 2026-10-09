@@ -22,6 +22,10 @@
   .code-block .fn { color: #dcdcaa; }
   .code-block .cm { color: #6a9955; font-style: italic; }
   .code-block .val { color: #b5cea8; }
+  .code-block .kw { color: #569cd6; font-weight: bold; }
+  .code-block .fn { color: #dcdcaa; }
+  .code-block .cm { color: #6a9955; font-style: italic; }
+  .code-block .val { color: #b5cea8; }
   .code-block .const { color: #4fc1ff; }
   .info {
     background: #e8f8f0; border-left: 4px solid #27ae60; padding: 1rem 1.2rem;
@@ -69,6 +73,132 @@
   Hauptmessung: <code>C = 100 nF</code>, <code>R = 47 k&Omega;</code>. Alle Zahlen unten sind Richtwerte;
   die Schülerwerte dürfen abweichen.
 </div>
+
+<h2>Der Sketch Zeile für Zeile</h2>
+<div class="info">
+  Ihr tippt den Sketch diesmal nicht ab &mdash; dafür solltet ihr ihn <em>lesen</em> können.
+  Hier steht, was jede Zeile tut und <strong>warum sie so und nicht anders dasteht</strong>.
+  Fast jede Entscheidung im Code ist eine Messgeräte-Entscheidung.
+</div>
+
+<h3>1. Die Konstanten &mdash; alles, was ihr anfassen müsst</h3>
+<div class="code-block"><span class="kw">const</span> <span class="kw">int</span> PIN_RC   = <span class="val">2</span>;      <span class="cm">// laedt und entlaedt</span>
+<span class="kw">const</span> <span class="kw">int</span> PIN_MESS = A0;     <span class="cm">// misst die Kondensatorspannung</span>
+
+<span class="kw">const</span> <span class="kw">int</span>           N        = <span class="val">100</span>;    <span class="cm">// Anzahl der Messpunkte</span>
+<span class="kw">const</span> <span class="kw">unsigned</span> <span class="kw">long</span> DT       = <span class="val">200</span>;    <span class="cm">// Abstand der Messpunkte in us</span>
+<span class="kw">const</span> <span class="kw">unsigned</span> <span class="kw">long</span> LADEZEIT = <span class="val">500</span>;    <span class="cm">// Ladedauer in ms</span>
+<span class="kw">const</span> <span class="kw">unsigned</span> <span class="kw">long</span> PAUSE    = <span class="val">3000</span>;   <span class="cm">// Wartezeit bis zur naechsten Messung</span></div>
+<p>Das ist die komplette „Bedienoberfläche“ des Geräts. <code>DT</code> und <code>LADEZEIT</code>
+sind genau die beiden Werte, die ihr in Aufgabe 1 und 2 selbst ausgerechnet habt &mdash; der Sketch
+nimmt euch die Physik nicht ab, er führt sie nur aus. Für den Zusatz mit 470 k&Omega; ändert ihr
+<em>eine</em> Zahl.</p>
+<p><code>const</code> heißt: Der Compiler darf den Wert fest in den Code einbauen, statt RAM dafür
+zu reservieren. <code>unsigned long</code> ist nötig, weil Zeiten in µs schnell große Zahlen werden
+(siehe unten beim Cast) &mdash; ein <code>int</code> kann auf dem Uno nur bis 32767 zählen.</p>
+
+<h3>2. Der Messwertspeicher</h3>
+<div class="code-block"><span class="kw">int</span> werte[N];                <span class="cm">// der Messwertspeicher</span></div>
+<p>100 Zahlen zu je 2 Byte = 200 Byte von 2048 Byte SRAM (9,8 %). Hier liegt die eigentliche
+Grenze des Geräts: <strong>Mehr Messpunkte kosten RAM, nicht Rechenzeit.</strong> Mit
+<code>N = 900</code> wäre der Uno voll und würde abstürzen &mdash; ohne Fehlermeldung, er läuft
+einfach wirr weiter. Genau deshalb hat auch ein echtes CASSY eine maximale Messpunktzahl.</p>
+
+<h3>3. setup() &mdash; einmalig</h3>
+<div class="code-block"><span class="kw">void</span> <span class="fn">setup</span>() {
+  Serial.<span class="fn">begin</span>(<span class="val">115200</span>);
+  <span class="fn">pinMode</span>(PIN_RC, OUTPUT);
+}</div>
+<p>115200 statt der gewohnten 9600 Baud &mdash; 12-mal schneller. Das ist keine Kosmetik: Bei 9600
+Baud dauert das Ausgeben der 100 Zeilen über eine Sekunde. <code>A0</code> braucht <em>kein</em>
+<code>pinMode</code>, Analogeingänge sind immer Eingänge.</p>
+
+<h3>4. Laden &mdash; der Pin ist die Spannungsquelle</h3>
+<div class="code-block"><span class="fn">digitalWrite</span>(PIN_RC, HIGH);
+<span class="fn">delay</span>(LADEZEIT);</div>
+<div class="info">
+  <strong>Der Trick des ganzen Aufbaus:</strong> <code>D2</code> ist nicht nur ein Schalter, sondern
+  die <em>Spannungsquelle</em>. Bei <code>HIGH</code> liegen 5 V am Pin, der Kondensator lädt über
+  R. Der Strom ist 5 V / 47 k&Omega; = 0,11 mA &mdash; ein Ausgangspin darf 40 mA, also völlig
+  unkritisch. Deshalb braucht die Schaltung kein Netzteil und keinen zweiten Widerstand.
+</div>
+
+<h3>5. Entladen &mdash; und warum LOW nicht „aus“ heißt</h3>
+<div class="code-block"><span class="fn">digitalWrite</span>(PIN_RC, LOW);
+<span class="kw">unsigned</span> <span class="kw">long</span> t0 = <span class="fn">micros</span>();          <span class="cm">// t = 0 ist uns exakt bekannt</span></div>
+<p><code>LOW</code> bedeutet <strong>nicht</strong> „Pin abgeschaltet“, sondern „Pin aktiv auf 0 V“.
+Der Ausgang wird zum GND-Anschluss, und der Kondensator entlädt sich über <em>denselben</em>
+Widerstand. Deshalb ist &tau; beim Laden und Entladen identisch &mdash; ein Bauteil, zwei Funktionen.</p>
+<div class="warn">
+  <strong>Wollte man den Kondensator stattdessen sich selbst überlassen</strong>, müsste man den Pin
+  mit <code>pinMode(PIN_RC, INPUT)</code> hochohmig schalten. Dann würde der Kondensator nur noch
+  über den Eingangswiderstand des Wandlers entladen &mdash; &tau; wäre Minuten statt Millisekunden.
+  Probiert es ruhig aus, es ist eine schöne Demonstration von Aufgabe 9.
+</div>
+<p><code>micros()</code> liefert die Zeit seit dem Einschalten in Mikrosekunden &mdash; allerdings
+in <strong>4-µs-Schritten</strong> (daher der Auflösungswert aus Aufgabe 9). Dass der Zähler nach
+etwa 71 Minuten überläuft, stört hier nicht: Weil mit <code>unsigned long</code> gerechnet wird,
+kommt bei <code>micros() - t0</code> auch über den Überlauf hinweg die richtige Differenz heraus.</p>
+
+<h3>6. Die Messschleife &mdash; die wichtigsten vier Zeilen</h3>
+<div class="code-block"><span class="kw">for</span> (<span class="kw">int</span> i = <span class="val">0</span>; i &lt; N; i++) {
+  <span class="kw">while</span> (<span class="fn">micros</span>() - t0 &lt; (<span class="kw">unsigned</span> <span class="kw">long</span>)i * DT) { ; }   <span class="cm">// auf den Takt warten</span>
+  werte[i] = <span class="fn">analogRead</span>(PIN_MESS);    <span class="cm">// nur messen, NICHT senden</span>
+}</div>
+<p><strong>Warum nicht einfach <code>delay(DT)</code>?</strong> Weil sich Fehler dann
+<em>aufaddieren</em>: Jeder Durchlauf bräuchte DT <em>plus</em> die Zeit für
+<code>analogRead()</code> plus den Schleifenaufwand. Nach 100 Punkten wäre die Zeitachse um über
+11 ms zu lang &mdash; und zwar ungleichmäßig. Hier wird stattdessen jeder Messpunkt gegen den
+<strong>festen Startzeitpunkt</strong> <code>t0</code> terminiert: Messpunkt <em>i</em> gehört zur
+Zeit <em>i</em>&nbsp;·&nbsp;DT, basta. Verzögerungen können sich nicht summieren.</p>
+<div class="warn">
+  <strong>Der Cast <code>(unsigned long)</code> ist kein Schönheitsfehler.</strong> Ohne ihn würde
+  <code>i * DT</code> als <code>int</code> gerechnet &mdash; und <code>int</code> endet auf dem Uno
+  bei 32767. Beim Zusatz mit <code>DT = 2000</code> wäre schon bei i = 17 Schluss, danach kämen
+  negative Zeiten heraus und die Schleife würde gar nicht mehr warten. Die Messung sähe aus wie ein
+  senkrechter Absturz. Solche Überläufe sind der häufigste schwer findbare Fehler in
+  Mikrocontroller-Programmen, weil nichts abstürzt &mdash; es kommen nur falsche Zahlen heraus.
+</div>
+<p>Gespeichert wird der <strong>Rohwert</strong> 0&hellip;1023, nicht die Spannung. Eine
+Umrechnung in Volt bräuchte Fließkommarechnung, und die kostet auf dem Uno Hunderte von
+Mikrosekunden &mdash; mitten im Messtakt. <em>Rechnen wird nach hinten verschoben, gemessen wird
+sofort.</em> Das ist ein Grundprinzip jedes Messgeräts (und nach Aufgabe 9a für das Ergebnis
+sowieso egal).</p>
+
+<h3>7. Der eingebaute Selbsttest</h3>
+<div class="code-block"><span class="kw">unsigned</span> <span class="kw">long</span> dauer = <span class="fn">micros</span>() - t0;  <span class="cm">// zur Kontrolle der Zeitbasis</span></div>
+<p>Das Gerät misst, wie lange es selbst gebraucht hat, und gibt es in der Kopfzeile aus. Weicht die
+Ist- stark von der Soll-Dauer ab, kommt der Prozessor dem Takt nicht nach &mdash; dann ist die
+Zeitachse gestreckt und <em>alle</em> &tau;-Werte sind falsch. Ein Messgerät, das seine eigene
+Funktion prüft, ist mehr wert als eines, das nur Zahlen ausspuckt (vgl. Aufgabe 4).</p>
+
+<h3>8. Ausgabe &mdash; erst jetzt</h3>
+<div class="code-block">Serial.<span class="fn">print</span>(F(<span class="cm">"# Punkte: "</span>));  Serial.<span class="fn">print</span>(N);
+&hellip;
+Serial.<span class="fn">println</span>(F(<span class="cm">"t_us;adc"</span>));
+
+<span class="kw">for</span> (<span class="kw">int</span> i = <span class="val">0</span>; i &lt; N; i++) {
+  Serial.<span class="fn">print</span>((<span class="kw">unsigned</span> <span class="kw">long</span>)i * DT);
+  Serial.<span class="fn">print</span>(<span class="cm">';'</span>);
+  Serial.<span class="fn">println</span>(werte[i]);
+}</div>
+<ul>
+  <li><strong><code>F("...")</code></strong> legt den Text ins Flash statt ins RAM. Ohne das würden
+      die Überschriften rund 100 Byte des knappen Speichers belegen &mdash; neben dem 200-Byte-Array
+      spürbar.</li>
+  <li><strong>Semikolon als Trennzeichen</strong>, weil das deutsche Excel/LibreOffice das Komma für
+      Dezimalstellen braucht. Die Zeitspalte wird hier <em>berechnet</em> (<code>i · DT</code>) und
+      nicht gemessen &mdash; sie ist per Konstruktion exakt gleichmäßig.</li>
+  <li><strong>Die Kopfzeile beginnt mit <code>#</code></strong>, damit man sie beim Import leicht
+      erkennt und überspringt.</li>
+</ul>
+
+<h3>9. Und dann von vorn</h3>
+<div class="code-block"><span class="fn">delay</span>(PAUSE);             <span class="cm">// Pause, dann misst das Geraet erneut</span></div>
+<p><code>loop()</code> läuft endlos, das Gerät misst also alle 3,5 s eine neue Kurve. Praktisch:
+Ihr könnt am Aufbau wackeln, den Widerstand tauschen oder den Kondensator entfernen und seht sofort,
+was passiert &mdash; ohne neu hochzuladen. Für die Auswertung nehmt ihr einfach einen vollständigen
+Block zwischen zwei Kopfzeilen.</p>
 
 <h2>Teil 1 &mdash; Vorüberlegung</h2>
 
