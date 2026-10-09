@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lösung AB 8 — Wir bauen uns ein CASSY</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f8f9fa; color: #2c3e50; line-height: 1.6; }
+  header { background: #2c3e50; color: white; padding: 1.5rem 2rem; }
+  header h1 { font-size: 1.5rem; }
+  header p { opacity: 0.8; margin-top: 0.3rem; font-size: 0.95rem; }
+  .container { max-width: 800px; margin: 1.5rem auto; padding: 0 1.5rem; }
+  h2 { color: #2c3e50; margin: 1.5rem 0 0.8rem; padding-bottom: 0.3rem; border-bottom: 2px solid #27ae60; }
+  h3 { color: #27ae60; margin: 1rem 0 0.5rem; }
+  .code-block {
+    background: #1e1e1e; color: #d4d4d4; border-radius: 8px; padding: 1.2rem;
+    font-family: 'Fira Code', 'Consolas', monospace; font-size: 0.9rem;
+    overflow-x: auto; margin: 0.8rem 0; line-height: 1.5; white-space: pre;
+  }
+  .code-block .kw { color: #569cd6; font-weight: bold; }
+  .code-block .fn { color: #dcdcaa; }
+  .code-block .cm { color: #6a9955; font-style: italic; }
+  .code-block .val { color: #b5cea8; }
+  .code-block .const { color: #4fc1ff; }
+  .info {
+    background: #e8f8f0; border-left: 4px solid #27ae60; padding: 1rem 1.2rem;
+    border-radius: 0 8px 8px 0; margin: 1rem 0;
+  }
+  .info strong { color: #27ae60; }
+  .warn {
+    background: #fdf3e7; border-left: 4px solid #e67e22; padding: 1rem 1.2rem;
+    border-radius: 0 8px 8px 0; margin: 1rem 0;
+  }
+  .warn strong { color: #d35400; }
+  table { border-collapse: collapse; margin: 0.8rem 0; width: 100%; }
+  th, td { border: 1px solid #ddd; padding: 0.5rem 0.8rem; text-align: left; }
+  th { background: #f0f0f0; }
+  code { background: #eef1f3; padding: 0.1rem 0.35rem; border-radius: 4px; font-size: 0.92em; }
+  .nav { display: flex; gap: 1rem; margin: 1.5rem 0; flex-wrap: wrap; }
+  .nav a {
+    background: #27ae60; color: white; padding: 0.5rem 1.2rem; border-radius: 6px;
+    text-decoration: none; font-size: 0.9rem; transition: background 0.2s;
+  }
+  .nav a:hover { background: #219a52; }
+  .nav a.outline { background: transparent; color: #27ae60; border: 2px solid #27ae60; }
+  .nav a.outline:hover { background: #e8f8f0; }
+  footer { text-align: center; padding: 2rem; color: #999; font-size: 0.85rem; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Lösung AB 8: Wir bauen uns ein CASSY</h1>
+  <p>Ein eigenes Messgerät für die Entladekurve eines Kondensators</p>
+</header>
+<div class="container">
+
+<div class="nav">
+  <a href="AB8_RC_Messung.pdf">📄 Arbeitsblatt (PDF)</a>
+  <a href="AB8_RC_Messung.ino">💾 Sketch (.ino)</a>
+  <a href="lsg6.html" class="outline">&larr; AB 6 (Abkühlkurve)</a>
+  <a href="lsg4.html" class="outline">AB 4 (ADC)</a>
+  <a href="./" class="outline">&larr; Übersicht</a>
+</div>
+
+<div class="info">
+  <strong>Die Leitidee:</strong> In Physik liefert das CASSY die Kurve, das Thema ist der Kondensator.
+  Hier ist es umgekehrt — der Kondensator ist nur der Prüfling, <strong>das Messgerät ist das Thema</strong>.
+  Alle Zahlen unten gelten für <code>C = 100 nF</code>; Ihre eigenen Werte dürfen abweichen.
+</div>
+
+<h2>Teil 1 — Das Gerät in Betrieb nehmen</h2>
+
+<h3>Aufgabe 1 — Widerstand nachmessen</h3>
+<p>Aufdruck 470 kΩ, gemessen z.&nbsp;B. 468 kΩ. Gerechnet wird mit dem <strong>Istwert</strong>.
+Ein Widerstand der Reihe E12 hat typisch ±5 % Toleranz — das sind bei 470 kΩ schon ±23 kΩ und geht
+in <code>C = τ/R</code> voll ins Ergebnis ein. Nachmessen kostet 20 Sekunden und spart 5 % Fehler.</p>
+
+<h3>Aufgabe 2 — Soll- und Ist-Messdauer</h3>
+<p>Soll: <code>(N−1)·DT = 199 · 1000 µs = 199 000 µs</code>. Ist: typisch ca. <code>199 100 µs</code>,
+also rund 100 µs mehr.</p>
+<table>
+<tr><th>Ursache</th><th>Größenordnung</th></tr>
+<tr><td>Der letzte <code>analogRead()</code> läuft noch, bevor <code>micros()</code> gelesen wird</td><td>ca. 112 µs</td></tr>
+<tr><td>Auflösung von <code>micros()</code> (zählt in 4-µs-Schritten)</td><td>4 µs</td></tr>
+</table>
+<div class="info">
+  <strong>Das Entscheidende:</strong> Die Abweichung ist <em>klein und konstant</em> — die Zeitbasis
+  stimmt also. Würde sie stark anwachsen, hieße das: das Gerät kommt mit dem eingestellten Takt nicht
+  mehr mit und die ganze Zeitachse ist falsch. Diese zwei Zahlen in der Kopfzeile sind der
+  <strong>Selbsttest Ihres Messgeräts</strong>. In Teil 4 werden Sie ihn brauchen.
+</div>
+
+<h3>Aufgabe 3 — Kalibrierung</h3>
+<p>Am 5-V-Pin gemessen z.&nbsp;B. <code>U<sub>ref</sub> = 4,985 V</code> (der USB-Port liefert selten
+genau 5,000 V).</p>
+<div class="code-block">u = adc / 1023 · 4,985 V
+
+eine Wandlerstufe:  4,985 V / 1023 = 4,87 mV</div>
+<p>1023, nicht 1024: der Wert 1023 steht für die volle Referenzspannung.</p>
+
+<h2>Teil 2 — Warum erst gespeichert und dann gesendet wird</h2>
+
+<h3>Aufgabe 4 — Wie lange dauert eine Messzeile?</h3>
+<div class="code-block">10 Zeichen · 10 Bit = 100 Bit pro Zeile
+
+  9600 Baud:  100 Bit / 9600 Bit/s  = 10,4 ms
+115200 Baud:  100 Bit / 115200 Bit/s = 0,87 ms
+
+Messtakt DT = 1,0 ms</div>
+<p>Bei 9600 Baud bräuchte das Senden <strong>zehnmal länger als der ganze Messtakt</strong> — jeder
+Messpunkt käme viel zu spät, die Zeitachse wäre frei erfunden. Auch 115200 Baud reicht nicht:
+0,87 ms von 1,0 ms gehen fürs Senden weg, für die Wandlung (0,112 ms) bleibt nichts übrig. Und bei
+<code>DT = 200 µs</code> (Teil 4) ist es völlig aussichtslos.</p>
+<div class="info">
+  <strong>Deshalb die Reihenfolge: erst messen, dann reden.</strong> Genau so arbeitet auch das CASSY —
+  es sammelt im Gerät und überträgt hinterher an den PC. Wer während der Messung sendet, baut kein
+  Messgerät, sondern einen Zufallsgenerator.
+</div>
+
+<h3>Aufgabe 5 — Speicherbedarf</h3>
+<div class="code-block">200 Werte · 2 Byte = 400 Byte   von 2048 Byte  =  19,5 %
+rein rechnerisch maximal: 2048 / 2 = 1024 Werte</div>
+<p>Ausreizen darf man das nicht. Es brauchen außerdem Platz: die übrigen Variablen, der serielle
+Sendepuffer (64 Byte) und vor allem der <strong>Stack</strong>, der vom anderen Ende des Speichers
+nach unten wächst. Treffen beide zusammen, überschreiben sie sich gegenseitig: der Arduino rechnet
+dann falsch oder startet dauernd neu — <strong>ohne jede Fehlermeldung</strong>, denn es gibt kein
+Betriebssystem, das eingreift. Faustregel: höchstens etwa 75 % belegen, also ca. 700–800 Messwerte.</p>
+
+<h2>Teil 3 — Die Entladekurve auswerten</h2>
+
+<h3>Aufgabe 6 — Halbwertszeit als Schnellschätzung</h3>
+<div class="code-block">abgelesen:  t½ ≈ 33 ms
+τ = t½ / ln 2 = 33 ms / 0,693 = 47,6 ms</div>
+<p>Zum Vergleich: <code>R·C = 468 kΩ · 100 nF = 46,8 ms</code>. Die Abschätzung dient nur dazu,
+einen groben Erwartungswert zu haben — wer in Aufgabe 7 auf 4,7 ms oder 470 ms kommt, hat sich um
+eine Zehnerpotenz vertan und merkt es sofort.</p>
+
+<h3>Aufgabe 7 — Linearisierung</h3>
+<div class="code-block">u(t) = U₀ · e^(−t/τ)        | logarithmieren
+ln u = ln U₀ − t/τ
+
+also eine Gerade  y = m·t + b   mit   m = −1/τ   und   b = ln U₀
+                                      τ = −1/m</div>
+<p>Beispiel: Steigungsdreieck ergibt <code>m = −21,0 1/s</code> → <code>τ = 47,6 ms</code>.
+Aufgetragen wird in ein <strong>normales, linear geteiltes Achsenkreuz</strong> — die Hilfsspalte
+<code>ln u</code> erledigt das Logarithmieren schon, logarithmisches Papier würde doppelt
+logarithmieren.</p>
+<div class="warn">
+  <strong>Welche Punkte darf man benutzen?</strong> Die letzten Messwerte liegen bei 2, 1, 0
+  Wandlerstufen. Dort ist der Quantisierungsfehler von ±1 Stufe größer als der Messwert selbst, und
+  <code>ln 0</code> ist gar nicht definiert. Werten Sie nur Punkte oberhalb von etwa 20 Stufen
+  (≈ 0,1 V) aus — bei den kleinen Werten biegt die Gerade sonst sichtbar weg.
+</div>
+
+<h3>Aufgabe 8 — Kapazität</h3>
+<div class="code-block">C = τ / R = 47,6 ms / 468 kΩ = 101,7 nF
+Abweichung vom Aufdruck 100 nF:  +1,7 %</div>
+<p>Folienkondensatoren sind meist mit ±5 % oder ±10 % angegeben. 1,7 % liegen klar in der Toleranz —
+das ist <strong>kein Messfehler, sondern das Bauteil</strong>. Verdacht auf einen echten Messfehler
+besteht erst, wenn die Abweichung deutlich über der Toleranz liegt und bei allen Gruppen in
+<em>dieselbe</em> Richtung zeigt. Dann suchen Sie eine systematische Ursache — siehe Aufgabe 12.</p>
+
+<h3>Aufgabe 9 — Die Pointe: dieses Gerät braucht keine Kalibrierung</h3>
+<div class="code-block">ln u = ln(k · adc) = ln(adc) + ln k        mit k = U_ref / 1023
+
+ln k ist eine KONSTANTE  ⇒  nur der Achsenabschnitt verschiebt sich,
+                            die STEIGUNG bleibt unverändert</div>
+<p>Die gesuchte Größe steckt also allein in der <strong>Zeit</strong>, und die Zeit beherrscht der
+Arduino sehr gut: sein Quarz geht auf etwa ±50 ppm genau, das sind 0,005 %. Die Spannung kann er nur
+auf ±2 Stufen (≈ 0,2 %) — aber sie fällt aus dem Ergebnis heraus.</p>
+<div class="info">
+  <strong>Vergleich mit AB 7:</strong> Beim Schwimmergeber ging die Spannung <em>direkt</em> ins
+  Ergebnis, dort war die Kalibrierung die ganze Arbeit. Hier ist sie für <code>τ</code> und
+  <code>C</code> schlicht überflüssig (für die hübsche Kurve in Volt brauchen Sie sie trotzdem).
+  <br><em>Merksatz: Ein gutes Messgerät wird so gebaut, dass das Ergebnis an der Größe hängt, die man
+  am besten beherrscht.</em>
+</div>
+
+<h2>Teil 4 — Die Grenzen des eigenen Geräts</h2>
+
+<h3>Aufgabe 10 — Die Tabelle</h3>
+<p>Ziel: Messdauer <code>(N−1)·DT ≈ 4τ</code>, also <code>DT = 4τ / 199</code>.</p>
+<table>
+<tr><th>R</th><th>τ = R·C</th><th>DT berechnet</th><th>DT gewählt</th><th>Beobachtung</th></tr>
+<tr><td>47 kΩ</td><td>4,7 ms</td><td>94 µs</td><td><strong>200 µs</strong></td>
+    <td>Takt zu schnell für den Wandler (Aufgabe 11). Mit 200 µs dauert die Messung 39,8 ms = 8,5 τ — die zweite Hälfte der Werte ist 0 und unbrauchbar.</td></tr>
+<tr><td>470 kΩ</td><td>47 ms</td><td>945 µs</td><td>1000 µs</td>
+    <td>Der bequeme Fall. Kurve füllt den Bereich gut aus.</td></tr>
+<tr><td>4,7 MΩ</td><td>470 ms</td><td>9447 µs</td><td>10000 µs</td>
+    <td>Startwert erreicht die 5 V nicht, τ fällt zu klein aus (Aufgabe 12).</td></tr>
+</table>
+<p>Die Ladezeit <code>LADEZEIT = 3000</code> passt für alle drei und muss nicht angefasst werden —
+nachgerechnet in Aufgabe 12.</p>
+
+<h3>Aufgabe 11 — Die obere Grenze: der Wandler</h3>
+<div class="code-block">DT berechnet = 94 µs   <   Wandlungsdauer 112 µs</div>
+<p>Dann wartet die <code>while</code>-Schleife überhaupt nicht mehr — das Gerät läuft, so schnell es
+kann, und der tatsächliche Abstand ist 112 µs statt der im Sketch eingetragenen 94 µs. Die Zeitachse
+in der Tabelle wäre also <strong>falsch, ohne dass man es an der Kurve sieht</strong>. Verraten wird
+es nur von der Kopfzeile: die Ist-Dauer ist deutlich größer als die Soll-Dauer. Genau dafür ist sie da.</p>
+<p>Kleinstes brauchbares <code>DT</code>: etwa <strong>200 µs</strong> — Faktor 2 Reserve, denn auch
+die Schleife selbst, der Vergleich und das Abspeichern brauchen Zeit.</p>
+<p><strong>Untere Kapazitätsgrenze bei 47 kΩ:</strong> Für eine vernünftige Ausgleichsgerade braucht
+man etwa 20 Punkte in den ersten 2 τ:</p>
+<div class="code-block">2τ ≥ 20 · 200 µs = 4 ms   ⇒   τ ≥ 2 ms   ⇒   C ≥ 2 ms / 47 kΩ = 43 nF</div>
+<p>Mit 100 nF liegen Sie also nur knapp über der Gerätegrenze. Ein 10-nF-Kondensator (τ = 470 µs)
+wäre mit diesem Gerät an 47 kΩ <strong>nicht mehr messbar</strong> — eine Zehnerpotenz weiter und das
+5-Euro-CASSY ist am Ende. Abhilfe: größerer Widerstand (dann aber Aufgabe 12 beachten) oder ein
+schnellerer Wandler.</p>
+
+<h3>Aufgabe 12 — Die untere Grenze: das Gerät verfälscht</h3>
+<p><strong>Reicht die Ladezeit?</strong></p>
+<div class="code-block">3000 ms / 470 ms = 6,4 τ   ⇒   u = (1 − e^(−6,4)) · U₀ = 99,83 % von U₀</div>
+<p>Ja, das genügt (die fehlenden 0,17 % sind weniger als eine Wandlerstufe).</p>
+<p><strong>Die gemeinsame Ursache beider Auffälligkeiten:</strong> Der Analogeingang ist kein perfekter
+Spannungsmesser — er hat einen endlichen Eingangswiderstand <code>R<sub>e</sub></code> (Datenblatt:
+Größenordnung 100 MΩ), und der liegt <strong>parallel zum Kondensator</strong>.</p>
+<table>
+<tr><th>Beim Laden</th><th>Beim Entladen</th></tr>
+<tr><td>R und R<sub>e</sub> bilden einen Spannungsteiler, es fließt ein Dauerstrom. Der Kondensator
+erreicht nur <code>U₀ · R<sub>e</sub>/(R + R<sub>e</sub>)</code>.</td>
+<td>R<sub>e</sub> liegt parallel zu R, der Kondensator entlädt sich über <em>beide</em> — also
+schneller. <code>τ = (R ∥ R<sub>e</sub>) · C</code>.</td></tr>
+</table>
+<div class="code-block">Zahlenbeispiel (R = 4,7 MΩ, R_e = 100 MΩ, U₀ = 4,985 V):
+
+Startwert:  U_C = 4,985 V · 100/(4,7+100) = 4,76 V     (95,5 %)
+            → fehlen 0,22 V, das sind 46 Wandlerstufen — gut sichtbar
+
+R ∥ R_e  =  (4,7 · 100)/(4,7 + 100) MΩ = 4,49 MΩ
+τ        =  4,49 MΩ · 100 nF = 449 ms   statt   470 ms   →  4,5 % zu klein</div>
+<p><strong>Eingangswiderstand aus dem Startwert:</strong> Spannungsteiler umstellen —</p>
+<div class="code-block">R_e = R · U_C / (U₀ − U_C) = 4,7 MΩ · 4,76/(4,985 − 4,76) = 99 MΩ</div>
+<div class="warn">
+  <strong>Wenn Ihr Wert viel kleiner herauskommt:</strong> Das ist kein Rechenfehler. Bei 100 MΩ
+  messen Sie nicht mehr nur den Chip, sondern auch Ihr Steckbrett — Fingerfeuchtigkeit,
+  Flussmittelreste und Staub zwischen den Kontakten bilden Nebenschlusswiderstände in ebendieser
+  Größenordnung. Auch das ist ein echtes Messergebnis: <em>bei sehr hochohmigen Messungen ist der
+  Aufbau Teil des Messgeräts.</em>
+</div>
+<p>Schön ist: Sie haben mit <em>einer</em> Messreihe zwei Dinge bestimmt — die Kapazität (aus dem
+kleinen Widerstand) und den Eingangswiderstand Ihres eigenen Geräts (aus dem großen). Die
+Bauteiltoleranz des Kondensators fällt dabei heraus, weil es immer derselbe Kondensator ist.</p>
+
+<h3>Aufgabe 13 (Zusatz) — Gegenüberstellung mit dem Sensor-CASSY</h3>
+<p>Das Sensor-CASSY hat <strong>1 MΩ</strong> Eingangswiderstand, also hundertmal weniger:</p>
+<table>
+<tr><th>R</th><th>CASSY: R ∥ 1 MΩ</th><th>Fehler in τ</th><th>Unser Gerät: R ∥ 100 MΩ</th><th>Fehler in τ</th></tr>
+<tr><td>47 kΩ</td><td>44,9 kΩ</td><td>−4,5 %</td><td>46,98 kΩ</td><td>−0,05 %</td></tr>
+<tr><td>4,7 MΩ</td><td>825 kΩ</td><td>−82,5 %</td><td>4,49 MΩ</td><td>−4,5 %</td></tr>
+</table>
+<p>Bei 4,7 MΩ würde das CASSY ein τ anzeigen, das nur noch ein Sechstel des wahren Wertes beträgt —
+die Messung wäre wertlos. Genau diesen Fehler haben Sie in Physik beim 47-kΩ-Versuch, in kleiner
+Dosis, auch schon drin.</p>
+<table>
+<tr><th>Darin ist unser Gerät besser</th><th>Darin ist das CASSY klar besser</th></tr>
+<tr><td>
+  <ul style="margin-left:1.2rem">
+    <li>100 MΩ statt 1 MΩ Eingangswiderstand → 100-fach geringere Rückwirkung</li>
+    <li>t = 0 ist exakt bekannt, weil das Gerät selbst schaltet — kein Trigger, kein Handschalter</li>
+    <li>Kosten: etwa 5 € gegen etwa 500 €</li>
+    <li>Der Messablauf ist vollständig einsehbar und änderbar</li>
+  </ul>
+</td><td>
+  <ul style="margin-left:1.2rem">
+    <li>12 Bit statt 10 Bit, Messbereiche von ±0,1 V bis ±250 V statt starr 0…5 V</li>
+    <li>bis 1 MHz statt ~9 kHz Abtastrate</li>
+    <li>Speicher für sehr lange Messreihen statt ~800 Werte</li>
+    <li>galvanisch getrennte Eingänge — unser Aufbau liegt auf der USB-Masse des PCs
+        (<strong>niemals an Netzspannung!</strong>)</li>
+    <li>kalibrierte Messbereiche, mehrere Kanäle, Auswertesoftware</li>
+  </ul>
+</td></tr>
+</table>
+<div class="info">
+  <strong>Das ist die eigentliche Erkenntnis des Blattes:</strong> Ein Messgerät ist nie „gut" oder
+  „schlecht". Es hat Eigenschaften, und man muss sie <em>kennen</em>, um zu wissen, bei welcher Messung
+  man ihm glauben darf. Unser Nachbau ist dem CASSY in genau einem Punkt überlegen — und das reicht,
+  um einen Versuch zu finden, bei dem er die besseren Werte liefert.
+</div>
+
+<div class="nav">
+  <a href="AB8_RC_Messung.pdf">📄 Arbeitsblatt (PDF)</a>
+  <a href="AB8_RC_Messung.ino">💾 Sketch (.ino)</a>
+  <a href="./" class="outline">&larr; Übersicht</a>
+</div>
+
+</div>
+<footer>Fachpraxis 12NP &middot; Lore-Lorentz-Schule Düsseldorf<!-- legal-links --><div style="margin-top:0.8rem;font-size:0.8rem"><a href="../impressum.html">Impressum</a> &nbsp;&middot;&nbsp; <a href="../datenschutz.html">Datenschutz</a></div>
+</footer>
+</body>
+</html>

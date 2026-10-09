@@ -22,9 +22,9 @@
 const int PIN_RC   = 2;      // laedt und entlaedt
 const int PIN_MESS = A0;     // misst die Kondensatorspannung
 
-/* --- Die zwei Zeilen, die zum Widerstand passen muessen ------------- */
+/* --- DT muss zum verwendeten Widerstand passen ---------------------- */
 const int           N          = 200;    // Anzahl der Messpunkte
-const unsigned long DT         = 500;    // Abstand der Messpunkte in us
+const unsigned long DT         = 1000;   // Abstand der Messpunkte in us
 const unsigned long LADEZEIT   = 3000;   // Ladedauer in ms (>= 5*tau)
 /* -------------------------------------------------------------------- */
 
