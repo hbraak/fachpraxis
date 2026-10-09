@@ -255,7 +255,7 @@ Dieses Blatt:      &tau; = 47 k&Omega; · 100 nF = 4,7 ms       t½ = 3,26 ms
 
 <h3>Aufgabe 4 &mdash; Zeitbasis prüfen</h3>
 <p>Der Widerstands-Istwert liegt typisch 0,5 % neben dem Aufdruck, z.&nbsp;B.
-<code>R = 46,8 k&Omega;</code>. Mit <em>diesem</em> Wert wird später gerechnet.
+<code>R = 46,6 k&Omega;</code> (am Lehreraufbau nachgemessen). Mit <em>diesem</em> Wert wird später gerechnet.
 Der Sketch hat <code>DT = 200 µs</code> eingestellt &mdash; genau der in Aufgabe 2 berechnete Wert.</p>
 <div class="code-block"># Punkte: 100  Takt: 200 us  Messdauer soll: 19800 us  ist: 19912 us</div>
 <table>
@@ -306,7 +306,7 @@ bestätigt sich auf unter 1 %, damit ist der Aufbau abgesichert.</p>
   <strong>Referenzmessung am Lehreraufbau (09.10.2026), 100 Punkte, DT = 200 µs:</strong>
   Startwert 1017, Endwert 14 (vorhergesagt: 15), Selbsttest <code>soll 19800 µs / ist 19916 µs</code>
   &mdash; 0,6 % Überhang, das ist der Overhead der letzten Wandlung.
-  Auswertung siehe unten: &tau; = 4,670 ms, C = 99,4 nF.
+  Auswertung siehe unten: &tau; = 4,670 ms, C = 100,2 nF.
   Abweichungen von diesen Zahlen sind normal: Der Endwert hängt <em>exponentiell</em> von &tau; ab,
   aus 10 % Bauteiltoleranz wird dort schnell ein Faktor 2. Ein Endwert zwischen 8 und 25 ist
   unauffällig &mdash; nicht „passend“ rechnen, das ist das Messergebnis.
@@ -333,12 +333,12 @@ ln u = ln U₀ − t/&tau;            &rarr;  Gerade mit m = −1/&tau;</div>
   Das ist kein Tricksen, sondern die Auflösungsgrenze des eigenen Geräts &mdash; man muss sie nur benennen.
 </div>
 <div class="info">
-  <strong>Was es wirklich ausmacht</strong> &mdash; dieselbe Messreihe, drei Entscheidungen (C mit R = 47,0 k&Omega;):
+  <strong>Was es wirklich ausmacht</strong> &mdash; dieselbe Messreihe, drei Entscheidungen (C mit dem gemessenen R = 46,6 k&Omega;):
   <table>
     <tr><th>verwendete Punkte</th><th>n</th><th>&tau;</th><th>C</th><th>R²</th></tr>
-    <tr><td>adc &ge; 100 (Empfehlung)</td><td>55</td><td>4,670 &plusmn; 0,002 ms</td><td>99,4 nF</td><td>0,99999</td></tr>
-    <tr><td>alle 100 Punkte</td><td>100</td><td>4,622 &plusmn; 0,007 ms</td><td>98,3 nF</td><td>0,99977</td></tr>
-    <tr><td>nur die letzten (adc &lt; 20)</td><td>8</td><td>5,0 &plusmn; 0,7 ms</td><td>107 nF</td><td>0,886</td></tr>
+    <tr><td>adc &ge; 100 (Empfehlung)</td><td>55</td><td>4,670 &plusmn; 0,002 ms</td><td>100,2 nF</td><td>0,99999</td></tr>
+    <tr><td>alle 100 Punkte</td><td>100</td><td>4,622 &plusmn; 0,007 ms</td><td>99,2 nF</td><td>0,99977</td></tr>
+    <tr><td>nur die letzten (adc &lt; 20)</td><td>8</td><td>5,0 &plusmn; 0,7 ms</td><td>108 nF</td><td>0,886</td></tr>
   </table>
   Aus dem Schwanz allein kommt eine Unsicherheit von <strong>14 %</strong>, aus dem guten Bereich
   <strong>0,04 %</strong> &mdash; Faktor 350, ohne eine einzige zusätzliche Messung.
@@ -350,8 +350,8 @@ ln u = ln U₀ − t/&tau;            &rarr;  Gerade mit m = −1/&tau;</div>
 &tau; = −1/m = 1/214 1/s = 4,67 ms</div>
 
 <h3>Aufgabe 8 &mdash; Kapazität</h3>
-<div class="code-block">C = &tau; / R = 4,67 ms / 46,8 k&Omega; = 99,8 nF
-Abweichung vom Aufdruck: (99,8 − 100)/100 = −0,2 %</div>
+<div class="code-block">C = &tau; / R = 4,670 ms / 46,6 k&Omega; = 100,2 nF
+Abweichung vom Aufdruck: (100,2 − 100)/100 = +0,2 %</div>
 <p>Folienkondensatoren haben typisch ±5 % (teils ±10 %) Toleranz. Der gemessene Wert liegt
 also klar innerhalb der Toleranz &mdash; und zwar deutlich besser als nötig.</p>
 
