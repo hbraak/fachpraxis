@@ -378,7 +378,7 @@ ln k ist eine KONSTANTE  &rarr;  verschiebt die Gerade nur nach oben/unten,
 <tr><td>Zeitauflösung <code>micros()</code> 4 µs</td><td>4 µs / 19800 µs = 0,02 %</td><td>belanglos</td></tr>
 <tr><td>Taktgeber des Boards</td><td>0,5 %</td><td><strong>dominiert die Zeitachse</strong></td></tr>
 <tr><td>Widerstandsmessung (Multimeter)</td><td>&asymp; 1 %</td><td><strong>dominiert insgesamt</strong></td></tr>
-<tr><td>ADC-Rauschen ±1 Stufe</td><td>mittelt sich über 80 Punkte heraus</td><td>klein</td></tr>
+<tr><td>ADC-Rauschen ±1 Stufe</td><td>im Bereich adc &ge; 100 vernachlässigbar</td><td>klein &mdash; aber <strong>systematisch</strong> im Schwanz (s.&nbsp;u.)</td></tr>
 <tr><td>Rückwirkung 47 k&Omega; ∥ 100 M&Omega;</td><td>0,05 %</td><td>belanglos</td></tr>
 </table>
 <div class="warn">
@@ -397,6 +397,49 @@ ln k ist eine KONSTANTE  &rarr;  verschiebt die Gerade nur nach oben/unten,
   <strong>Eigenschaft dieses Kondensators</strong> &mdash; die Messung ist gut genug, um
   Exemplare voneinander zu unterscheiden. Das ist die Antwort auf die Frage, ob der
   Eigenbau etwas taugt: Für diese Aufgabe ja.
+</div>
+
+<div class="info">
+  <strong>Zwei unabhängige Messreihen am selben Aufbau</strong> (09.10.2026): einmal 100 Punkte über
+  19,8 ms, einmal 300 Punkte über 59,8 ms. Ergebnis im Fit-Bereich adc&nbsp;&ge;&nbsp;100:
+  <code>&tau; = 4,670 ms</code> und <code>&tau; = 4,663 ms</code> &mdash; Unterschied
+  <strong>0,15 %</strong>, also C = 100,2 nF gegen 100,1 nF. Das ist die ehrlichste Aussage über das
+  Gerät, die man machen kann: nicht „der Fehler ist klein“, sondern „zweimal gemessen, zweimal
+  dasselbe“. Reproduzierbarkeit ist kein Ersatz für Richtigkeit &mdash; ein systematischer Fehler
+  wiederholt sich ja brav &mdash;, aber ohne sie ist jede Genauigkeitsangabe wertlos.
+</div>
+
+<p><strong>(d) Wo genau hört das Gerät auf zu messen?</strong></p>
+<p>Die lange Messreihe über 59,8&nbsp;ms (&asymp;&nbsp;12,8&nbsp;&tau;) zeigt es direkt: Ab
+<code>t = 30,0 ms</code> liefert der Wandler nur noch <strong>Null</strong> &mdash; 149 der 300
+Punkte sind leer. Das ist <code>6,4 &tau;</code>, und es ist genau dasselbe Kriterium wie beim
+Ladevorgang aus Aufgabe 1, nur rückwärts gelesen:</p>
+<div class="code-block">blind, sobald  u &lt; 1 Stufe:   1018 · e^(−t/&tau;) &lt; 1
+                               t &gt; &tau; · ln 1018 = 6,93 &tau; = 32,3 ms
+gemessen:                      ab 30,0 ms = 6,43 &tau;</div>
+<p>Dieselbe Zahl 6,93, die in Aufgabe 1 die Ladezeit festgelegt hat, begrenzt auch das Messfenster.
+Der Dynamikbereich eines 10-Bit-Wandlers ist nun einmal 1024:1 &mdash; und in einem
+Exponentialvorgang sind das rund sieben Zeitkonstanten, mehr nicht. <em>Wer länger misst, misst nichts.</em></p>
+<div class="warn">
+  <strong>Und hier lügt der ADC nicht zufällig, sondern systematisch:</strong> Ein Wandler
+  <em>schneidet ab</em>, er rundet nicht &mdash; er liefert im Mittel eine halbe Stufe zu wenig.
+  Oben ist das belanglos (bei adc 1000 sind 0,5 Stufen 0,05 %), unten ist es verheerend: bei
+  adc 2 fehlen 25 %. In <code>ln u</code> zieht dieser Fehler die Punkte am Ende systematisch
+  nach unten, die Gerade wird <em>zu steil</em>, und &tau; kommt <em>zu klein</em> heraus.
+  Die Zahlen aus der 300-Punkte-Reihe:
+  <table>
+    <tr><th>verwendete Punkte</th><th>n</th><th>&tau;</th><th>C</th><th>R²</th></tr>
+    <tr><td>adc &ge; 100 (Empfehlung)</td><td>55</td><td>4,663 ms</td><td>100,1 nF</td><td>0,99998</td></tr>
+    <tr><td>alle Punkte &gt; 0</td><td>151</td><td>4,35 ms</td><td>93 nF</td><td>0,99533</td></tr>
+    <tr><td>nur 1 &le; adc &lt; 20</td><td>59</td><td>3,70 ms</td><td>79 nF</td><td>0,97921</td></tr>
+  </table>
+  Der Schwanz-Fit liegt <strong>21 % daneben</strong> &mdash; weit außerhalb der 5 %
+  Bauteiltoleranz. Man würde den Kondensator fälschlich für Ausschuss erklären.
+  <strong>Die Probe aufs Exempel:</strong> Rechnet man die halbe Stufe heraus und fittet
+  <code>ln(adc + 0,5)</code>, springt der Schwanz-Fit von 3,70 ms auf 4,25 ms &mdash; während
+  sich der gute Bereich praktisch nicht rührt (4,670 → 4,671 ms). Genau so unterscheidet man
+  einen systematischen von einem zufälligen Fehler: Eine Korrektur, die den Verdacht trifft,
+  verändert nur die verdächtigen Daten.
 </div>
 
 <h3>Aufgabe 10 (Zusatz) &mdash; Probe mit 470 k&Omega;</h3>
