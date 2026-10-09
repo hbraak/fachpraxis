@@ -24,12 +24,12 @@
 \chead{Fachpraxis}
 \ihead{12NP}
 
-\RedeclareSectionCommand[beforeskip=-1.2ex, afterskip=0.5ex]{subsection}
-\RedeclareSectionCommand[beforeskip=-1.0ex, afterskip=0.4ex]{subsubsection}
+\RedeclareSectionCommand[beforeskip=-2.6ex, afterskip=1.2ex]{subsection}
+\RedeclareSectionCommand[beforeskip=-2.2ex, afterskip=1.0ex]{subsubsection}
 
 \lstdefinestyle{arduino}{
   language=C,
-  basicstyle=\ttfamily\footnotesize,
+  basicstyle=\ttfamily\small,
   keywordstyle=\color{blue}\bfseries,
   commentstyle=\color{gray}\itshape,
   stringstyle=\color{red},
@@ -44,16 +44,16 @@
   tabsize=2,
   xleftmargin=4pt,
   xrightmargin=4pt,
-  aboveskip=3pt,
-  belowskip=3pt
+  aboveskip=9pt,
+  belowskip=9pt
 }
 
-\setlength{\abovedisplayskip}{6pt}
-\setlength{\belowdisplayskip}{6pt}
-\setlength{\abovedisplayshortskip}{3pt}
-\setlength{\belowdisplayshortskip}{3pt}
+\setlength{\abovedisplayskip}{11pt}
+\setlength{\belowdisplayskip}{11pt}
+\setlength{\abovedisplayshortskip}{6pt}
+\setlength{\belowdisplayshortskip}{6pt}
 \renewcommand{\arraystretch}{1.3}
-\linespread{0.97}
+\linespread{1.10}
 
 
 
@@ -128,7 +128,7 @@ $R=\SI{47}{\kilo\ohm}$. Für Laden und Entladen gilt
   \text{entladen: } u(t) = U_0\,e^{-t/\tau}, \qquad \tau = R\cdot C .
 \]
 
-\begin{enumerate}[leftmargin=2em, resume, itemsep=3pt, topsep=3pt]
+\begin{enumerate}[leftmargin=2em, resume, itemsep=15pt, topsep=9pt]
 \item \textbf{Wann ist der Kondensator voll, wann leer?} Berechnet $\tau$. Tragt dann ein, welcher
 Anteil von $U_0$ beim \emph{Laden} erreicht ist und welcher Anteil beim \emph{Entladen} noch
 übrig ist:
@@ -167,7 +167,7 @@ etwa \SI{0{,}2}{\second}. Beurteilt damit beide Fälle: Wo ist Handmessung mögl
 \noindent
 \begin{minipage}[c]{9.2cm}
 \begin{center}
-\begin{tikzpicture}[line width=0.9pt, scale=1.0]
+\begin{tikzpicture}[line width=0.9pt, scale=1.12]
   \draw (0,0) rectangle (2.5,3.2);
   \node[align=center] at (1.25,1.6) {Arduino\\Uno};
   \draw (2.5,2.7) -- (4.0,2.7);
@@ -195,7 +195,7 @@ etwa \SI{0{,}2}{\second}. Beurteilt damit beide Fälle: Wo ist Handmessung mögl
 er hat den Moment ja selbst ausgelöst. Ein Startsignal von außen braucht er nicht.
 \end{minipage}
 
-\vspace{4pt}
+\vspace{9pt}
 \noindent Das ist das Herzstück des Sketches -- lest es, bevor ihr ihn hochladet:
 
 \begin{lstlisting}[style=arduino]
@@ -208,7 +208,7 @@ for (int i = 0; i < N; i++) {
 }
 \end{lstlisting}
 
-\begin{enumerate}[leftmargin=2em, resume, itemsep=3pt, topsep=3pt]
+\begin{enumerate}[leftmargin=2em, resume, itemsep=15pt, topsep=9pt]
 \item \textbf{Aufbauen, messen, Zeitbasis prüfen.} Messt den Widerstand vor dem Einbau mit dem
 Multimeter nach und notiert den \textbf{Istwert} -- mit dem rechnet ihr später, nicht mit dem
 Aufdruck. Baut die Schaltung auf, ladet den Sketch hoch und öffnet den Seriellen Monitor mit
@@ -218,7 +218,7 @@ Kopfzeile die \emph{Soll-} und die \emph{Ist-Messdauer} und erklärt die Abweich
 stark anwachsende Ist-Dauer bedeuten?
 
 \item \textbf{Zwei Grenzen des Geräts.}
-  \begin{enumerate}[label=(\alph*), leftmargin=2em, itemsep=2pt, topsep=2pt]
+  \begin{enumerate}[label=(\alph*), leftmargin=2em, itemsep=10pt, topsep=8pt]
   \item Eine einzelne Wandlung mit \texttt{analogRead()} dauert \SI{112}{\micro\second}. Prüft, ob
         der eingestellte Takt zulässig ist. Berechnet dann, welche Kapazität ihr mit
         $R=\SI{47}{\kilo\ohm}$ mindestens braucht, damit noch 40 Messpunkte auf die Kurve passen.
@@ -232,7 +232,7 @@ stark anwachsende Ist-Dauer bedeuten?
 
 \subsection*{Teil 3 -- Auswerten}
 
-\begin{enumerate}[leftmargin=2em, resume, itemsep=3pt, topsep=3pt]
+\begin{enumerate}[leftmargin=2em, resume, itemsep=15pt, topsep=9pt]
 \item \textbf{Kurve und Schnellschätzung.} Messt die Spannung am \texttt{5V}-Pin und gebt die
 Umrechnung $u(\text{adc})$ an. Übertragt die Messwerte in die Tabellenkalkulation und zeichnet $u$
 über $t$. Lest die Halbwertszeit ab und vergleicht mit eurer Rechnung aus Aufgabe 2.
@@ -249,9 +249,9 @@ Abweichung vom Aufdruck \SI{100}{\nano\farad} in Prozent an.
 
 \subsection*{Teil 4 -- Wie gut ist unser Messgerät?}
 
-\begin{enumerate}[leftmargin=2em, resume, itemsep=3pt, topsep=3pt]
+\begin{enumerate}[leftmargin=2em, resume, itemsep=15pt, topsep=9pt]
 \item \textbf{Fehlerbilanz.}
-  \begin{enumerate}[label=(\alph*), leftmargin=2em, itemsep=2pt, topsep=2pt]
+  \begin{enumerate}[label=(\alph*), leftmargin=2em, itemsep=10pt, topsep=8pt]
   \item Zeigt rechnerisch: Für die \emph{Steigung} der Geraden ist es gleichgültig, ob ihr $\ln u$
         oder $\ln(\text{adc})$ auftragt. Welche überraschende Folgerung ergibt sich daraus für euer
         Messgerät -- im Unterschied zum Füllstandsgeber aus Arbeitsblatt 7?
@@ -266,7 +266,7 @@ Abweichung vom Aufdruck \SI{100}{\nano\farad} in Prozent an.
 
 \subsection*{Zusatzaufgabe}
 
-\begin{enumerate}[leftmargin=2em, resume, itemsep=3pt, topsep=3pt]
+\begin{enumerate}[leftmargin=2em, resume, itemsep=15pt, topsep=9pt]
 \item \textbf{Probe mit einem anderen Widerstand.} Wiederholt die Messung mit
 $R=\SI{470}{\kilo\ohm}$. Berechnet vorher das neue $\tau$ und das passende \texttt{DT} und ändert
 im Sketch \emph{nur diese eine Zeile}; prüft auch, ob die Ladezeit noch reicht. Ihr erhaltet eine
