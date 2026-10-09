@@ -400,14 +400,37 @@ ln k ist eine KONSTANTE  &rarr;  verschiebt die Gerade nur nach oben/unten,
 </div>
 
 <div class="info">
-  <strong>Zwei unabhängige Messreihen am selben Aufbau</strong> (09.10.2026): einmal 100 Punkte über
-  19,8 ms, einmal 300 Punkte über 59,8 ms. Ergebnis im Fit-Bereich adc&nbsp;&ge;&nbsp;100:
-  <code>&tau; = 4,670 ms</code> und <code>&tau; = 4,663 ms</code> &mdash; Unterschied
-  <strong>0,15 %</strong>, also C = 100,2 nF gegen 100,1 nF. Das ist die ehrlichste Aussage über das
-  Gerät, die man machen kann: nicht „der Fehler ist klein“, sondern „zweimal gemessen, zweimal
-  dasselbe“. Reproduzierbarkeit ist kein Ersatz für Richtigkeit &mdash; ein systematischer Fehler
-  wiederholt sich ja brav &mdash;, aber ohne sie ist jede Genauigkeitsangabe wertlos.
+  <strong>Drei unabhängige Messreihen am selben Aufbau</strong> (09.10.2026): 100 Punkte über
+  19,8 ms, dann zweimal 300 Punkte über 59,8 ms. Fit jeweils über adc&nbsp;&ge;&nbsp;100:
+  <table>
+    <tr><th>Messreihe</th><th>&tau;</th><th>C</th></tr>
+    <tr><td>Reihe 1 (100 Punkte)</td><td>4,6698 ms</td><td>100,21 nF</td></tr>
+    <tr><td>Reihe 2 (300 Punkte)</td><td>4,6628 ms</td><td>100,06 nF</td></tr>
+    <tr><td>Reihe 3 (300 Punkte)</td><td>4,6639 ms</td><td>100,08 nF</td></tr>
+    <tr><td><strong>Mittelwert</strong></td><td><strong>4,6655 ms</strong></td><td><strong>100,12 nF</strong></td></tr>
+  </table>
+  Die Standardabweichung der drei Werte beträgt <code>s = 0,0037 ms</code> &mdash;
+  <strong>0,08 %</strong>, Spannweite 0,15 %.
 </div>
+<div class="warn">
+  <strong>Und jetzt die eigentliche Pointe:</strong> Die Wiederholungen streuen um ±0,05 nF.
+  Die Unsicherheit der <em>Widerstandsmessung</em> mit dem Multimeter beträgt aber rund 1 %,
+  also <strong>±1,0 nF</strong> &mdash; <strong>zwanzigmal mehr</strong>. Das Ergebnis lautet
+  deshalb <strong>nicht</strong> „C = 100,12 ± 0,05 nF“, sondern
+  <code>C = 100,1 ± 1,0 nF</code>. Wer nur wiederholt misst, erfährt nur, wie
+  <em>präzise</em> sein Gerät ist &mdash; nicht, wie <em>richtig</em>. Drei gleiche Werte können
+  auch drei gleich falsche Werte sein; ein systematischer Fehler wiederholt sich ja brav mit.
+  Die Streuung zu verkleinern bringt hier gar nichts mehr &mdash; wer genauer werden will,
+  muss den <em>Widerstand</em> besser messen. <em>Das</em> ist Fehlerrechnung: nicht alles
+  addieren, sondern herausfinden, welcher Posten das Ergebnis bestimmt.
+</div>
+<p>Der punktweise Vergleich der beiden langen Reihen zeigt außerdem, woher die Streuung kommt:
+Die Einzelwerte unterscheiden sich um <strong>höchstens eine Stufe</strong> (Mittelwert der
+Differenz &minus;0,05 Stufen, kein Trend über die Zeit). Das Rauschen des Wandlers ist also
+tatsächlich zufällig &mdash; und genau deshalb mittelt es sich im Fit über 55 Punkte fast
+vollständig heraus. Dass <em>beide</em> langen Reihen ab exakt <code>t = 30,0 ms</code> blind
+werden, ist ebenfalls reproduzierbar: Es ist keine Zufälligkeit, sondern die Grenze des
+Wandlers.</p>
 
 <p><strong>(d) Wo genau hört das Gerät auf zu messen?</strong></p>
 <p>Die lange Messreihe über 59,8&nbsp;ms (&asymp;&nbsp;12,8&nbsp;&tau;) zeigt es direkt: Ab
