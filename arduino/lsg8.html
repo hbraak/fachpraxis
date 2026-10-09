@@ -299,9 +299,16 @@ Speicherbedarf: 100 Werte · 2 Byte = 200 Byte von 2048 Byte = 9,8 %</div>
 
 <h3>Aufgabe 6 &mdash; Kurve und Schnellschätzung</h3>
 <div class="code-block">u = adc / 1023 · 4,985 V        (4,87 mV pro Stufe)</div>
-<p>Die Kurve fällt von 1023 auf etwa 15 Stufen. Halbwertszeit abgelesen: <code>t½ &asymp; 3,3 ms</code>
-&mdash; passt zu den 3,26 ms aus Aufgabe 2. Die Vorhersage <em>vor</em> der Messung bestätigt sich,
-damit ist der Aufbau als funktionierend abgesichert.</p>
+<p>Die Kurve fällt von etwa 1020 auf eine einstellige Stufenzahl. Halbwertszeit abgelesen:
+<code>t½ &asymp; 3,3 ms</code> &mdash; passt zu den 3,26 ms aus Aufgabe 2. Die Vorhersage <em>vor</em>
+der Messung bestätigt sich, damit ist der Aufbau als funktionierend abgesichert.</p>
+<div class="info">
+  <strong>Erwartungswert am Ende der Messreihe: 7 bis 15 Stufen.</strong> Die 15 aus Aufgabe 2 gelten
+  für genau 100 nF. Ein echter Kondensator darf um 10 bis 20 % daneben liegen, und weil der Endwert
+  <em>exponentiell</em> von &tau; abhängt, wird daraus schnell ein Faktor 2. Referenzmessung am
+  Lehreraufbau: Endwert <strong>7</strong>, daraus &tau; = 4,0 ms und C &asymp; 85 nF. Das ist kein
+  Fehler, das ist das Messergebnis &mdash; nicht „passend“ rechnen.
+</div>
 
 <h3>Aufgabe 7 &mdash; Linearisierung</h3>
 <div class="code-block">u(t) = U₀ · e^(−t/&tau;)          | logarithmieren
@@ -310,10 +317,18 @@ ln u = ln U₀ − t/&tau;            &rarr;  Gerade mit m = −1/&tau;</div>
 (kein logarithmisches Papier &mdash; sonst wird zweimal logarithmiert).</p>
 <div class="warn">
   <strong>Welche Punkte darf man nehmen?</strong> Nur die mit genügend großem adc-Wert.
-  Am Ende der Messreihe stehen Werte wie 18, 16, 15 &mdash; dort ist eine Quantisierungsstufe
-  schon über 6 % des Messwerts, und <code>ln 0</code> ist gar nicht definiert. Praxisregel:
-  Punkte unter etwa 20 Stufen weglassen. Das ist kein Tricksen, sondern die Auflösungsgrenze
-  des eigenen Geräts &mdash; man muss sie nur benennen.
+  Eine Quantisierungsstufe ist immer dieselbe absolute Unsicherheit (&plusmn;0,5 LSB), aber ihr
+  <em>Anteil</em> am Messwert wächst beim Fallen der Kurve dramatisch:
+  bei adc 1000 sind es &plusmn;0,05 %, bei adc 100 schon &plusmn;0,5 %, bei adc 7 ganze
+  &plusmn;7 %. Im ln-Diagramm wird daraus ein Fehlerbalken von &plusmn;0,07 &mdash; die letzten Punkte
+  streuen also am stärksten und würden die Gerade am kräftigsten verdrehen. Dazu ist
+  <code>ln 0</code> gar nicht definiert.
+  <br><strong>Praxisregel: nur Punkte mit adc &ge; 100 verwenden</strong> &mdash; das sind die ersten
+  gut 45 Punkte bis etwa t = 9 ms. Das deckt 90 % des Spannungsabfalls ab und lässt immer noch fast
+  50 Messpunkte für die Ausgleichsgerade übrig &mdash; mehr als genug. Alles unter 20 Stufen ist in jedem Fall unbrauchbar.
+  Man sieht es den Rohdaten direkt an: am Ende steht viermal hintereinander dieselbe 9, dann springt
+  es um ganze Stufen. Das ist kein Tricksen, sondern die Auflösungsgrenze des eigenen Geräts
+  &mdash; man muss sie nur benennen.
 </div>
 <div class="code-block">Steigungsdreieck:  m &asymp; −214 1/s
 &tau; = −1/m = 1/214 1/s = 4,67 ms</div>
