@@ -299,15 +299,17 @@ Speicherbedarf: 100 Werte · 2 Byte = 200 Byte von 2048 Byte = 9,8 %</div>
 
 <h3>Aufgabe 6 &mdash; Kurve und Schnellschätzung</h3>
 <div class="code-block">u = adc / 1023 · 4,985 V        (4,87 mV pro Stufe)</div>
-<p>Die Kurve fällt von etwa 1020 auf eine einstellige Stufenzahl. Halbwertszeit abgelesen:
-<code>t½ &asymp; 3,3 ms</code> &mdash; passt zu den 3,26 ms aus Aufgabe 2. Die Vorhersage <em>vor</em>
-der Messung bestätigt sich, damit ist der Aufbau als funktionierend abgesichert.</p>
+<p>Die Kurve fällt von 1017 auf 14 Stufen. Halbwertszeit abgelesen: <code>t½ = 3,24 ms</code>
+&mdash; die Vorhersage aus Aufgabe 2 lautete 3,26 ms. Die Rechnung <em>vor</em> der Messung
+bestätigt sich auf unter 1 %, damit ist der Aufbau abgesichert.</p>
 <div class="info">
-  <strong>Erwartungswert am Ende der Messreihe: 7 bis 15 Stufen.</strong> Die 15 aus Aufgabe 2 gelten
-  für genau 100 nF. Ein echter Kondensator darf um 10 bis 20 % daneben liegen, und weil der Endwert
-  <em>exponentiell</em> von &tau; abhängt, wird daraus schnell ein Faktor 2. Referenzmessung am
-  Lehreraufbau: Endwert <strong>7</strong>, daraus &tau; = 4,0 ms und C &asymp; 85 nF. Das ist kein
-  Fehler, das ist das Messergebnis &mdash; nicht „passend“ rechnen.
+  <strong>Referenzmessung am Lehreraufbau (09.10.2026), 100 Punkte, DT = 200 µs:</strong>
+  Startwert 1017, Endwert 14 (vorhergesagt: 15), Selbsttest <code>soll 19800 µs / ist 19916 µs</code>
+  &mdash; 0,6 % Überhang, das ist der Overhead der letzten Wandlung.
+  Auswertung siehe unten: &tau; = 4,670 ms, C = 99,4 nF.
+  Abweichungen von diesen Zahlen sind normal: Der Endwert hängt <em>exponentiell</em> von &tau; ab,
+  aus 10 % Bauteiltoleranz wird dort schnell ein Faktor 2. Ein Endwert zwischen 8 und 25 ist
+  unauffällig &mdash; nicht „passend“ rechnen, das ist das Messergebnis.
 </div>
 
 <h3>Aufgabe 7 &mdash; Linearisierung</h3>
@@ -324,11 +326,25 @@ ln u = ln U₀ − t/&tau;            &rarr;  Gerade mit m = −1/&tau;</div>
   streuen also am stärksten und würden die Gerade am kräftigsten verdrehen. Dazu ist
   <code>ln 0</code> gar nicht definiert.
   <br><strong>Praxisregel: nur Punkte mit adc &ge; 100 verwenden</strong> &mdash; das sind die ersten
-  gut 45 Punkte bis etwa t = 9 ms. Das deckt 90 % des Spannungsabfalls ab und lässt immer noch fast
-  50 Messpunkte für die Ausgleichsgerade übrig &mdash; mehr als genug. Alles unter 20 Stufen ist in jedem Fall unbrauchbar.
-  Man sieht es den Rohdaten direkt an: am Ende steht viermal hintereinander dieselbe 9, dann springt
-  es um ganze Stufen. Das ist kein Tricksen, sondern die Auflösungsgrenze des eigenen Geräts
-  &mdash; man muss sie nur benennen.
+  55 Punkte bis t = 10,8 ms. Das deckt 90 % des Spannungsabfalls ab und lässt immer noch 55 Punkte
+  für die Ausgleichsgerade übrig &mdash; mehr als genug.
+  Man sieht die Grenze den Rohdaten direkt an: am Ende steht mehrfach derselbe Wert, dann springt es
+  um ganze Stufen, und bei t = 18,8 ms geht der Wert sogar wieder <em>hoch</em> (18 nach 17).
+  Das ist kein Tricksen, sondern die Auflösungsgrenze des eigenen Geräts &mdash; man muss sie nur benennen.
+</div>
+<div class="info">
+  <strong>Was es wirklich ausmacht</strong> &mdash; dieselbe Messreihe, drei Entscheidungen (C mit R = 47,0 k&Omega;):
+  <table>
+    <tr><th>verwendete Punkte</th><th>n</th><th>&tau;</th><th>C</th><th>R²</th></tr>
+    <tr><td>adc &ge; 100 (Empfehlung)</td><td>55</td><td>4,670 &plusmn; 0,002 ms</td><td>99,4 nF</td><td>0,99999</td></tr>
+    <tr><td>alle 100 Punkte</td><td>100</td><td>4,622 &plusmn; 0,007 ms</td><td>98,3 nF</td><td>0,99977</td></tr>
+    <tr><td>nur die letzten (adc &lt; 20)</td><td>8</td><td>5,0 &plusmn; 0,7 ms</td><td>107 nF</td><td>0,886</td></tr>
+  </table>
+  Aus dem Schwanz allein kommt eine Unsicherheit von <strong>14 %</strong>, aus dem guten Bereich
+  <strong>0,04 %</strong> &mdash; Faktor 350, ohne eine einzige zusätzliche Messung.
+  Bemerkenswert ist auch die mittlere Zeile: Alle Punkte mitzunehmen kostet nur 1 % Genauigkeit.
+  Ein ungewichteter Fit ist also nicht <em>falsch</em>, nur unnötig schlechter &mdash; der
+  Unterschied ist eine Frage der Sorgfalt, nicht des Bestehens.
 </div>
 <div class="code-block">Steigungsdreieck:  m &asymp; −214 1/s
 &tau; = −1/m = 1/214 1/s = 4,67 ms</div>
