@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lösung AB 9 — Wie schnell bist du wirklich?</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f8f9fa; color: #2c3e50; line-height: 1.6; }
+  header { background: #2c3e50; color: white; padding: 1.5rem 2rem; }
+  header h1 { font-size: 1.5rem; }
+  header p { opacity: 0.8; margin-top: 0.3rem; font-size: 0.95rem; }
+  .container { max-width: 800px; margin: 1.5rem auto; padding: 0 1.5rem; }
+  h2 { color: #2c3e50; margin: 1.5rem 0 0.8rem; padding-bottom: 0.3rem; border-bottom: 2px solid #27ae60; }
+  h3 { color: #27ae60; margin: 1rem 0 0.5rem; }
+  .code-block {
+    background: #1e1e1e; color: #d4d4d4; border-radius: 8px; padding: 1.2rem;
+    font-family: 'Fira Code', 'Consolas', monospace; font-size: 0.9rem;
+    overflow-x: auto; margin: 0.8rem 0; line-height: 1.5; white-space: pre;
+  }
+  .code-block .kw { color: #569cd6; font-weight: bold; }
+  .code-block .fn { color: #dcdcaa; }
+  .code-block .cm { color: #6a9955; font-style: italic; }
+  .code-block .val { color: #b5cea8; }
+  .code-block .const { color: #4fc1ff; }
+  .info {
+    background: #e8f8f0; border-left: 4px solid #27ae60; padding: 1rem 1.2rem;
+    border-radius: 0 8px 8px 0; margin: 1rem 0;
+  }
+  .info strong { color: #27ae60; }
+  .warn {
+    background: #fdf3e7; border-left: 4px solid #e67e22; padding: 1rem 1.2rem;
+    border-radius: 0 8px 8px 0; margin: 1rem 0;
+  }
+  .warn strong { color: #d35400; }
+  table { border-collapse: collapse; margin: 0.8rem 0; width: 100%; }
+  th, td { border: 1px solid #ddd; padding: 0.5rem 0.8rem; text-align: left; }
+  th { background: #f0f0f0; }
+  code { background: #eef1f3; padding: 0.1rem 0.35rem; border-radius: 4px; font-size: 0.92em; }
+  .nav { display: flex; gap: 1rem; margin: 1.5rem 0; flex-wrap: wrap; }
+  .nav a {
+    background: #27ae60; color: white; padding: 0.5rem 1.2rem; border-radius: 6px;
+    text-decoration: none; font-size: 0.9rem; transition: background 0.2s;
+  }
+  .nav a:hover { background: #219a52; }
+  .nav a.outline { background: transparent; color: #27ae60; border: 2px solid #27ae60; }
+  .nav a.outline:hover { background: #e8f8f0; }
+  footer { text-align: center; padding: 2rem; color: #999; font-size: 0.85rem; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Lösung AB 9: Wie schnell bist du wirklich?</h1>
+  <p>Ein eigenes Messgerät für Reaktionszeiten</p>
+</header>
+<div class="container">
+
+<div class="nav">
+  <a href="AB9_Reaktionszeit.pdf">📄 Arbeitsblatt (PDF)</a>
+  <a href="AB9_Reaktionszeit.ino">💾 Sketch (.ino)</a>
+  <a href="lsg8.html" class="outline">&larr; AB 8 (CASSY)</a>
+  <a href="lsg4.html" class="outline">AB 4 (ADC)</a>
+  <a href="./" class="outline">&larr; Übersicht</a>
+</div>
+
+<div class="info">
+  <strong>Die Leitidee:</strong> In AB 8 war das <em>Gerät</em> der Flaschenhals &mdash; der Kondensator
+  war schneller als der Arduino. Hier ist es genau umgekehrt: Der Arduino ist rund
+  <strong>20&thinsp;000-fach genauer</strong> als der Mensch, den er messen soll. Deshalb geht es auf diesem
+  Blatt nicht um einen besseren Messwert, sondern um <strong>Statistik</strong>: Was tut man mit einer
+  Größe, die jedes Mal anders herauskommt? Alle Zahlen unten sind Richtwerte einer Beispielmessreihe
+  (<code>t&#772; &asymp; 255 ms</code>, <code>s &asymp; 30 ms</code>); Schülerwerte dürfen abweichen.
+</div>
+
+<h2>Teil 1 &mdash; Hinsehen</h2>
+
+<h3>Aufgabe 1: Fehlstart</h3>
+<p>Das Gerät meldet <code>FEHLSTART</code>, verwirft den Versuch (<code>n</code> wird nicht erhöht),
+wartet, bis der Taster wieder losgelassen ist, und beginnt mit einer neuen Zufallswartezeit.</p>
+<p><strong>Warum nötig:</strong> Ohne diese Prüfung könnte man den Taster schon vor dem Aufleuchten
+drücken oder dauerhaft gedrückt halten. Die Messung würde dann Zeiten nahe 0&nbsp;ms liefern &mdash;
+aber nicht die Reaktion messen, sondern das Raten. Ein Messgerät muss erkennen, wenn die
+Voraussetzung seiner Messung verletzt ist; ein Wert, der physiologisch unmöglich ist
+(unter ca. 100&nbsp;ms), darf nicht als Messwert durchgehen.</p>
+
+<h3>Aufgabe 2: Die zufällige Wartezeit</h3>
+<p>Bei <em>immer</em> 3&nbsp;s lernt man den Rhythmus nach wenigen Versuchen und drückt
+<strong>antizipiert</strong> &mdash; man misst dann das Zeitgefühl, nicht die Reaktion. Die Werte fallen
+unter die physiologische Grenze, teils bis in den Fehlstart.</p>
+<p><strong><code>randomSeed(analogRead(A5));</code>:</strong> <code>random()</code> ist ein
+<em>deterministischer</em> Algorithmus: gleicher Startwert &rarr; gleiche Zahlenfolge. Ohne diese Zeile
+käme nach jedem Reset dieselbe Folge von Wartezeiten &mdash; wieder lernbar. Ein offener
+Analogeingang hat kein definiertes Potential; seine untersten Bits schwanken (Rauschen, AB&nbsp;4b),
+und dieser unvorhersehbare Wert startet den Generator.</p>
+
+<h3>Aufgabe 3: Was wird da eigentlich gemessen?</h3>
+<p>Die Kette: LED leuchtet &rarr; Licht zum Auge &rarr; Netzhaut wandelt um (ca. 20&ndash;40&nbsp;ms)
+&rarr; Sehnerv &rarr; Verarbeitung und Entscheidung im Gehirn (ca. 80&ndash;150&nbsp;ms) &rarr;
+motorischer Befehl &rarr; Nerv zum Arm &rarr; Muskel kontrahiert, Finger bewegt sich
+(ca. 30&ndash;50&nbsp;ms) &rarr; Taster schließt.</p>
+<table>
+<tr><th>Beitrag</th><th>Rechnung</th><th>Ergebnis</th><th>Anteil an 250 ms</th></tr>
+<tr><td>(a) Licht, 1 m</td><td>t = 1 m / 3&middot;10<sup>8</sup> m/s</td><td>3,3 ns</td><td>0,000 001 %</td></tr>
+<tr><td>(b) Nerv, 1 m</td><td>t = 1 m / 50 m/s</td><td>20 ms</td><td>ca. 8 %</td></tr>
+</table>
+<p><strong>Folgerung:</strong> Der Lichtweg ist um den Faktor 10<sup>8</sup> zu klein &mdash; er taucht im
+Messwert nicht auf, man könnte auch 100&nbsp;m entfernt stehen. Die Nervenleitung macht nur etwa
+ein Zwölftel aus. Die übrigen ca. 230&nbsp;ms sind <strong>Signalverarbeitung und Entscheidung</strong>.
+Gemessen wird also nicht eine Leitungslänge, sondern eine Rechenzeit im Gehirn.</p>
+
+<h2>Teil 2 &mdash; Messen</h2>
+
+<h3>Aufgabe 4: Trend über die Messreihe</h3>
+<p>Oft fallen die Werte leicht ab: <strong>Übungseffekt</strong> (man stellt sich auf die Aufgabe ein,
+Finger liegt besser, Blick ist richtig gerichtet). Gegenläufig: <strong>Ermüdung und
+Konzentrationsverlust</strong>, besonders nach langen Wartezeiten &mdash; dann steigen einzelne Werte
+stark an (Ausreißer nach oben). Eine dritte Ursache ist ein Strategiewechsel: Wer riskanter wird,
+drückt schneller, produziert aber Fehlstarts.</p>
+<div class="info"><strong>Wichtig:</strong> Eine <em>gerätebedingte</em> Drift gibt es hier praktisch nicht
+&mdash; der Quarz läuft über zehn Versuche hinweg nicht weg, und die Abfrageschleife ist in jedem
+Versuch identisch. Wer einen Trend sieht, hat einen Trend des <em>Menschen</em> gesehen. Genau
+umgekehrt wäre es bei einem aufgewärmten Sensor (vgl. NTC, AB&nbsp;6).</div>
+
+<h3>Aufgabe 5: Mittelwert, Streuung, Ergebnis</h3>
+<p>Beispielreihe (10 Werte in ms): 264,5 &middot; 231,9 &middot; 243,6 &middot; 301,7 &middot; 212,4
+&middot; 255,1 &middot; 198,3 &middot; 287,0 &middot; 248,9 &middot; 266,6</p>
+<table>
+<tr><th>Größe</th><th>Rechnung</th><th>Wert</th></tr>
+<tr><td>Mittelwert t&#772;</td><td>Summe / 10 = 2510,0 ms / 10</td><td>251,0 ms</td></tr>
+<tr><td>Standardabweichung s</td><td><code>=STABW.S(...)</code></td><td>ca. 31 ms</td></tr>
+<tr><td>Fehler des Mittelwerts</td><td>s/&radic;n = 31 ms / &radic;10 = 31/3,16</td><td>9,8 ms</td></tr>
+</table>
+<p><strong>Ergebnis:</strong> t&#772; = (251 &plusmn; 10) ms, besser noch (250 &plusmn; 10) ms.</p>
+<div class="warn"><strong>Warum 264,5 ms als Endergebnis falsch ist:</strong> Erstens ist es ein
+<em>Einzelwert</em> &mdash; der nächste Versuch liegt um bis zu 50 ms daneben. Zweitens behauptet die
+Nachkommastelle eine Genauigkeit von 0,1 ms, also 300-mal feiner als die tatsächliche Streuung.
+Diese Nachkommastelle ist eine Eigenschaft des <strong>Arduino</strong>, nicht eine Eigenschaft des
+Menschen. Mehr Stellen hinschreiben macht ein Ergebnis nicht genauer, sondern unehrlich.</div>
+
+<h2>Teil 3 &mdash; Wie gut ist unser Messgerät?</h2>
+
+<h3>Aufgabe 6: Die Abtastlücke &mdash; das Gerät misst sich selbst</h3>
+<p>Aus Versuch 3: t = 243&nbsp;608 µs bei 27&nbsp;116 Abfragen.</p>
+<div class="code-block">Dauer einer Abfrage = 243 608 µs / 27 116 = 8,98 µs &asymp; 9 µs</div>
+<p>Die größtmögliche Abtastlücke ist genau eine Abfragedauer: <strong>ca. 9 µs = 0,009 ms</strong>.
+Verglichen mit der Spannweite von 103 ms ist das ein Faktor von über 11&nbsp;000 &mdash;
+vollkommen bedeutungslos.</p>
+<div class="info"><strong>Die Pointe:</strong> Diese Zahl steht in keinem Datenblatt. Der Sketch hat die
+Abfragen <em>mitgezählt</em>, und damit misst das Gerät seine eigene Reaktionsgeschwindigkeit unter
+genau den Bedingungen, unter denen es arbeitet &mdash; inklusive Compiler, Takt und allem, was
+sonst noch in der Schleife steht. Ein Datenblattwert für <code>digitalRead()</code> (ca. 5 µs) wäre
+nur eine Abschätzung.</div>
+
+<h3>Aufgabe 7: Die beiden Uhrenfehler, Gesamtbilanz</h3>
+<table>
+<tr><th>Beitrag</th><th>Rechnung (für t = 250 ms)</th><th>Wert</th></tr>
+<tr><td>Abtastlücke (A. 6)</td><td>eine Schleifendauer</td><td>0,009 ms</td></tr>
+<tr><td>Auflösung <code>micros()</code></td><td>4 µs</td><td>0,004 ms</td></tr>
+<tr><td>Taktgeber (Quarz)</td><td>0,5 % &middot; 250 ms</td><td>1,25 ms</td></tr>
+<tr><td><strong>Gerät gesamt</strong></td><td>Summe</td><td><strong>ca. 1,3 ms</strong></td></tr>
+<tr><td><strong>Mensch (s aus A. 5)</strong></td><td>&mdash;</td><td><strong>ca. 31 ms</strong></td></tr>
+</table>
+<p><strong>Entscheidung:</strong> Der Quarz dominiert unter den Gerätebeiträgen, aber alle drei zusammen
+sind 24-mal kleiner als die Streuung des Menschen &mdash; unter 5 % davon. <strong>Das Ergebnis wird
+vollständig vom Menschen bestimmt.</strong> Ein teureres Board würde die Messung nicht verbessern;
+mehr Versuche schon.</p>
+
+<h3>Aufgabe 8: Erst messen, dann senden</h3>
+<div class="code-block">60 Zeichen &middot; 10 Bit = 600 Bit
+t = 600 Bit / 115 200 Bit/s = 5,2 ms</div>
+<p>Läge diese Sendezeit <em>im</em> Messfenster, wären alle Messwerte systematisch um 5,2 ms zu groß
+&mdash; bei 250 ms ein Fehler von 2 %, vier Mal größer als der gesamte Gerätefehler aus Aufgabe 7,
+aber noch deutlich kleiner als die Streuung des Menschen. Man würde es in den Daten kaum sehen.</p>
+<div class="warn"><strong>Vergleich mit AB 8:</strong> Dort war &tau; &asymp; 4,7 ms und der Messtakt
+200 µs. Dieselben 5,2 ms Sendezeit wären <em>mehr als ein ganzes &tau;</em> und 26 Messtakte &mdash; die
+Kurve wäre komplett zerstört, nicht nur verschoben. <strong>Derselbe absolute Fehler, völlig
+verschiedene Bedeutung:</strong> Ein Fehler zählt immer <em>relativ zur gemessenen Größe</em>. Das ist
+der Grund, warum die Regel „erst messen, dann senden“ trotzdem auch hier eingehalten wird &mdash;
+man baut sie sich als Gewohnheit an, solange sie billig ist.</div>
+
+<h3>Aufgabe 9: Was bringen mehr Versuche?</h3>
+<div class="code-block">s/&radic;n &lt; 2 ms   &rarr;   n &gt; (s / 2 ms)² = (31/2)² = 240 Versuche</div>
+<p>Bei ca. 5 s pro Versuch sind das etwa 20 Minuten durchgehendes Drücken. <strong>Praktisch
+unrealistisch</strong> &mdash; und zwar nicht nur wegen der Dauer.</p>
+<div class="warn"><strong>Die stillschweigende Annahme:</strong> Die Formel s/&radic;n gilt nur, wenn alle
+Werte aus <em>derselben</em> Verteilung stammen, die Person also über die ganze Reihe hinweg gleich
+schnell bleibt. Genau das ist nach Aufgabe 4 verletzt: Übung und Ermüdung verschieben den
+Mittelwert selbst. Man mittelt dann sehr genau &mdash; über eine Größe, die es nicht gibt.
+<br><br>Zweite Grenze: Der Quarzfehler von 1,25 ms ist <strong>systematisch</strong> und wird durch Mitteln
+<em>nicht</em> kleiner. Bei 2 ms Zielgenauigkeit stößt man genau an ihn. Feiner geht es mit diesem
+Board grundsätzlich nicht, egal wie oft man drückt.</div>
+
+<h3>Aufgabe 10: Das Prellen</h3>
+<p><strong>Der Messwert ist nicht betroffen.</strong> Die Schleife bricht beim <em>ersten</em>
+<code>LOW</code> ab und merkt sich sofort <code>t1</code>. Alle weiteren Kontaktschläge treffen eine
+Schleife, die es nicht mehr gibt &mdash; das Prellen passiert nach der Messung.</p>
+<p><strong>Ohne die Wartezeit</strong> wäre der nächste Versuch kaputt: Das Nachprellen oder der noch
+gedrückte Finger würde in der Wartephase sofort als „zu früh gedrückt“ gelesen &rarr; Fehlstart nach
+Fehlstart. Deshalb stehen im Sketch beide Maßnahmen: <code>while (digitalRead(...) == LOW)</code>
+wartet aufs Loslassen, <code>delay(ABKLINGEN)</code> auf das Abklingen der Kontaktschläge.</p>
+
+<h2>Teil 4 &mdash; Gegenprobe mit dem Lineal</h2>
+
+<h3>Aufgabe 11: Der Fallversuch</h3>
+<div class="code-block">s = ½ g t²   &rarr;   t = &radic;(2s/g)</div>
+<table>
+<tr><th>Fallstrecke s</th><th>Reaktionszeit t</th></tr>
+<tr><td>15 cm</td><td>175 ms</td></tr>
+<tr><td>20 cm</td><td>202 ms</td></tr>
+<tr><td>25 cm</td><td>226 ms</td></tr>
+</table>
+<p>Beispiel: s&#772; = 20 cm &rarr; t = &radic;(2&middot;0,20 m / 9,81 m/s²) = &radic;0,0408 s² = 0,202 s.</p>
+
+<h3>Aufgabe 12: Die beiden Verfahren vergleichen</h3>
+<p><strong>(a) Empfindlichkeit:</strong></p>
+<div class="code-block">t(s) = &radic;(2s/g)   &rarr;   dt/ds = 1 / &radic;(2gs)
+
+s = 5 cm:    dt/ds = 1/&radic;(0,981)  = 1,01 s/m   &rarr;  1 cm &equiv; 10,1 ms
+s = 25 cm:   dt/ds = 1/&radic;(4,905)  = 0,45 s/m   &rarr;  1 cm &equiv;  4,5 ms</div>
+<p>Derselbe Ablesefehler wiegt bei kurzen Strecken mehr als doppelt so schwer, weil die
+Wurzelfunktion am Anfang steil verläuft &mdash; das Lineal fällt dort noch langsam, pro Zentimeter
+vergeht also mehr Zeit. Praktische Folge: Sehr kleine Fallstrecken sind unbrauchbar; 20&ndash;30 cm
+sind der günstige Bereich.</p>
+<p><strong>(b) Zwei Gründe, die keine Messfehler sind</strong> &mdash; die Aufgabe für den Menschen ist
+eine andere:</p>
+<ul style="margin:0.6rem 0 0.6rem 1.4rem">
+  <li>Der <strong>Reiz</strong> ist verschieden: eine <em>Bewegung</em> im Gesichtsfeld wird schneller
+  verarbeitet als ein Helligkeitswechsel.</li>
+  <li>Die <strong>Bewegung</strong> ist verschieden: Zugreifen mit der ganzen Hand ist eine andere,
+  reflexnähere Handlung als das gezielte Drücken eines kleinen Tasters mit einem Finger.</li>
+  <li>Dazu kommt: Beim Lineal sieht man die Hand des Partners und kann teilweise <em>antizipieren</em>
+  &mdash; eine Fehlstartprüfung gibt es nicht.</li>
+</ul>
+<p>Deshalb liegen Linealwerte typisch 30&ndash;60 ms <em>niedriger</em>. Das ist kein Widerspruch,
+sondern ein anderer Messgegenstand.</p>
+<p><strong>(c) Zum Vergleich zweier Personen: das Arduino-Gerät.</strong> Begründung: identischer,
+definierter Reiz für beide; der Startzeitpunkt ist dem Gerät exakt bekannt statt von einem Partner
+abhängig; die Zeit wird direkt gemessen und nicht über g ausgerechnet; Fehlstarts werden erkannt;
+beliebig viele Wiederholungen ohne Ablese- und Notierfehler. Beim Lineal hängt das Ergebnis mit am
+Partner &mdash; man vergleicht dann Paare, nicht Personen.</p>
+
+<h2>Teil 5 &mdash; Übertragen auf das eigene Gerät</h2>
+
+<h3>Aufgabe 13: Dasselbe Prinzip, andere Größe</h3>
+<table>
+<tr><th>Aufgabe</th><th>Start</th><th>Stopp</th><th>Ergebnis</th><th>Größenordnung</th></tr>
+<tr><td>(a) Pendel</td><td>Pendel unterbricht die Lichtschranke</td>
+    <td>nächste Unterbrechung <em>in gleicher Richtung</em> (also jede zweite!)</td>
+    <td>T, daraus g = 4&pi;²l/T²</td><td>1&ndash;2 s</td></tr>
+<tr><td>(b) Drehzahl</td><td>Markierung passiert den Sensor</td><td>nächste Passage</td>
+    <td>T, n = 60/T in min<sup>&minus;1</sup></td><td>20 ms bei 3000 min<sup>&minus;1</sup></td></tr>
+<tr><td>(c) Schall</td><td>Sende-Trigger des Ultraschallmoduls</td><td>Flanke am ECHO-Pin</td>
+    <td>t, c = 2s/t</td><td>5,8 ms für 1 m hin und zurück</td></tr>
+</table>
+<div class="warn"><strong>Klassische Falle bei (a):</strong> Wer jede Unterbrechung zählt, misst die halbe
+Periodendauer &mdash; und damit ein um den Faktor 4 falsches g. Der Zähler muss abwechselnd
+ignorieren.</div>
+
+<h3>Aufgabe 14: Messgüte vorab abschätzen</h3>
+<table>
+<tr><th>Beispiel</th><th>Zeit t</th><th>Auflösung 4 µs</th><th>Quarz 0,5 %</th><th>Was dominiert?</th></tr>
+<tr><td>Pendel</td><td>1,5 s</td><td>0,0003 %</td><td>7,5 ms</td><td>Gerät (Quarz) bzw. Triggerpunkt</td></tr>
+<tr><td>Drehzahl</td><td>20 ms</td><td>0,02 %</td><td>0,1 ms</td><td>Gerät, sehr genau</td></tr>
+<tr><td>Ultraschall</td><td>5,8 ms</td><td>0,07 % &equiv; 0,7 mm</td><td>0,03 ms</td><td>weder &mdash; die Lufttemperatur (0,17 %/K)</td></tr>
+<tr><td>Reaktionszeit (heute)</td><td>250 ms</td><td>0,002 %</td><td>1,25 ms</td><td><strong>der Mensch</strong> (31 ms)</td></tr>
+</table>
+<p>In allen drei Projektbeispielen bestimmt also nicht mehr der Mensch die Genauigkeit, sondern das
+Gerät oder sogar eine ganz andere Größe (Temperatur). Die Reaktionszeitmessung ist in dieser Reihe
+der Sonderfall &mdash; und deshalb so lehrreich.</p>
+<div class="info"><strong>Satz fürs Projekttagebuch (Beispiel):</strong> „Mein Gerät kann Zeiten von
+etwa 50 µs (das Zehnfache der Abtastlücke, selbst gemessen: 9 µs) bis 71 Minuten (dann läuft
+<code>micros()</code> über) messen. Die Genauigkeit ist durch den Quarz auf 0,5 % begrenzt; bei
+250 ms sind das 1,3 ms. Die Streuung meiner Messreihe ist 20-mal größer und stammt vom Menschen,
+nicht vom Gerät.“
+<br><br><strong>Zahlenwert zum Überlauf:</strong> <code>micros()</code> zählt in einem 32-Bit-Register:
+2<sup>32</sup> µs = 4295 s = 71,6 min. Danach beginnt es bei 0 &mdash; für Dauermessungen ein echtes
+Problem, für 250 ms völlig unerheblich.</div>
+
+<h2>Zusatzaufgabe 15 &mdash; Vorwarnung gegen Überraschung</h2>
+<p>Mit <code>WARTE_MIN = WARTE_MAX = 3000</code> leuchtet die LED immer nach genau 3 s.</p>
+<table>
+<tr><th>Messreihe</th><th>Mittelwert</th><th>Standardabweichung s</th></tr>
+<tr><td>zufällige Wartezeit</td><td>ca. 250 ms</td><td>ca. 31 ms</td></tr>
+<tr><td>feste Wartezeit (nach einigen Übungsversuchen)</td><td>ca. 120&ndash;180 ms</td><td>ca. 10&ndash;20 ms</td></tr>
+</table>
+<p>Beides sinkt, <strong>relativ sinkt die Standardabweichung meist stärker</strong>: Die Werte werden
+„schöner“, weil nicht mehr reagiert, sondern mitgezählt wird. Einzelne Werte rutschen unter die
+physiologische Grenze von ca. 100 ms oder in den Fehlstart &mdash; ein sicheres Zeichen dafür, dass
+etwas anderes gemessen wird.</p>
+<div class="warn"><strong>Die Lehre:</strong> Eine kleinere Streuung bedeutet hier
+<em>nicht</em> eine bessere Messung. Die zufällige Wartezeit ist kein Schmuck, sondern sie
+<strong>definiert die Messgröße</strong>: Nur wenn der Zeitpunkt unvorhersehbar ist, misst das Gerät
+Reaktion und nicht Vorhersage. Wer an einem Messverfahren etwas vereinfacht, muss immer prüfen, ob
+danach noch dieselbe Größe gemessen wird.</div>
+
+<div class="nav">
+  <a href="AB9_Reaktionszeit.pdf">📄 Arbeitsblatt (PDF)</a>
+  <a href="AB9_Reaktionszeit.ino">💾 Sketch (.ino)</a>
+  <a href="./" class="outline">&larr; Übersicht</a>
+</div>
+
+</div>
+<footer>Fachpraxis 12NP &middot; Lore-Lorentz-Schule Düsseldorf<!-- legal-links --><div style="margin-top:0.8rem;font-size:0.8rem"><a href="../impressum.html">Impressum</a> &nbsp;&middot;&nbsp; <a href="../datenschutz.html">Datenschutz</a></div>
+</footer>
+</body>
+</html>

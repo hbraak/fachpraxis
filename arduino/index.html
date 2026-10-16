@@ -161,6 +161,17 @@
     <p style="font-size:0.9em;color:#555;margin-top:0.6em;">Hauptmessung: 100-nF-Folie an 47 k&Omega; &rarr; &tau; = 4,7 ms — genau 1000-mal schneller als dieselbe Kurve im Physik-Praktikum (100 µF, &tau; = 4,7 s) und mit der Stoppuhr prinzipiell nicht mehr erreichbar. Das ist die Begründung für den Eigenbau. Der Sketch hat zwei Betriebsarten: <code>BALKEN = true</code> zeichnet Laden und Entladen als ASCII-Balken im Seriellen Monitor — die Kurve ist in den ersten Minuten sichtbar, erst danach kommen Zahlen, Takt und Fehlerrechnung dazu. Der Arduino lädt und entlädt selbst über einen Pin und kennt t = 0 deshalb exakt, kein Trigger nötig. Zusatz: dieselbe Messung mit 470 k&Omega; liefert dieselbe Kapazität. Sketch-Kurzlink für die SuS: <code>tinyurl.com/ab8-rc-sketch</code></p>
   </div>
 
+  <div class="card" style="border-left: 4px solid #c0392b;">
+    <h2>AB 9: Wie schnell bist du wirklich? <span class="badge">Jg. 12</span></h2>
+    <p>Zeitabhängige Messung mit <code>micros()</code>: LED als Startsignal, Taster als Stoppsignal, zufällige Wartezeit gegen Antizipation, Fehlstarterkennung &rarr; Messreihe, Mittelwert, Streuung, Standardfehler. Gegenprobe mit dem Lineal-Fallversuch; Übertragung auf eigene Projektideen (Pendel, Drehzahl, Ultraschall)</p>
+    <div class="links">
+      <a href="AB9_Reaktionszeit.pdf" class="btn-pdf">📄 Arbeitsblatt (PDF)</a>
+      <a href="AB9_Reaktionszeit.ino" class="btn-pdf">💾 Sketch: Reaktionszeit-Messgerät (.ino)</a>
+      <a href="lsg9.html" class="btn-lsg">✅ Lösung</a>
+    </div>
+    <p style="font-size:0.9em;color:#555;margin-top:0.6em;">Das Gegenstück zu AB 8 — dort war das Gerät der Flaschenhals, hier ist der Arduino rund 20&thinsp;000-mal genauer als der Mensch. Damit ist nicht mehr ein besserer Messwert das Ziel, sondern <strong>Statistik</strong>: Was tut man mit einer Größe, die jedes Mal anders herauskommt? Der Sketch zählt die Abfragen der Warteschleife mit, die SuS rechnen daraus die Abtastlücke (ca. 9 µs) selbst aus — ohne Datenblatt. Mittelwert und Streuung gibt das Gerät absichtlich <em>nicht</em> aus, nur Minimum, Maximum und Spannweite. Aufbau: LED + 220 &Omega; an D8, Taster an D2 mit <code>INPUT_PULLUP</code>, sonst nichts.</p>
+  </div>
+
   <a href="../" class="back">&larr; Zurück zur Übersicht</a>
 </div>
 <footer>Fachpraxis Physik 11NP — Lore-Lorentz-Schule Düsseldorf<!-- legal-links --><div style="margin-top:0.8rem;font-size:0.8rem"><a href="../impressum.html">Impressum</a> &nbsp;·&nbsp; <a href="../datenschutz.html">Datenschutz</a></div>

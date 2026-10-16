@@ -1,0 +1,399 @@
+\documentclass[a4paper,12pt]{scrartcl}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{enumitem}
+\usepackage{geometry}
+\usepackage{siunitx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tikz}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage[most]{tcolorbox}
+\usepackage{scrlayer-scrpage}
+\usepackage{qrcode}
+\usepackage{microtype}
+\usepackage[hidelinks]{hyperref}
+\usetikzlibrary{arrows.meta,positioning}
+\sisetup{locale=DE, per-mode=fraction, output-decimal-marker={,}}
+\geometry{a4paper, left=2cm, right=2cm, top=2.1cm, bottom=2.4cm, footskip=0.9cm}
+
+\ohead{BRAK}
+\chead{Fachpraxis}
+\ihead{12NP}
+
+\RedeclareSectionCommand[beforeskip=-2.1ex, afterskip=1.0ex]{subsection}
+\RedeclareSectionCommand[beforeskip=-2.2ex, afterskip=1.0ex]{subsubsection}
+
+\lstdefinestyle{arduino}{
+  language=C,
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{blue}\bfseries,
+  commentstyle=\color{gray}\itshape,
+  stringstyle=\color{red},
+  numbers=none,
+  frame=single,
+  backgroundcolor=\color{gray!5},
+  breaklines=true,
+  showstringspaces=false,
+  morekeywords={HIGH,LOW,OUTPUT,INPUT,INPUT_PULLUP,pinMode,digitalWrite,digitalRead,analogRead,analogWrite,micros,millis,map,constrain,Serial,begin,println,print,delay,setup,loop,int,long,unsigned,float,void,for,while,if,else,const,bool,true,false,A0,A1,A2},
+  columns=fullflexible,
+  keepspaces=true,
+  tabsize=2,
+  xleftmargin=4pt,
+  xrightmargin=4pt,
+  aboveskip=9pt,
+  belowskip=9pt
+}
+
+\lstdefinestyle{monitor}{
+  basicstyle=\ttfamily\footnotesize,
+  numbers=none,
+  frame=single,
+  backgroundcolor=\color{white},
+  breaklines=false,
+  columns=fullflexible,
+  keepspaces=true,
+  xleftmargin=4pt,
+  xrightmargin=4pt,
+  aboveskip=7pt,
+  belowskip=7pt
+}
+
+\newtcolorbox{auftrag}{colback=white, colframe=black!70, boxrule=0.8pt,
+  left=7pt, right=7pt, top=5pt, bottom=5pt, arc=2pt}
+
+\setlength{\abovedisplayskip}{10pt}
+\setlength{\belowdisplayskip}{10pt}
+\setlength{\abovedisplayshortskip}{6pt}
+\setlength{\belowdisplayshortskip}{6pt}
+\renewcommand{\arraystretch}{1.3}
+\linespread{1.02}
+
+\begin{document}
+
+\begin{center}
+{\Large\textbf{Arbeitsblatt 9: Wie schnell bist du wirklich?}}\\[4pt]
+\normalsize Ein eigenes Messgerät für Reaktionszeiten
+\end{center}
+
+\vspace{2pt}
+\hrule
+\vspace{7pt}
+
+\begin{auftrag}
+\textbf{Worum es heute geht.} Am Ende dieser Stunde habt ihr eure eigene Reaktionszeit
+\emph{gemessen} -- mit einem Gerät, das ihr selbst gebaut habt -- und könnt begründen, wie viele
+Stellen von eurem Ergebnis überhaupt etwas bedeuten.
+
+\smallskip
+\noindent In Arbeitsblatt~8 war das Messgerät der Flaschenhals: Der Kondensator war schneller als
+der Arduino. Heute ist es umgekehrt. Der Arduino ist \textbf{tausendfach genauer} als das, was er
+messen soll -- und genau daraus entsteht die neue Frage: Was macht man mit einem Messwert, der
+jedes Mal anders herauskommt?
+\end{auftrag}
+
+\vspace{5pt}
+
+\begin{center}
+\noindent
+\begin{minipage}[c]{2.0cm}
+\qrcode[height=1.9cm]{https://hbraak.github.io/fachpraxis/arduino/AB9_Reaktionszeit.ino}
+\end{minipage}%
+\hspace{5pt}%
+\begin{minipage}[c]{5.9cm}
+\raggedright\small\textbf{Der Sketch} -- auch diesmal wird nicht getippt:\\
+\texttt{hbraak.github.io/fachpraxis/}\\
+\texttt{arduino/AB9\_Reaktionszeit.ino}\\[2pt]
+\emph{Speichern, in der IDE öffnen, hochladen.}
+\end{minipage}%
+\hspace{12pt}%
+\begin{minipage}[c]{2.0cm}
+\qrcode[height=1.9cm]{https://hbraak.github.io/fachpraxis/arduino/lsg9.html}
+\end{minipage}%
+\hspace{5pt}%
+\begin{minipage}[c]{5.9cm}
+\raggedright\small\textbf{Lösungen \& Erklärungen:}\\
+\texttt{hbraak.github.io/fachpraxis/}\\
+\texttt{arduino/lsg9.html}\\[2pt]
+\emph{Erst selbst versuchen.} Dort steht\\
+auch der Sketch Zeile für Zeile erklärt.
+\end{minipage}
+\end{center}
+
+\vspace{4pt}
+
+\subsection*{Material -- bitte zuerst abhaken}
+
+\begin{center}
+\begin{tabular}{p{6.3cm} c p{6.3cm} c}
+\toprule
+\textbf{Bauteil} & \textbf{vorh.} & \textbf{Bauteil} & \textbf{vorh.} \\
+\midrule
+Arduino Uno + USB-Kabel & $\square$ & Taster & $\square$ \\
+Steckbrett & $\square$ & Widerstand \SI{220}{\ohm} & $\square$ \\
+LED (gut sichtbar) & $\square$ & Lineal \SI{30}{\centi\meter} \emph{(Teil 5)} & $\square$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection*{Teil 1 -- Hinsehen: das Gerät in Betrieb nehmen}
+
+\noindent
+\begin{minipage}[c]{9.4cm}
+\begin{center}
+\begin{tikzpicture}[line width=0.9pt, scale=1.05]
+  \draw (0,0) rectangle (2.5,3.4);
+  \node[align=center] at (1.25,1.7) {Arduino\\Uno};
+
+  % LED-Zweig
+  \draw (2.5,2.9) -- (4.1,2.9);
+  \draw[fill=white] (4.1,2.65) rectangle (5.3,3.15);
+  \node at (4.7,2.9) {\small\SI{220}{\ohm}};
+  \draw (5.3,2.9) -- (6.6,2.9);
+  % LED-Symbol
+  \draw[fill=white] (6.6,2.6) -- (6.6,3.2) -- (7.15,2.9) -- cycle;
+  \draw (7.15,2.6) -- (7.15,3.2);
+  \draw[-{Stealth[length=4pt,width=3pt]}] (7.38,3.22) -- (7.78,3.62);
+  \draw[-{Stealth[length=4pt,width=3pt]}] (7.63,3.22) -- (8.03,3.62);
+  \draw (7.15,2.9) -- (8.4,2.9) -- (8.4,0.4);
+
+  % Taster-Zweig
+  \draw (2.5,1.5) -- (6.1,1.5);
+  \draw (6.1,1.5) -- (6.5,1.5);
+  \draw (6.5,1.5) -- (6.9,1.85);
+  \draw (6.9,1.5) -- (8.4,1.5);
+  \fill (6.5,1.5) circle (2.0pt);
+  \fill (6.9,1.5) circle (2.0pt);
+  \node[above] at (6.75,1.95) {\small Taster};
+
+  % GND-Sammelleitung
+  \draw (2.5,0.4) -- (8.4,0.4);
+  \fill (8.4,1.5) circle (2.2pt);
+  \fill (8.4,2.9) circle (2.2pt);
+
+  \node[above] at (3.1,2.9) {\small D8};
+  \node[above] at (3.1,1.5) {\small D2};
+  \node[above] at (3.1,0.4) {\small GND};
+\end{tikzpicture}
+\end{center}
+\end{minipage}%
+\hfill
+\begin{minipage}[c]{7.2cm}
+\small Zwei Bauteile, zwei Rollen: Die LED an \texttt{D8} ist das \textbf{Startsignal} -- der
+Arduino schaltet sie selbst ein und weiß deshalb \emph{exakt}, wann $t=0$ ist. Der Taster an
+\texttt{D2} ist das \textbf{Stoppsignal}.
+
+\smallskip
+Der Taster braucht keinen eigenen Widerstand: Im Sketch steht \texttt{INPUT\_PULLUP}, damit
+schaltet der Arduino einen Widerstand in sich selbst zu. Offener Taster heißt \texttt{HIGH},
+gedrückter Taster \texttt{LOW}.
+\end{minipage}
+
+\begin{enumerate}[leftmargin=2em, resume, itemsep=9pt, topsep=7pt]
+\item \textbf{Aufbauen und starten.} Baut die Schaltung auf, ladet den Sketch hoch und öffnet den
+Seriellen Monitor mit \textbf{115200\,Baud}. Drückt den Taster, sobald die LED leuchtet -- zehnmal
+hintereinander. Immer dieselbe Person, sonst messt ihr zehn verschiedene Menschen.
+
+\smallskip
+\noindent\begin{minipage}{\linewidth}
+Ihr seht dabei etwa das Folgende:
+
+\begin{lstlisting}[style=monitor]
+Versuch 3/10  -- Achtung ...
+  Reaktionszeit: 243.6 ms   (243608 us, 27116 Abfragen)
+
+Versuch 4/10  -- Achtung ...
+FEHLSTART: zu frueh gedrueckt. Versuch wird verworfen.
+\end{lstlisting}
+\end{minipage}
+
+\noindent Löst absichtlich einen Fehlstart aus und beschreibt, was das Gerät dann tut. Begründet,
+warum ein Messgerät eine solche Prüfung überhaupt braucht -- was könnte man ohne sie „messen``?
+
+\item \textbf{Warum wartet das Gerät zufällig lange?} Die Wartezeit vor dem Aufleuchten wird
+jedes Mal neu zwischen \SI{2}{\second} und \SI{5}{\second} ausgewürfelt.
+
+\smallskip
+Erklärt, was ihr messen würdet, wenn die Wartezeit immer genau \SI{3}{\second} betragen würde.
+Sucht im Sketch die Zeile \texttt{randomSeed(analogRead(A5));} und erklärt mit Hilfe von
+Arbeitsblatt~4b, warum ein \emph{offener} Analogeingang hier nützlich ist und was ohne diese Zeile
+nach jedem Reset passieren würde.
+
+\item \textbf{Was heißt hier eigentlich „Reaktionszeit``?} Zählt die einzelnen Schritte auf, die
+zwischen dem Aufleuchten der LED und dem geschlossenen Taster ablaufen -- vom Auge bis zum Finger.
+
+\smallskip
+Rechnet dazu zwei der Schritte aus und vergleicht:
+  \begin{enumerate}[label=(\alph*), leftmargin=2em, itemsep=6pt, topsep=5pt]
+  \item Das Licht der LED läuft \SI{1}{\meter} bis zum Auge. Berechnet die Laufzeit mit
+        $c=\SI{3e8}{\meter\per\second}$.
+  \item Ein Nervensignal läuft \SI{1}{\meter} vom Auge zum Finger, Leitungsgeschwindigkeit
+        etwa \SI{50}{\meter\per\second}. Berechnet die Laufzeit.
+  \end{enumerate}
+Entscheidet damit, welcher der beiden Beiträge in eurem Messwert überhaupt auftaucht -- und ob
+eure Messung von Nerven, von Licht oder von etwas Drittem bestimmt wird.
+\end{enumerate}
+
+\subsection*{Teil 2 -- Messen: die ganze Messreihe}
+
+\noindent Nach dem zehnten Versuch gibt das Gerät die vollständige Messreihe als Zahlentabelle
+aus -- eine Zeile je Versuch:
+
+\begin{center}
+\begin{lstlisting}[style=monitor]
+--- MESSREIHE ------------------------------
+# Versuche: 10   kleinste: 198.3 ms   groesste: 301.7 ms   Spannweite: 103.4 ms
+nr;t_us;t_ms;abfragen
+1;264512;264.5;29431
+2;231880;231.9;25802
+...
+\end{lstlisting}
+\end{center}
+
+\begin{enumerate}[leftmargin=2em, resume, itemsep=9pt, topsep=7pt]
+\item \textbf{Übertragen und darstellen.} Übertragt die Tabelle in die Tabellenkalkulation
+(Spalten mit Semikolon getrennt). Zeichnet die zehn Werte als \textbf{Säulendiagramm} über der
+Versuchsnummer.
+
+\smallskip
+Beurteilt am Diagramm: Ist ein Trend von Versuch~1 zu Versuch~10 erkennbar? Falls ja -- nennt
+zwei
+mögliche Ursachen, die am Menschen liegen. Prüft anschließend, ob auch das Gerät eine solche
+Drift erzeugen könnte -- und begründet eure Antwort.
+
+\item \textbf{Mittelwert und Streuung.} Das Gerät nennt euch bewusst nur Kleinste, Größte und
+Spannweite. Berechnet selbst:
+  \begin{enumerate}[label=(\alph*), leftmargin=2em, itemsep=6pt, topsep=5pt]
+  \item den Mittelwert $\bar{t}$,
+  \item die Standardabweichung $s$ der Einzelwerte (in der Tabellenkalkulation
+        \texttt{=STABW.S(...)}),
+  \item die Standardabweichung des Mittelwerts $s_{\bar{t}} = s/\sqrt{n}$.
+  \end{enumerate}
+
+\smallskip
+Gebt euer Ergebnis anschließend in der Form $\bar{t} \pm s_{\bar{t}}$ an und rundet dabei
+sinnvoll. Begründet, warum es \emph{falsch} wäre, die \SI{264,5}{\milli\second} aus der Tabelle
+als Endergebnis hinzuschreiben.
+\end{enumerate}
+
+\subsection*{Teil 3 -- Wie gut ist unser Messgerät?}
+
+\noindent Jetzt kommt die Frage, auf die es ankommt: Wie viel von der Streuung in eurer Messreihe
+stammt vom \emph{Menschen} -- und wie viel vom \emph{Gerät}? Rechnen wir die Beiträge des Geräts
+einzeln aus.
+
+\begin{enumerate}[leftmargin=2em, resume, itemsep=9pt, topsep=7pt]
+\item \textbf{Die Abtastlücke -- das Gerät misst sich selbst.} Der Arduino fragt den Taster in
+einer engen Schleife ab. Zwischen zwei Abfragen ist er \emph{blind}; drückt der Finger genau
+dazwischen, wird der Druck erst bei der nächsten Abfrage bemerkt.
+
+\smallskip
+In jeder Zeile steht, wie oft abgefragt wurde. Berechnet aus $t$ und der Spalte
+\texttt{abfragen} die Dauer \emph{einer} Abfrage und damit die größtmögliche Abtastlücke.
+Vergleicht sie mit der Spannweite eurer Messreihe. Begründet, warum ihr dafür kein Datenblatt
+braucht -- das Gerät hat diese Zahl selbst mitgemessen.
+
+\item \textbf{Die beiden Uhrenfehler.} Die Funktion \texttt{micros()} liefert Zeiten in Schritten
+von \SI{4}{\micro\second}; der Taktgeber des Boards geht auf \SI{0,5}{\percent} genau.
+
+\smallskip
+Rechnet beide Beiträge für einen Messwert von \SI{250}{\milli\second} in Millisekunden um. Stellt
+anschließend alle drei Gerätebeiträge (Abtastlücke, Auflösung, Taktgeber) der Standardabweichung
+$s$ aus Aufgabe~5 gegenüber und entscheidet, welcher Beitrag euer Ergebnis bestimmt.
+
+\item \textbf{Erst messen, dann senden.} Der Sketch gibt die Reaktionszeit erst \emph{nach} dem
+Tastendruck aus. Eine Ausgabezeile ist etwa 60~Zeichen lang, pro Zeichen werden 10~Bit übertragen.
+
+\smallskip
+Berechnet die Sendedauer bei 115200\,Baud. Erklärt, was im Messwert stecken würde, wenn der Sketch
+diese Zeile \emph{vor} der Zeitmessung senden würde -- und begründet, warum derselbe Fehler in
+Arbeitsblatt~8 viel schlimmere Folgen hatte als hier.
+
+\item \textbf{Was bringen mehr Versuche?} Der Gerätefehler lässt sich nicht mehr verkleinern --
+die Streuung des Menschen aber im Mittelwert.
+
+\smallskip
+Berechnet mit $s_{\bar{t}} = s/\sqrt{n}$ und eurem $s$, wie viele Versuche $n$ nötig wären, damit
+der Mittelwert auf \SI{2}{\milli\second} genau ist. Beurteilt, ob diese Messreihe praktisch
+durchführbar ist, und nennt die Annahme, die dabei stillschweigend gemacht wird (Stichwort:
+Aufgabe~4).
+
+\item \textbf{Das Prellen.} Nach jedem Versuch wartet der Sketch \SI{400}{\milli\second}
+(\texttt{ABKLINGEN}) und bis der Taster wieder losgelassen ist.
+
+\smallskip
+Ein mechanischer Taster schließt nicht sauber, sondern schlägt für etwa
+\SIrange{1}{10}{\milli\second} mehrfach auf. Entscheidet begründet, ob dieses Prellen euren
+\emph{Messwert} verfälscht -- und was ohne die Wartezeit mit dem \emph{nächsten} Versuch passieren
+würde.
+\end{enumerate}
+
+\subsection*{Teil 4 -- Gegenprobe mit dem Lineal}
+
+\noindent Ein Messwert, der nur von einem einzigen Gerät kommt, ist ungeprüft. Darum messen wir
+dieselbe Größe noch einmal -- mit einem Lineal und ohne jede Elektronik.
+
+\begin{enumerate}[leftmargin=2em, resume, itemsep=9pt, topsep=7pt]
+\item \textbf{Der Fallversuch.} Eine Person hält ein Lineal senkrecht an der Marke \SI{0}{\centi\meter}
+fest, die zweite hält die Finger ohne Berührung an der Marke \SI{0}{\centi\meter} bereit. Das Lineal wird
+ohne Ankündigung losgelassen; gegriffen wird so schnell wie möglich. Notiert die Fallstrecke $s$
+und wiederholt den Versuch zehnmal.
+
+\smallskip
+Leitet aus $s=\frac{1}{2}g t^2$ die Gleichung für $t$ her und berechnet daraus den Mittelwert
+eurer Reaktionszeit.
+
+\item \textbf{Die beiden Verfahren vergleichen.} Stellt die Ergebnisse aus Aufgabe~5 und
+Aufgabe~11 gegenüber.
+  \begin{enumerate}[label=(\alph*), leftmargin=2em, itemsep=6pt, topsep=5pt]
+  \item Begründet mit Hilfe der Ableitung von $t(s)$, warum ein Ablesefehler von \SI{1}{\centi\meter} bei
+        kurzen Fallstrecken \emph{stärker} ins Gewicht fällt als bei langen.
+  \item Die beiden Werte werden nicht gleich sein. Nennt zwei Gründe, die \emph{nicht}
+        Messfehler sind, sondern daran liegen, dass die Aufgabe für den Menschen jeweils eine
+        andere ist.
+  \item Beurteilt abschließend: Welches der beiden Verfahren würdet ihr verwenden, um zwei
+        Personen miteinander zu vergleichen -- und warum?
+  \end{enumerate}
+\end{enumerate}
+
+\subsection*{Teil 5 -- Übertragen auf euer eigenes Gerät}
+
+\noindent Im Abschlussprojekt baut jede Gruppe ein eigenes Messgerät. Die Zeitmessung aus diesem
+Arbeitsblatt ist dafür ein Baukasten: ein Startereignis, ein Stoppereignis, \texttt{micros()}
+dazwischen.
+
+\begin{enumerate}[leftmargin=2em, resume, itemsep=9pt, topsep=7pt]
+\item \textbf{Dasselbe Prinzip, andere Größe.} Wählt eine der folgenden Messaufgaben aus und
+beschreibt für sie in Stichworten: Was ist das Startereignis, was das Stoppereignis, welche
+Größe rechnet man am Ende aus?
+  \begin{enumerate}[label=(\alph*), leftmargin=2em, itemsep=6pt, topsep=5pt]
+  \item Periodendauer eines Pendels (Lichtschranke oder Taster)
+  \item Drehzahl eines Lüfterrads
+  \item Schallgeschwindigkeit in Luft über die Laufzeit eines Ultraschallsignals
+  \end{enumerate}
+
+\item \textbf{Die Messgüte vorab abschätzen.} Für euer gewähltes Beispiel: Gebt an, wie groß die
+zu messende Zeit etwa ist, und vergleicht sie mit den Gerätegrenzen aus Aufgabe~6
+und~7. Entscheidet begründet, ob dort -- wie heute -- der Mensch, oder -- wie in Arbeitsblatt~8 --
+das Gerät die Genauigkeit bestimmt. Formuliert daraus einen Satz für euer Projekttagebuch:
+\emph{Mein Gerät kann Zeiten von \ldots bis \ldots sinnvoll messen, weil \ldots}
+\end{enumerate}
+
+\subsection*{Zusatzaufgabe}
+
+\begin{enumerate}[leftmargin=2em, resume, itemsep=9pt, topsep=7pt]
+\item \textbf{Vorwarnung gegen Überraschung.} Ändert im Sketch die beiden Zeilen
+\texttt{WARTE\_MIN} und \texttt{WARTE\_MAX} auf denselben Wert, sodass die LED immer nach genau
+\SI{3}{\second} aufleuchtet, und messt eine neue Reihe mit zehn Versuchen.
+
+\smallskip
+Vergleicht Mittelwert \emph{und} Standardabweichung mit eurer ersten Messreihe. Erklärt, welche
+der beiden Größen sich stärker ändert, und begründet damit, warum die zufällige Wartezeit kein
+Schmuck, sondern ein Teil des Messverfahrens ist.
+\end{enumerate}
+
+\end{document}
