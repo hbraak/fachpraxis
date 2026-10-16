@@ -122,7 +122,7 @@
   .matrix li{font-size:clamp(.82rem,1.25vw,1.12rem);line-height:1.65;color:var(--muted)}
   .matrix li b{color:var(--ink);font-weight:600}
   .matrix li.now{color:var(--ink)}
-  .matrix li.now::after{content:" ← das war dein Versuch";color:var(--a1);font-size:.82em;font-weight:600}
+  .matrix li.now::after{content:" ← euer Einstiegsspiel";color:var(--a1);font-size:.82em;font-weight:600}
   /* Geraete-Schema */
   .dev{display:flex;gap:1.1vw;align-items:center;flex-wrap:wrap;margin:.6em 0 .2em}
   .dev .u{border:2px solid var(--line);border-radius:12px;padding:.7em 1em;text-align:center;
@@ -148,16 +148,16 @@
 <!-- 1 -->
 <section class="slide title-slide">
   <div class="kicker">Projekttage 2026 · Fachpraxis</div>
-  <h1 style="font-size:clamp(2.6rem,9vw,7rem);line-height:.95">Rund 250&nbsp;Millisekunden.</h1>
+  <h1 style="font-size:clamp(2.6rem,9vw,7rem);line-height:.95">Wie schnell<br>bist du wirklich?</h1>
   <div class="rule"></div>
-  <p class="lead">So lange braucht dein Finger, bis er auf die LED reagiert.<br>
-  Du weißt das, <strong>weil du es gemessen hast</strong> &mdash; mit einem Gerät, das du selbst gebaut hast.</p>
+  <p class="lead">Schätz mal &mdash; in Millisekunden. Aufschreiben.<br>
+  <strong>Nachher weißt du es genau</strong>, weil du dir das Messgerät dafür selbst baust.</p>
 </section>
 
 <!-- 2 -->
 <section class="slide">
-  <div class="kicker">Zur Erinnerung: AB 9</div>
-  <h2>Das hier war euer Messgerät</h2>
+  <div class="kicker">Der Einstieg &mdash; das baut ihr zuerst</div>
+  <h2>Das Reaktionsspiel</h2>
   <div class="dev">
     <div class="u"><b>LED an D8</b>Startsignal</div><span class="ar">&rarr;</span>
     <div class="u"><b>zufällig 2&ndash;5 s</b>damit du nicht rätst</div><span class="ar">&rarr;</span>
@@ -168,25 +168,25 @@
 t0 = micros();
 while (digitalRead(PIN_TASTER) == HIGH) ;   <span class="c">// warten, sonst nichts</span>
 t = micros() - t0;                    <span class="c">// Stoppereignis</span></pre>
-  <div class="note">Zwei Bauteile, vier Zeilen, zehn Messungen &mdash; und am Ende eine Zahl über dich selbst,
-  die vorher niemand kannte. Genau das ist ein Messgerät.</div>
+  <div class="note">Zwei Bauteile, vier Zeilen Code, zehn Durchgänge &mdash; und am Ende eine Zahl über dich selbst,
+  die vorher niemand kannte. Wer zu früh drückt, bekommt einen Fehlstart. Gewertet wird natürlich trotzdem.</div>
 </section>
 
 <!-- 3 -->
 <section class="slide">
-  <div class="kicker">Die Zahl, die euch überrascht hat</div>
-  <h2>Nicht das Gerät war ungenau. Du warst es.</h2>
+  <div class="kicker">Die Wette</div>
+  <h2>Das Gerät wird nicht das Problem sein. Du wirst es sein.</h2>
   <div class="vs">
-    <div class="dv"><div class="v">&plusmn; 1,3 ms</div>
-      <div class="k">So unsicher ist das <strong>Gerät</strong> &mdash; Abtastlücke 9&nbsp;µs,
-      Quarz 0,5&nbsp;%, Auflösung 4&nbsp;µs. Alles zusammen.</div></div>
-    <div class="me"><div class="v">&plusmn; 31 ms</div>
-      <div class="k">So stark streut <strong>dein Finger</strong> von Versuch zu Versuch.
-      Rund 24-mal mehr als das Gerät.</div></div>
+    <div class="dv"><div class="v">&plusmn; 1 ms</div>
+      <div class="k">So unsicher ist ungefähr das <strong>Gerät</strong> &mdash; Abtastlücke,
+      Quarzgenauigkeit, Auflösung 4&nbsp;µs. Alles zusammen. Den genauen Wert rechnet ihr selbst aus.</div></div>
+    <div class="me"><div class="v">&plusmn; 30 ms</div>
+      <div class="k">So stark streut vermutlich <strong>dein Finger</strong> von Durchgang zu Durchgang.
+      Etwa 30-mal mehr als das Gerät. Ob das stimmt &mdash; eure Messreihe entscheidet.</div></div>
   </div>
-  <div class="note">Deshalb half kein besseres Bauteil, sondern nur <strong>mehr Messungen</strong>:
+  <div class="note">Wenn das stimmt, hilft kein besseres Bauteil, sondern nur <strong>mehr Messungen</strong>:
   Mittelwert, Streuung, Standardfehler. Die Frage „Wer begrenzt hier eigentlich die Genauigkeit?“
-  ist die wichtigste Frage an jedes Messgerät &mdash; auch an deines.</div>
+  ist die wichtigste Frage an jedes Messgerät &mdash; und ihr beantwortet sie zum ersten Mal an euch selbst.</div>
 </section>
 
 <!-- 4 -->
@@ -200,7 +200,7 @@ t = micros() - t0;                    <span class="c">// Stoppereignis</span></p
 
 <!-- 5 -->
 <section class="slide">
-  <div class="kicker">Der Baukasten</div>
+  <div class="kicker">Der Baukasten &mdash; und hier wird es interessant</div>
   <h2>Zwei Spalten. Jede Kombination ist ein Projekt.</h2>
   <div class="matrix">
     <div class="col s"><h3 style="color:var(--a3)">Was den Start auslöst</h3>
@@ -222,7 +222,7 @@ t = micros() - t0;                    <span class="c">// Stoppereignis</span></p
         <li><b>Mikrofon</b> hört den Donner</li>
       </ul></div>
   </div>
-  <div class="note">Der Code dahinter bleibt fast derselbe wie in AB&nbsp;9. Was sich ändert, ist
+  <div class="note">Der Code bleibt dabei fast derselbe wie im Reaktionsspiel. Was sich ändert, ist
   das <strong>Bauteil am Eingang</strong> &mdash; und die Frage, die du damit beantwortest.</div>
 </section>
 
@@ -232,8 +232,8 @@ t = micros() - t0;                    <span class="c">// Stoppereignis</span></p
   <h2>Bewegung &amp; Geschwindigkeit</h2>
   <div class="cards">
     <div class="card c1"><h3>Die Sprintstrecke</h3>
-      <p>Zwei Lichtschranken im bekannten Abstand. Was beim Menschen die Reaktionszeit war,
-      ist hier die Laufzeit &mdash; und daraus wird die Geschwindigkeit.</p>
+      <p>Zwei Lichtschranken im bekannten Abstand. Was beim Reaktionsspiel dein Finger ist,
+      ist hier die Kugel &mdash; aus der Laufzeit wird die Geschwindigkeit.</p>
       <div class="ss"><span class="g">Start:</span> erste Lichtschranke unterbrochen &nbsp;·&nbsp;
         <span class="r">Stopp:</span> zweite Lichtschranke unterbrochen</div>
       <div class="meta"><span class="tag t">v = s/t</span><span class="tag">LDR + LED</span><span class="dots">●●○</span></div></div>
@@ -264,8 +264,8 @@ t = micros() - t0;                    <span class="c">// Stoppereignis</span></p
   <h2>Drehen &amp; Schwingen</h2>
   <div class="cards">
     <div class="card c4"><h3>Das Pendel misst g</h3>
-      <p>Bei dir streuten zehn Messungen um 31&nbsp;ms. Ein Pendel streut fast gar nicht &mdash;
-      der Arduino zählt 50 Perioden am Stück und wird dabei genauer als jede Stoppuhr.</p>
+      <p>Ein Pendel streut, anders als dein Finger, fast gar nicht &mdash; der Arduino zählt
+      50 Perioden am Stück und wird dabei genauer als jede Stoppuhr.</p>
       <div class="ss"><span class="g">Start:</span> Pendel passiert die Lichtschranke &nbsp;·&nbsp;
         <span class="r">Stopp:</span> 50 Durchgänge später</div>
       <div class="meta"><span class="tag t">g = 4π²l/T²</span><span class="dots">●●○</span></div></div>
@@ -282,7 +282,7 @@ t = micros() - t0;                    <span class="c">// Stoppereignis</span></p
       <div class="meta"><span class="tag t">T² über m</span><span class="dots">●●●</span></div></div>
     <div class="card c4"><h3>Hält der Takt?</h3>
       <p>Ein Metronom &mdash; oder ein Mensch, der mitklatscht. Jeder Schlag wird erfasst,
-      die Abweichungen werden ausgewertet. Dieselbe Statistik wie bei deiner Reaktionszeit.</p>
+      die Abweichungen werden ausgewertet. Dieselbe Statistik wie beim Reaktionsspiel.</p>
       <div class="ss"><span class="g">Start:</span> Klick &nbsp;·&nbsp;
         <span class="r">Stopp:</span> nächster Klick</div>
       <div class="meta"><span class="tag t">Streuung</span><span class="tag">Mikrofon</span><span class="dots">●●●</span></div></div>
@@ -295,7 +295,7 @@ t = micros() - t0;                    <span class="c">// Stoppereignis</span></p
   <h2>Abstand &amp; Schall</h2>
   <div class="cards">
     <div class="card c3"><h3>Einparkhilfe</h3>
-      <p>Das Ultraschallmodul macht nichts anderes als dein Reaktionstester &mdash; nur dass die
+      <p>Das Ultraschallmodul macht nichts anderes als das Reaktionsspiel &mdash; nur dass die
       „Reaktion“ hier das zurückkommende Echo ist. Je näher, desto schneller piept der Summer.</p>
       <div class="ss"><span class="g">Start:</span> Impuls geht raus &nbsp;·&nbsp;
         <span class="r">Stopp:</span> Echo kommt an</div>
@@ -308,7 +308,7 @@ t = micros() - t0;                    <span class="c">// Stoppereignis</span></p
       <div class="meta"><span class="tag t">c(T)</span><span class="dots">●●●</span></div></div>
     <div class="card c3"><h3>Blitz-Entfernungsmesser</h3>
       <p>Hier drückst du wieder selbst &mdash; aber jetzt ist deine Reaktionszeit der <em>Fehler</em>.
-      Rechne aus, wie viele Meter dich deine 250&nbsp;ms kosten. Eine schöne Fehlerdiskussion.</p>
+      Rechne aus, wie viele Meter dich dein eigener Messwert kostet. Eine schöne Fehlerdiskussion.</p>
       <div class="ss"><span class="g">Start:</span> dein Finger beim Blitz &nbsp;·&nbsp;
         <span class="r">Stopp:</span> Mikrofon hört den Donner</div>
       <div class="meta"><span class="tag t">s = c·t</span><span class="dots">●○○</span></div></div>
@@ -327,7 +327,7 @@ t = micros() - t0;                    <span class="c">// Stoppereignis</span></p
   <h2>Mensch &amp; Sport</h2>
   <div class="cards">
     <div class="card c2"><h3>Reaktions-Duell</h3>
-      <p>Dein Gerät aus AB&nbsp;9, zu Ende gebaut: zwei Taster, zwei Spieler, Fehlstarterkennung,
+      <p>Das Einstiegsspiel zu Ende gebaut: zwei Taster, zwei Spieler, Fehlstarterkennung,
       Bestenliste auf dem Display. Wer ist wirklich schneller &mdash; und ab welchem Abstand ist das kein Zufall mehr?</p>
       <div class="ss"><span class="g">Start:</span> LED &nbsp;·&nbsp;
         <span class="r">Stopp:</span> der schnellere von zwei Tastern</div>
@@ -360,13 +360,13 @@ t = micros() - t0;                    <span class="c">// Stoppereignis</span></p
   <div class="cards">
     <div class="card c5"><h3>Kapazitätsmesser</h3>
       <p>Hier löst der Arduino Start <em>und</em> Stopp selbst aus &mdash; kein Mensch, keine
-      Streuung. AB&nbsp;8 zu Ende gedacht: Kondensator anstecken, Gerät zeigt C an.</p>
+      Streuung. Kondensator anstecken, Gerät zeigt die Kapazität an.</p>
       <div class="ss"><span class="g">Start:</span> Pin auf HIGH &nbsp;·&nbsp;
         <span class="r">Stopp:</span> Spannung erreicht 63&nbsp;%</div>
       <div class="meta"><span class="tag t">C = τ/R</span><span class="dots">●●○</span></div></div>
     <div class="card c5"><h3>Dämmungs-Tester</h3>
-      <p>Zwei gleiche Becher, einer isoliert, NTC in beiden. Statt 250&nbsp;Millisekunden misst
-      dein Gerät jetzt eine Stunde &mdash; und schreibt dabei mit.</p>
+      <p>Zwei gleiche Becher, einer isoliert, NTC in beiden. Statt Millisekunden misst
+      dein Gerät jetzt eine ganze Stunde &mdash; und schreibt dabei mit.</p>
       <div class="ss"><span class="g">Start:</span> heiß eingefüllt &nbsp;·&nbsp;
         <span class="r">Stopp:</span> alle 10&nbsp;s ein Messwert</div>
       <div class="meta"><span class="tag t">Datenlogger</span><span class="tag">NTC</span><span class="dots">●●○</span></div></div>
@@ -378,7 +378,7 @@ t = micros() - t0;                    <span class="c">// Stoppereignis</span></p
       <div class="meta"><span class="tag t">Q = V/t</span><span class="dots">●●○</span></div></div>
     <div class="card c5"><h3>Deine eigene Idee</h3>
       <p>Sie muss nur zwei Dinge haben, die du benennen kannst: ein Startereignis und ein
-      Stoppereignis. Alles andere steht schon in deinen alten Sketches.</p>
+      Stoppereignis. Den Rest kennst du aus den Sketches der letzten Blätter.</p>
       <div class="ss"><span class="g">Start:</span> ? &nbsp;·&nbsp; <span class="r">Stopp:</span> ?</div>
       <div class="meta"><span class="tag t">dein Thema</span><span class="dots">●?○</span></div></div>
   </div>
@@ -390,8 +390,8 @@ t = micros() - t0;                    <span class="c">// Stoppereignis</span></p
   <div class="split">
     <div>
       <h2 style="margin-bottom:.3em">Messen allein<br>reicht nicht.</h2>
-      <p class="lead">Dein Reaktionstester war schon fast ein fertiges Projekt: Sensor, Aktor,
-      Messreihe, Fehlerbetrachtung. Es fehlten nur Gehäuse, Anzeige und Dokumentation.</p>
+      <p class="lead">Das Reaktionsspiel ist schon fast ein fertiges Projekt: Sensor, Aktor,
+      Messreihe, Fehlerbetrachtung. Es fehlen nur Gehäuse, Anzeige und Dokumentation.</p>
     </div>
     <div>
       <h3 style="font-size:clamp(.8rem,1.1vw,1rem);letter-spacing:.16em;text-transform:uppercase;color:var(--a2);margin-bottom:.9em">Das muss jedes Projekt haben</h3>
@@ -409,18 +409,18 @@ t = micros() - t0;                    <span class="c">// Stoppereignis</span></p
 
 <!-- 12 -->
 <section class="slide">
-  <div class="kicker">Die drei Fragen &mdash; beim Reaktionstester konntest du sie schon beantworten</div>
-  <h2>Kannst du sie auch für dein Projekt?</h2>
+  <div class="kicker">Die drei Fragen &mdash; erst am Reaktionsspiel, dann an deinem Projekt</div>
+  <h2>Ein gutes Projekt beantwortet alle drei.</h2>
   <div class="qs">
     <div><div class="n">1</div><div class="t">Was misst dein Gerät eigentlich?
-      <small><strong>Damals:</strong> die Zeit zwischen Aufleuchten und Tastendruck, in Millisekunden,
-      im Bereich 150 bis 400&nbsp;ms.</small></div></div>
+      <small><strong>Beim Reaktionsspiel:</strong> die Zeit zwischen Aufleuchten und Tastendruck,
+      in Millisekunden, irgendwo zwischen 150 und 400.</small></div></div>
     <div><div class="n">2</div><div class="t">Wie genau ist es &mdash; und wer begrenzt das?
-      <small><strong>Damals:</strong> das Gerät auf 1,3&nbsp;ms, der Mensch auf 31&nbsp;ms.
-      Also war der Mensch die Grenze, nicht die Elektronik.</small></div></div>
+      <small><strong>Beim Reaktionsspiel:</strong> das Gerät auf etwa 1&nbsp;ms genau, der Mensch
+      auf etwa 30&nbsp;ms. Die Grenze ist also der Mensch, nicht die Elektronik.</small></div></div>
     <div><div class="n">3</div><div class="t">Woher weißt du, dass es stimmt?
-      <small><strong>Damals:</strong> der Lineal-Fallversuch &mdash; eine völlig andere Methode,
-      die auf denselben Wert kam.</small></div></div>
+      <small><strong>Beim Reaktionsspiel:</strong> der Lineal-Fallversuch &mdash; eine völlig andere
+      Methode, die auf denselben Wert kommen muss.</small></div></div>
   </div>
 </section>
 
@@ -429,8 +429,8 @@ t = micros() - t0;                    <span class="c">// Stoppereignis</span></p
   <div class="kicker">Nächster Schritt</div>
   <h1>Drei Ideen aufschreiben.<br>Je einen Satz:<br>Start &mdash; Stopp &mdash; Ergebnis.</h1>
   <div class="rule" style="background:var(--a2)"></div>
-  <p class="lead">Mehr nicht. Über Bauteile reden wir danach &mdash; genau wie beim Reaktionstester,
-  der auch mit einer Idee anfing und nicht mit einer Einkaufsliste.</p>
+  <p class="lead">Mehr nicht. Über Bauteile reden wir danach.<br>
+  Vorher wird gespielt: Reaktionsspiel bauen, messen, Bestenliste.</p>
 </section>
 
 </div>
