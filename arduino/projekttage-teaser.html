@@ -210,6 +210,13 @@
   .vs .k{color:var(--muted);font-size:clamp(.82rem,1.2vw,1.05rem);margin-top:.4em;line-height:1.5;
      position:relative;z-index:1}
 
+  /* Betreuer-Zeile */
+  .crew{margin-top:1.6em;align-self:flex-start;width:fit-content;max-width:min(100%,62ch);font-size:clamp(.82rem,1.25vw,1.12rem);color:var(--muted);line-height:1.6;
+        display:inline-block;padding:.6em 1.1em;border:1px solid var(--line);border-radius:999px;
+        background:var(--glass);backdrop-filter:blur(6px)}
+  .crew b{color:var(--acc);font-weight:700}
+  .title-slide .crew{margin-top:2em}
+
   /* Druck: zurueck auf hell */
   @media print{
     body{background:#fff;color:#15202b;overflow:visible}
@@ -218,6 +225,8 @@
     .title-slide h1{color:#15202b;-webkit-text-fill-color:#15202b}
     .card,.matrix .col,.vs>div,.flow .box{background:#fff;border-color:#dfe5ea;box-shadow:none}
     .card h3,.matrix li b,.qs .t,.ss b{color:#15202b}
+    .crew{background:#fff;border-color:#dfe5ea;color:#5b6b7a}
+    .crew b{color:#15202b}
     pre.code{background:#f5f8fb;color:#15202b;box-shadow:none}
     #bar,#hud,#brand{display:none}
   }
@@ -232,6 +241,7 @@
   <div class="rule"></div>
   <p class="lead">Schätz mal &mdash; in Millisekunden. Aufschreiben.<br>
   <strong>Nachher weißt du es genau</strong>, weil du dir das Messgerät dafür selbst baust.</p>
+  <div class="crew">Betreuung der Projekte: <b>Wolfgang Wegner</b> &amp; <b>Heiko Braak</b></div>
 </section>
 
 <!-- 2 -->
@@ -466,7 +476,7 @@ t = micros() - t0;                    <span class="c">// Stoppereignis</span></p
     <div class="card c5"><h3>Deine eigene Idee</h3>
       <p>Alles, was eine Startbedingung und eine Stoppbedingung hat, geht &mdash; ihr müsst nur
       sagen können, <em>welche Frage über den Menschen</em> ihr damit beantwortet.
-      Sprecht mich an, bevor ihr baut.</p>
+      Sprecht uns an, bevor ihr baut.</p>
       <div class="ss"><span class="g">Start:</span> ? &nbsp;·&nbsp;
         <span class="r">Stopp:</span> ?</div>
       <div class="meta"><span class="tag t">eure Frage</span><span class="dots">?</span></div></div>
@@ -493,6 +503,7 @@ t = micros() - t0;                    <span class="c">// Stoppereignis</span></p
         <li>KI-Einsatz offengelegt &mdash; wo und wofür</li>
         <li>Vorführung mit Erklärung des Messprinzips</li>
       </ul>
+      <div class="crew" style="margin-top:1.1em">Betreut von <b>Wolfgang Wegner</b> und <b>Heiko Braak</b></div>
     </div>
   </div>
 </section>
@@ -521,6 +532,8 @@ t = micros() - t0;                    <span class="c">// Stoppereignis</span></p
   <div class="rule"></div>
   <p class="lead">Jede Idee ändert genau <em>eine</em> Sache am Reaktionsspiel.<br>
   Vorher wird gespielt: Reaktionsspiel bauen, messen, Bestenliste.</p>
+  <div class="crew">Wir begleiten euch durch die Projekte &mdash; fragt uns früh, nicht erst am letzten Tag:<br>
+  <b>Wolfgang Wegner</b> &amp; <b>Heiko Braak</b></div>
 </section>
 
 </div>
