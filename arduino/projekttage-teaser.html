@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Projekttage 2026 — Dein eigenes Messgerät</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{
+    --bg:#ffffff; --ink:#15202b; --muted:#5b6b7a;
+    --a1:#1f6feb; --a2:#c0392b; --a3:#0e8a5f; --a4:#8e44ad; --a5:#d98200;
+    --line:#dfe5ea;
+  }
+  html,body{height:100%}
+  body{
+    font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+    background:var(--bg); color:var(--ink); overflow:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+  #deck{position:relative;width:100vw;height:100vh}
+  .slide{
+    position:absolute;inset:0;display:none;
+    padding:4.5vh 5vw 8vh;
+    flex-direction:column;justify-content:center;
+    animation:in .32s ease-out;
+  }
+  .slide.on{display:flex}
+  @keyframes in{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+  h1{font-size:clamp(2rem,5.4vw,4.4rem);line-height:1.05;letter-spacing:-.02em}
+  h2{font-size:clamp(1.5rem,3.4vw,2.9rem);line-height:1.12;letter-spacing:-.015em;margin-bottom:.5em}
+  h3{font-size:clamp(1.05rem,1.75vw,1.55rem);line-height:1.2}
+  p.lead{font-size:clamp(1rem,1.9vw,1.6rem);color:var(--muted);line-height:1.45;max-width:48ch}
+  .kicker{font-size:clamp(.8rem,1.1vw,1rem);letter-spacing:.16em;text-transform:uppercase;
+          color:var(--a1);font-weight:700;margin-bottom:1.2em}
+  .big{font-size:clamp(2.4rem,7vw,6rem);font-weight:800;letter-spacing:-.03em;line-height:1}
+  .mono{font-family:'Fira Code',Consolas,monospace}
+
+  /* Titelfolie */
+  .title-slide{justify-content:center}
+  .title-slide h1{max-width:20ch}
+  .title-slide .sub{margin-top:.7em;font-size:clamp(1.1rem,2.2vw,1.9rem);color:var(--muted)}
+  .rule{width:5.5rem;height:6px;background:var(--a1);border-radius:3px;margin:1.6rem 0}
+
+  /* Kette */
+  .chain{display:flex;flex-wrap:wrap;align-items:center;gap:.6vw;margin-top:1.4em}
+  .chain span{background:#f2f6fa;border:2px solid var(--line);border-radius:10px;
+              padding:.5em .85em;font-size:clamp(.78rem,1.35vw,1.2rem);font-weight:600;white-space:nowrap}
+  .chain span.hot{background:#fff4f2;border-color:var(--a2);color:var(--a2)}
+  .chain i{color:var(--muted);font-style:normal;font-size:clamp(.9rem,1.5vw,1.4rem)}
+
+  /* Prinzip-Schema */
+  .flow{display:flex;align-items:stretch;gap:1.2vw;margin-top:1.2em;flex-wrap:wrap}
+  .flow .box{flex:1 1 0;min-width:170px;border:3px solid var(--line);border-radius:14px;padding:1.1em 1em}
+  .flow .box.s{border-color:var(--a3)} .flow .box.m{border-color:var(--a1)} .flow .box.e{border-color:var(--a2)}
+  .flow .box b{display:block;font-size:clamp(.95rem,1.6vw,1.35rem);margin-bottom:.35em}
+  .flow .box small{color:var(--muted);font-size:clamp(.8rem,1.2vw,1.05rem);line-height:1.4;display:block}
+
+  /* Zahlen-Folie */
+  .nums{display:flex;gap:2.5vw;flex-wrap:wrap;margin-top:.8em}
+  .nums div{flex:1 1 200px}
+  .nums .v{font-size:clamp(1.9rem,5vw,4rem);font-weight:800;letter-spacing:-.03em}
+  .nums .k{color:var(--muted);font-size:clamp(.85rem,1.3vw,1.15rem);margin-top:.2em;line-height:1.35}
+
+  /* Ideenkarten */
+  .cards{display:grid;grid-template-columns:repeat(2,1fr);gap:1.3vh 1.4vw;margin-top:.4em}
+  @media (max-width:760px){ .cards{grid-template-columns:1fr} }
+  .card{border:2px solid var(--line);border-left-width:8px;border-radius:12px;
+        padding:1.1em 1.25em;background:#fff}
+  .card h3{margin-bottom:.3em}
+  .card p{font-size:clamp(.85rem,1.3vw,1.18rem);color:var(--muted);line-height:1.42}
+  .card .meta{margin-top:.55em;display:flex;gap:.5em;flex-wrap:wrap;align-items:center;
+              font-size:clamp(.7rem,1vw,.88rem)}
+  .tag{background:#eef3f8;border-radius:999px;padding:.2em .7em;color:#405466;font-weight:600}
+  .tag.t{background:#eaf4ff;color:#1f6feb}
+  .dots{margin-left:auto;letter-spacing:.1em;color:var(--a5);font-weight:700}
+  .c1{border-left-color:var(--a1)} .c2{border-left-color:var(--a2)}
+  .c3{border-left-color:var(--a3)} .c4{border-left-color:var(--a4)} .c5{border-left-color:var(--a5)}
+
+  /* Fragenfolie */
+  .qs{display:flex;flex-direction:column;gap:.9em;margin-top:.6em}
+  .qs div{display:flex;gap:1em;align-items:baseline}
+  .qs .n{font-size:clamp(1.6rem,3.6vw,3rem);font-weight:800;color:var(--a1);min-width:1.6em}
+  .qs .t{font-size:clamp(1rem,2vw,1.7rem);line-height:1.3}
+  .qs .t small{display:block;color:var(--muted);font-size:clamp(.8rem,1.2vw,1.05rem);margin-top:.25em;font-weight:400}
+
+  ul.check{list-style:none;margin-top:.5em}
+  ul.check li{font-size:clamp(.92rem,1.6vw,1.4rem);line-height:1.5;padding-left:1.8em;position:relative;margin-bottom:.45em}
+  ul.check li::before{content:"□";position:absolute;left:0;color:var(--a1);font-weight:700}
+
+  .split{display:flex;gap:3vw;align-items:center;flex-wrap:wrap}
+  .split>*{flex:1 1 320px}
+
+  .note{margin-top:1.1em;border-left:5px solid var(--a5);background:#fffaf2;
+        padding:.8em 1em;border-radius:0 10px 10px 0;
+        font-size:clamp(.85rem,1.25vw,1.1rem);color:#6b5330;line-height:1.45;max-width:70ch}
+
+  /* Chrome */
+  #bar{position:fixed;left:0;bottom:0;height:5px;background:var(--a1);width:0;transition:width .3s;z-index:20}
+  #hud{position:fixed;right:1.6vw;bottom:1.6vh;font-size:.85rem;color:#90a0ad;z-index:20;
+       display:flex;gap:1em;align-items:center}
+  #hud b{color:var(--ink);font-variant-numeric:tabular-nums}
+  #hud button{font:inherit;color:#90a0ad;background:none;border:1px solid var(--line);
+              border-radius:6px;padding:.15em .6em;cursor:pointer}
+  #hud button:hover{color:var(--a1);border-color:var(--a1)}
+  #brand{position:fixed;left:5vw;bottom:1.6vh;font-size:.85rem;color:#a8b4bf;z-index:20}
+  @media (max-width:700px){ .slide{padding:3vh 6vw 8vh} #brand{display:none} }
+  @media print{ .slide{display:flex!important;position:static;height:100vh;page-break-after:always} #bar,#hud{display:none} }
+</style>
+</head>
+<body>
+<div id="deck">
+
+<!-- 1 -->
+<section class="slide title-slide">
+  <div class="kicker">Projekttage 2026 · Fachpraxis</div>
+  <h1>Du baust ein Messgerät,<br>das es so noch nicht gibt.</h1>
+  <div class="rule"></div>
+  <p class="lead">Neun Arbeitsblätter lang hat der Arduino gemessen, was wir ihm vorgegeben haben.
+  Jetzt entscheidest du, <strong>was</strong> gemessen wird.</p>
+</section>
+
+<!-- 2 -->
+<section class="slide">
+  <div class="kicker">Das kannst du schon</div>
+  <h2>Die messtechnische Kette &mdash; komplett in deiner Hand</h2>
+  <div class="chain">
+    <span>Sensor</span><i>&rarr;</i>
+    <span>Spannung</span><i>&rarr;</i>
+    <span>ADC</span><i>&rarr;</i>
+    <span>Code</span><i>&rarr;</i>
+    <span>Aktor</span><i>&nbsp;&nbsp;+&nbsp;&nbsp;</i>
+    <span class="hot">Zeit</span>
+  </div>
+  <p class="lead" style="margin-top:1.4em">LED und Taster, NTC und Kennlinie, ADC und Auflösung,
+  Poti und <span class="mono">map()</span>, Servo als Zeiger, Kondensator und &tau;,
+  Reaktionszeit und Streuung.<br>
+  <strong>Jedes dieser Teile ist ein Baustein für dein Projekt.</strong></p>
+</section>
+
+<!-- 3 -->
+<section class="slide">
+  <div class="kicker">Das Grundprinzip</div>
+  <h2>Drei Zeilen, aus denen fast jedes Projekt besteht</h2>
+  <div class="flow">
+    <div class="box s"><b>1 &nbsp;Startereignis</b><small>Etwas passiert &mdash; eine LED geht an,
+      ein Pendel unterbricht die Lichtschranke, ein Ultraschall&shy;impuls geht raus.<br>
+      <span class="mono">t0 = micros();</span></small></div>
+    <div class="box m"><b>2 &nbsp;Warten &amp; aufpassen</b><small>Der Arduino fragt den Eingang
+      zehntausende Male pro Sekunde ab und tut sonst <em>nichts</em>.<br>
+      <span class="mono">while (digitalRead(...)) ;</span></small></div>
+    <div class="box e"><b>3 &nbsp;Stoppereignis</b><small>Der Moment ist da &mdash; die Zeit wird
+      gemerkt, erst danach gerechnet und gesendet.<br>
+      <span class="mono">t = micros() - t0;</span></small></div>
+  </div>
+  <div class="note"><strong>Alles, was eine Zeit hat, ist damit messbar:</strong> Geschwindigkeit,
+  Beschleunigung, Drehzahl, Frequenz, Abstand, Temperaturverlauf, Puls, Kapazität. Du musst nur
+  sagen können, was bei dir Start und was Stopp ist.</div>
+</section>
+
+<!-- 4 -->
+<section class="slide">
+  <div class="kicker">Womit du arbeitest</div>
+  <h2>Drei Zahlen, die dein Gerät definieren</h2>
+  <div class="nums">
+    <div><div class="v">4 µs</div><div class="k">So fein kann <span class="mono">micros()</span>
+      die Zeit auflösen. Schall legt in dieser Zeit 1,4&nbsp;mm zurück.</div></div>
+    <div><div class="v">0,5 %</div><div class="k">So genau geht der Quarz des Boards.
+      Das ist deine Grenze &mdash; auch nach tausend Messungen.</div></div>
+    <div><div class="v">71 min</div><div class="k">Dann läuft der Zähler über und fängt bei
+      null an. Für fast alles egal &mdash; für Langzeitmessungen nicht.</div></div>
+  </div>
+  <div class="note">Daraus folgt der Satz, der in jedes Projekttagebuch gehört:
+  <em>„Mein Gerät kann Zeiten von &hellip; bis &hellip; sinnvoll messen, weil &hellip;“</em></div>
+</section>
+
+<!-- 5 -->
+<section class="slide">
+  <div class="kicker">Ideen 1 / 5</div>
+  <h2>Bewegung &amp; Geschwindigkeit</h2>
+  <div class="cards">
+    <div class="card c1"><h3>Die Lichtschranken-Sprintstrecke</h3>
+      <p>Zwei Lichtschranken im Abstand <em>s</em>. Start beim Durchlaufen der ersten, Stopp bei der
+      zweiten &rarr; Geschwindigkeit. Für Menschen, Modellautos oder rollende Kugeln.</p>
+      <div class="meta"><span class="tag t">v = s/t</span><span class="tag">LDR + LED</span><span class="dots">●●○</span></div></div>
+    <div class="card c1"><h3>Fallbeschleunigung g</h3>
+      <p>Eine Kugel fällt durch zwei Lichtschranken. Aus beiden Zeiten wird die Beschleunigung
+      berechnet &mdash; und mit dem Literaturwert 9,81 m/s² verglichen. Harte Probe für dein Gerät.</p>
+      <div class="meta"><span class="tag t">a aus v₁, v₂</span><span class="tag">Stativ</span><span class="dots">●●●</span></div></div>
+    <div class="card c1"><h3>Fahrradtacho</h3>
+      <p>Ein Magnet an der Speiche, ein Reedkontakt am Rahmen. Zeit pro Umdrehung &rarr;
+      Geschwindigkeit und Tageskilometer. Anzeige auf dem Display.</p>
+      <div class="meta"><span class="tag t">v, s</span><span class="tag">Reedkontakt</span><span class="dots">●●○</span></div></div>
+    <div class="card c1"><h3>Die Rampe</h3>
+      <p>Wagen rollt eine schiefe Ebene hinab, drei Lichtschranken auf dem Weg. Ist die Bewegung
+      wirklich gleichmäßig beschleunigt? Dein Gerät beantwortet das mit Zahlen.</p>
+      <div class="meta"><span class="tag t">s(t)-Gesetz</span><span class="dots">●●●</span></div></div>
+  </div>
+</section>
+
+<!-- 6 -->
+<section class="slide">
+  <div class="kicker">Ideen 2 / 5</div>
+  <h2>Drehen &amp; Schwingen</h2>
+  <div class="cards">
+    <div class="card c4"><h3>Drehzahlmesser</h3>
+      <p>Eine helle Markierung auf dem Lüfterrad, eine Reflexlichtschranke daneben. Zeit zwischen
+      zwei Vorbeiläufen &rarr; Umdrehungen pro Minute. Funktioniert auch an der Bohrmaschine.</p>
+      <div class="meta"><span class="tag t">n = 60/T</span><span class="dots">●●○</span></div></div>
+    <div class="card c4"><h3>Das Pendel misst g</h3>
+      <p>Lichtschranke am Umkehrpunkt, 50 Perioden automatisch gezählt. Aus T und der Länge
+      bekommst du g auf zwei Stellen genau &mdash; besser als mit jeder Stoppuhr.</p>
+      <div class="meta"><span class="tag t">g = 4π²l/T²</span><span class="dots">●●○</span></div></div>
+    <div class="card c4"><h3>Federkonstante im Betrieb</h3>
+      <p>Federpendel schwingt, der Arduino misst die Periodendauer. Masse ändern, neu messen &rarr;
+      aus der Steigung die Federkonstante D. Linearisierung aus dem Physikunterricht.</p>
+      <div class="meta"><span class="tag t">T² über m</span><span class="dots">●●●</span></div></div>
+    <div class="card c4"><h3>Metronom-Prüfer</h3>
+      <p>Wie genau hält ein Metronom (oder ein Mensch) den Takt? Jeder Klick wird mit dem Mikrofon
+      erfasst, die Abweichungen werden aufgezeichnet &mdash; und ausgewertet.</p>
+      <div class="meta"><span class="tag t">Streuung</span><span class="tag">Mikrofon</span><span class="dots">●●●</span></div></div>
+  </div>
+</section>
+
+<!-- 7 -->
+<section class="slide">
+  <div class="kicker">Ideen 3 / 5</div>
+  <h2>Abstand &amp; Schall</h2>
+  <div class="cards">
+    <div class="card c3"><h3>Einparkhilfe</h3>
+      <p>Ultraschallmodul misst den Abstand, der Summer piept umso schneller, je näher es wird.
+      Der Klassiker &mdash; aber die Messgüte macht den Unterschied.</p>
+      <div class="meta"><span class="tag t">s = c·t/2</span><span class="tag">HC-SR04</span><span class="dots">●○○</span></div></div>
+    <div class="card c3"><h3>Schallgeschwindigkeit bestimmen</h3>
+      <p>Dasselbe Modul, andere Frage: Abstand <em>bekannt</em>, c gesucht. Dann die Luft erwärmen
+      und die Temperaturabhängigkeit nachweisen. Aus dem Bauteil wird ein Experiment.</p>
+      <div class="meta"><span class="tag t">c(T)</span><span class="dots">●●●</span></div></div>
+    <div class="card c3"><h3>Berührungsloser Füllstandsmesser</h3>
+      <p>Ultraschall von oben in den Behälter, Laufzeit &rarr; Pegel in Prozent, Servo als Zeiger
+      oder Balken auf dem Display. Das Gegenstück zum Schwimmergeber aus AB&nbsp;7.</p>
+      <div class="meta"><span class="tag t">Kalibrierung</span><span class="dots">●●○</span></div></div>
+    <div class="card c3"><h3>Körpergrößen-Messstation</h3>
+      <p>Modul an der Decke, Knopf drücken, Größe ablesen. Klingt simpel &mdash; bis man
+      Haarschöpfe, Schrägstellung und Rauschen in den Griff bekommen muss.</p>
+      <div class="meta"><span class="tag t">Mittelwert</span><span class="dots">●○○</span></div></div>
+  </div>
+</section>
+
+<!-- 8 -->
+<section class="slide">
+  <div class="kicker">Ideen 4 / 5</div>
+  <h2>Mensch &amp; Sport</h2>
+  <div class="cards">
+    <div class="card c2"><h3>Reaktions-Duell</h3>
+      <p>Zwei Taster, eine LED, zwei Spieler: Wer zuerst drückt, gewinnt &mdash; mit Fehlstart&shy;erkennung
+      und Bestenliste. Die Erweiterung von AB&nbsp;9 zum echten Gerät.</p>
+      <div class="meta"><span class="tag t">Statistik</span><span class="tag">Display</span><span class="dots">●●○</span></div></div>
+    <div class="card c2"><h3>Pulsmesser</h3>
+      <p>Eine helle LED durch die Fingerkuppe, ein Fotowiderstand dahinter: Jeder Herzschlag ändert
+      die Helligkeit. Zeit zwischen zwei Schlägen &rarr; Puls. Anspruchsvoll, aber beeindruckend.</p>
+      <div class="meta"><span class="tag t">f = 60/T</span><span class="tag">LDR</span><span class="dots">●●●</span></div></div>
+    <div class="card c2"><h3>Sprungkraft-Messer</h3>
+      <p>Eine Matte mit Kontakt: Solange du in der Luft bist, ist der Kontakt offen. Aus der
+      Flugzeit wird die Sprunghöhe berechnet &mdash; h = g·t²/8.</p>
+      <div class="meta"><span class="tag t">Flugzeit &rarr; h</span><span class="dots">●●○</span></div></div>
+    <div class="card c2"><h3>Trainingsampel</h3>
+      <p>Gerät gibt in zufälligen Abständen Signale, du musst in der richtigen Reihenfolge drücken.
+      Gemessen wird nicht nur die Zeit, sondern auch die Fehlerquote.</p>
+      <div class="meta"><span class="tag t">Protokoll</span><span class="dots">●●○</span></div></div>
+  </div>
+</section>
+
+<!-- 9 -->
+<section class="slide">
+  <div class="kicker">Ideen 5 / 5</div>
+  <h2>Elektrik, Wärme &amp; Flüssigkeit</h2>
+  <div class="cards">
+    <div class="card c5"><h3>Kapazitätsmesser</h3>
+      <p>AB&nbsp;8 zu Ende gedacht: unbekannten Kondensator anstecken, Gerät misst &tau;, rechnet C aus
+      und zeigt den Wert an. Ein Messgerät, das man kaufen könnte.</p>
+      <div class="meta"><span class="tag t">C = &tau;/R</span><span class="dots">●●○</span></div></div>
+    <div class="card c5"><h3>Dämmungs-Tester</h3>
+      <p>Zwei gleiche Becher, einer isoliert. NTC in beiden, Abkühlkurven über eine Stunde
+      aufzeichnen und vergleichen. Welche Dämmung hält wirklich, was sie verspricht?</p>
+      <div class="meta"><span class="tag t">Datenlogger</span><span class="tag">NTC</span><span class="dots">●●○</span></div></div>
+    <div class="card c5"><h3>Tropfenzähler / Durchfluss</h3>
+      <p>Lichtschranke unter dem Hahn zählt Tropfen und misst ihre Abstände &rarr; Durchfluss in
+      ml/min. Hochrechnung: Was kostet ein tropfender Wasserhahn im Jahr?</p>
+      <div class="meta"><span class="tag t">Q = V/t</span><span class="dots">●●○</span></div></div>
+    <div class="card c5"><h3>Blitz-Entfernungsmesser</h3>
+      <p>Licht ist sofort da, der Donner braucht 3 s pro Kilometer. Knopf beim Blitz, Mikrofon beim
+      Donner &mdash; das Gerät rechnet die Entfernung aus. Dieselbe Physik wie das Echolot.</p>
+      <div class="meta"><span class="tag t">s = c<sub>Schall</sub>·t</span><span class="dots">●○○</span></div></div>
+  </div>
+</section>
+
+<!-- 10 -->
+<section class="slide">
+  <div class="kicker">Oder</div>
+  <div class="split">
+    <div>
+      <h2 style="margin-bottom:.3em">Deine eigene Idee.</h2>
+      <p class="lead">Die beste Projektidee ist die, die hier nicht steht. Sie muss nur drei Dinge
+      haben: etwas, das <strong>gemessen</strong> wird, etwas, das <strong>reagiert</strong> &mdash;
+      und eine Frage, die man vorher nicht beantworten konnte.</p>
+    </div>
+    <div>
+      <h3 style="font-size:clamp(.8rem,1.1vw,1rem);letter-spacing:.16em;text-transform:uppercase;color:var(--a2);margin-bottom:.9em">Das muss jedes Projekt haben</h3>
+      <ul class="check">
+        <li>Mindestens ein Sensor und ein Aktor</li>
+        <li>Funktionierender Prototyp auf dem Steckbrett</li>
+        <li>Lauffähiger, kommentierter Code</li>
+        <li>Schaltplan und kurze Doku</li>
+        <li>KI-Einsatz offengelegt &mdash; wo und wofür</li>
+        <li>Vorführung mit Erklärung des Messprinzips</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 11 -->
+<section class="slide">
+  <div class="kicker">Woran man ein gutes Projekt erkennt</div>
+  <h2>Drei Fragen &mdash; und du bist durch</h2>
+  <div class="qs">
+    <div><div class="n">1</div><div class="t">Was misst dein Gerät eigentlich?
+      <small>Nicht „es piept, wenn ich die Hand davor halte“, sondern: welche Größe, in welcher Einheit,
+      in welchem Bereich.</small></div></div>
+    <div><div class="n">2</div><div class="t">Wie genau ist es &mdash; und wer begrenzt das?
+      <small>Der Sensor, der Quarz, die Auflösung des ADC oder der Mensch davor? Eine Zahl, eine
+      Begründung. Genau das hast du in AB&nbsp;8 und AB&nbsp;9 geübt.</small></div></div>
+    <div><div class="n">3</div><div class="t">Woher weißt du, dass es stimmt?
+      <small>Eine zweite, unabhängige Methode: Zollstock, Multimeter, Literaturwert, Stoppuhr.
+      Ein Messwert ohne Gegenprobe ist nur eine Behauptung.</small></div></div>
+  </div>
+</section>
+
+<!-- 12 -->
+<section class="slide title-slide">
+  <div class="kicker">Nächster Schritt</div>
+  <h1>Drei Ideen aufschreiben.<br>Eine davon verteidigen.</h1>
+  <div class="rule" style="background:var(--a2)"></div>
+  <p class="lead">Zu jeder Idee ein Satz: <em>Was ist Start, was ist Stopp, was kommt heraus?</em><br>
+  Danach sprechen wir über Bauteile &mdash; nicht vorher.</p>
+</section>
+
+</div>
+
+<div id="bar"></div>
+<div id="brand">Fachpraxis · Lore-Lorentz-Schule Düsseldorf · <a href="../impressum.html" style="color:inherit">Impressum</a> · <a href="../datenschutz.html" style="color:inherit">Datenschutz</a></div>
+<div id="hud">
+  <button onclick="fs()" title="Vollbild (F)">Vollbild</button>
+  <span><b id="cur">1</b> / <span id="tot">12</span></span>
+</div>
+
+<script>
+(function(){
+  var s = document.querySelectorAll('.slide'), i = 0;
+  document.getElementById('tot').textContent = s.length;
+  function show(n){
+    i = Math.max(0, Math.min(s.length-1, n));
+    s.forEach(function(el,k){ el.classList.toggle('on', k===i); });
+    document.getElementById('cur').textContent = i+1;
+    document.getElementById('bar').style.width = ((i)/(s.length-1)*100)+'%';
+    location.hash = i+1;
+  }
+  window.fs = function(){
+    if(document.fullscreenElement) document.exitFullscreen();
+    else document.documentElement.requestFullscreen();
+  };
+  document.addEventListener('keydown', function(e){
+    if(['ArrowRight','PageDown',' ','Enter'].indexOf(e.key)>-1){ show(i+1); e.preventDefault(); }
+    else if(['ArrowLeft','PageUp','Backspace'].indexOf(e.key)>-1){ show(i-1); e.preventDefault(); }
+    else if(e.key==='Home'){ show(0); }
+    else if(e.key==='End'){ show(s.length-1); }
+    else if(e.key==='f'||e.key==='F'){ fs(); }
+  });
+  document.getElementById('deck').addEventListener('click', function(e){
+    show(e.clientX < window.innerWidth*0.25 ? i-1 : i+1);
+  });
+  var x0=null;
+  document.addEventListener('touchstart', function(e){ x0 = e.touches[0].clientX; }, {passive:true});
+  document.addEventListener('touchend', function(e){
+    if(x0===null) return;
+    var dx = e.changedTouches[0].clientX - x0;
+    if(Math.abs(dx)>50) show(dx<0 ? i+1 : i-1);
+    x0=null;
+  }, {passive:true});
+  show(parseInt(location.hash.replace('#',''),10)-1 || 0);
+})();
+</script>
+</body>
+</html>
