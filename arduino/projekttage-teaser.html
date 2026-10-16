@@ -192,197 +192,207 @@ t = micros() - t0;                    <span class="c">// Stoppereignis</span></p
 <!-- 4 -->
 <section class="slide title-slide">
   <div class="kicker">Und jetzt der Trick</div>
-  <h1 style="max-width:24ch">Dem Gerät ist völlig egal,<br>dass da ein Mensch drückt.</h1>
+  <h1 style="max-width:26ch">Eine Zahl ist keine Antwort.<br>Sie ist der Anfang.</h1>
   <div class="rule" style="background:var(--a2)"></div>
-  <p class="lead">Es misst nur die Zeit zwischen <em>irgendeinem</em> Startereignis und
-  <em>irgendeinem</em> Stoppereignis. Tausch die beiden aus &mdash; und du hast ein neues Gerät.</p>
+  <p class="lead">Du weißt jetzt, <em>wie schnell</em> du bist. Du weißt nicht, <em>wovon das abhängt.</em>
+  Ändere eine einzige Sache am Spiel &mdash; das Signal, die Aufgabe, deinen Zustand &mdash;
+  und du hast ein Projekt.</p>
 </section>
 
 <!-- 5 -->
 <section class="slide">
   <div class="kicker">Der Baukasten &mdash; und hier wird es interessant</div>
-  <h2>Zwei Spalten. Jede Kombination ist ein Projekt.</h2>
+  <h2>Zwei Spalten. Jede Kombination ist eine andere Challenge.</h2>
   <div class="matrix">
-    <div class="col s"><h3 style="color:var(--a3)">Was den Start auslöst</h3>
+    <div class="col s"><h3 style="color:var(--a3)">Womit du gereizt wirst</h3>
       <ul>
-        <li class="now"><b>LED geht an</b></li>
-        <li><b>Kugel</b> unterbricht die erste Lichtschranke</li>
-        <li><b>Ultraschallimpuls</b> verlässt den Sender</li>
-        <li><b>Magnet</b> läuft am Reedkontakt vorbei</li>
-        <li><b>Arduino</b> legt den Pin auf HIGH (Kondensator lädt)</li>
-        <li><b>Blitz</b> am Himmel &mdash; du drückst</li>
+        <li class="now"><b>Eine LED</b> geht an</li>
+        <li><b>Ein Summer</b> piept &mdash; Auge aus, Ohr an</li>
+        <li><b>Zwei LEDs</b> &mdash; aber nur eine gilt</li>
+        <li><b>Vier LEDs</b> an vier Stellen</li>
+        <li><b>Ein Takt</b>, den du vorhersehen kannst</li>
+        <li><b>Nichts</b> &mdash; nur ein Lineal, das fällt</li>
       </ul></div>
-    <div class="col e"><h3 style="color:var(--a2)">Was den Stopp auslöst</h3>
+    <div class="col e"><h3 style="color:var(--a2)">Womit du antwortest</h3>
       <ul>
-        <li class="now"><b>Dein Finger</b> drückt den Taster</li>
-        <li><b>Zweite Lichtschranke</b> wird unterbrochen</li>
-        <li><b>Echo</b> kommt am Empfänger an</li>
-        <li><b>Derselbe Magnet</b> eine Umdrehung später</li>
-        <li><b>Spannung</b> erreicht eine Schwelle</li>
-        <li><b>Mikrofon</b> hört den Donner</li>
+        <li class="now"><b>Zeigefinger</b> auf dem Taster</li>
+        <li><b>Der richtige</b> von zwei Tastern</li>
+        <li><b>Gar nicht</b> &mdash; wenn Rot kommt</li>
+        <li><b>Der Fuß</b> auf dem Bremspedal</li>
+        <li><b>Die Hand des Nachbarn</b> in der Kette</li>
+        <li><b>Zugreifen</b>, bevor das Lineal weg ist</li>
       </ul></div>
   </div>
-  <div class="note">Der Code bleibt dabei fast derselbe wie im Reaktionsspiel. Was sich ändert, ist
-  das <strong>Bauteil am Eingang</strong> &mdash; und die Frage, die du damit beantwortest.</div>
+  <div class="note">Der Aufbau bleibt immer derselbe: Signal raus, <code>micros()</code> merken, auf den
+  Eingang warten. Was sich ändert, ist die <strong>Frage über den Menschen davor</strong>.</div>
 </section>
 
 <!-- 6 -->
 <section class="slide">
-  <div class="kicker">Ideen 1 / 5 · statt deines Fingers: eine Lichtschranke</div>
-  <h2>Bewegung &amp; Geschwindigkeit</h2>
+  <div class="kicker">Ideen 1 / 5 · gleiche Aufgabe, anderer Sinn</div>
+  <h2>Welcher Sinn ist der schnellste?</h2>
   <div class="cards">
-    <div class="card c1"><h3>Die Sprintstrecke</h3>
-      <p>Zwei Lichtschranken im bekannten Abstand. Was beim Reaktionsspiel dein Finger ist,
-      ist hier die Kugel &mdash; aus der Laufzeit wird die Geschwindigkeit.</p>
-      <div class="ss"><span class="g">Start:</span> erste Lichtschranke unterbrochen &nbsp;·&nbsp;
-        <span class="r">Stopp:</span> zweite Lichtschranke unterbrochen</div>
-      <div class="meta"><span class="tag t">v = s/t</span><span class="tag">LDR + LED</span><span class="dots">●●○</span></div></div>
-    <div class="card c1"><h3>Fallbeschleunigung g</h3>
-      <p>Eine Kugel fällt durch zwei Lichtschranken. Dein Gerät misst, der Literaturwert 9,81&nbsp;m/s²
-      prüft nach &mdash; die härteste Gegenprobe, die es gibt.</p>
-      <div class="ss"><span class="g">Start:</span> Kugel passiert oben &nbsp;·&nbsp;
-        <span class="r">Stopp:</span> Kugel passiert unten</div>
-      <div class="meta"><span class="tag t">a aus v₁, v₂</span><span class="dots">●●●</span></div></div>
-    <div class="card c1"><h3>Fahrradtacho</h3>
-      <p>Hier ist Start und Stopp <em>dasselbe</em> Ereignis, nur eine Umdrehung später.
-      Aus der Zeit pro Umdrehung wird Geschwindigkeit und Kilometerstand.</p>
-      <div class="ss"><span class="g">Start:</span> Magnet am Reedkontakt &nbsp;·&nbsp;
-        <span class="r">Stopp:</span> derselbe Magnet, eine Runde später</div>
-      <div class="meta"><span class="tag t">v, s</span><span class="tag">Display</span><span class="dots">●●○</span></div></div>
-    <div class="card c1"><h3>Die Rampe</h3>
-      <p>Ein Wagen rollt die schiefe Ebene hinab, drei Lichtschranken auf dem Weg.
-      Ist die Bewegung wirklich gleichmäßig beschleunigt? Dein Gerät sagt es dir.</p>
-      <div class="ss"><span class="g">Start:</span> Lichtschranke 1 &nbsp;·&nbsp;
-        <span class="r">Stopp:</span> Lichtschranke 2 und 3</div>
-      <div class="meta"><span class="tag t">s(t)-Gesetz</span><span class="dots">●●●</span></div></div>
+    <div class="card c1"><h3>Auge gegen Ohr</h3>
+      <p>Derselbe Test zweimal: einmal startet die LED, einmal der Summer. Die Literatur sagt,
+      das Ohr gewinnt um rund 30&nbsp;ms. Stimmt das bei euch auch?</p>
+      <div class="ss"><span class="g">Start:</span> LED bzw. Summer &nbsp;·&nbsp;
+        <span class="r">Stopp:</span> Finger am Taster</div>
+      <div class="meta"><span class="tag t">zwei Mittelwerte</span><span class="tag">LED + Summer</span><span class="dots">●○○</span></div></div>
+    <div class="card c1"><h3>Wie hell muss es sein?</h3>
+      <p>LED per <code>analogWrite()</code> in fünf Helligkeitsstufen. Ab wann wird die Reaktion
+      spürbar langsamer &mdash; und ab wann sieht man das Signal gar nicht mehr?</p>
+      <div class="ss"><span class="g">Start:</span> LED mit PWM-Stufe 20…255 &nbsp;·&nbsp;
+        <span class="r">Stopp:</span> Finger am Taster</div>
+      <div class="meta"><span class="tag t">t über Helligkeit</span><span class="dots">●●○</span></div></div>
+    <div class="card c1"><h3>Aus dem Augenwinkel</h3>
+      <p>Zwei LEDs: eine direkt vor der Nase, eine 50&nbsp;cm seitlich. Blick geradeaus halten.
+      Wie teuer ist es, ein Signal nur peripher zu sehen? (Autofahrer-Frage!)</p>
+      <div class="ss"><span class="g">Start:</span> zufällig LED Mitte oder Rand &nbsp;·&nbsp;
+        <span class="r">Stopp:</span> Finger am Taster</div>
+      <div class="meta"><span class="tag t">zentral vs. peripher</span><span class="dots">●●○</span></div></div>
+    <div class="card c1"><h3>Laut, leise, hoch, tief</h3>
+      <p>Der Summer kann mehr als piepen. Reagiert man auf einen hohen Ton schneller als auf einen
+      tiefen? Auf einen lauten schneller als auf einen leisen?</p>
+      <div class="ss"><span class="g">Start:</span> <code>tone()</code> mit 400 / 1000 / 3000&nbsp;Hz &nbsp;·&nbsp;
+        <span class="r">Stopp:</span> Finger am Taster</div>
+      <div class="meta"><span class="tag t">t über Frequenz</span><span class="dots">●○○</span></div></div>
   </div>
 </section>
 
 <!-- 7 -->
 <section class="slide">
-  <div class="kicker">Ideen 2 / 5 · statt einmal messen: tausendmal</div>
-  <h2>Drehen &amp; Schwingen</h2>
+  <div class="kicker">Ideen 2 / 5 · jetzt muss das Gehirn auch noch denken</div>
+  <h2>Wie teuer ist eine Entscheidung?</h2>
   <div class="cards">
-    <div class="card c4"><h3>Das Pendel misst g</h3>
-      <p>Ein Pendel streut, anders als dein Finger, fast gar nicht &mdash; der Arduino zählt
-      50 Perioden am Stück und wird dabei genauer als jede Stoppuhr.</p>
-      <div class="ss"><span class="g">Start:</span> Pendel passiert die Lichtschranke &nbsp;·&nbsp;
-        <span class="r">Stopp:</span> 50 Durchgänge später</div>
-      <div class="meta"><span class="tag t">g = 4π²l/T²</span><span class="dots">●●○</span></div></div>
-    <div class="card c4"><h3>Drehzahlmesser</h3>
-      <p>Eine helle Marke auf dem Lüfterrad, eine Reflexlichtschranke daneben. Zeit zwischen
-      zwei Vorbeiläufen &rarr; Umdrehungen pro Minute. Geht auch an der Bohrmaschine.</p>
-      <div class="ss"><span class="g">Start:</span> Marke vorbei &nbsp;·&nbsp;
-        <span class="r">Stopp:</span> Marke wieder vorbei</div>
-      <div class="meta"><span class="tag t">n = 60/T</span><span class="dots">●●○</span></div></div>
-    <div class="card c4"><h3>Federkonstante im Betrieb</h3>
-      <p>Federpendel schwingt, der Arduino misst die Periodendauer. Masse ändern, neu messen,
-      T² über m auftragen &mdash; die Steigung liefert D. Linearisierung wie im Physikunterricht.</p>
-      <div class="ss"><span class="g">Start/Stopp:</span> Lichtschranke am Umkehrpunkt</div>
-      <div class="meta"><span class="tag t">T² über m</span><span class="dots">●●●</span></div></div>
-    <div class="card c4"><h3>Hält der Takt?</h3>
-      <p>Ein Metronom &mdash; oder ein Mensch, der mitklatscht. Jeder Schlag wird erfasst,
-      die Abweichungen werden ausgewertet. Dieselbe Statistik wie beim Reaktionsspiel.</p>
-      <div class="ss"><span class="g">Start:</span> Klick &nbsp;·&nbsp;
-        <span class="r">Stopp:</span> nächster Klick</div>
-      <div class="meta"><span class="tag t">Streuung</span><span class="tag">Mikrofon</span><span class="dots">●●●</span></div></div>
+    <div class="card c2"><h3>Links oder rechts?</h3>
+      <p>Zwei LEDs, zwei Taster &mdash; du musst den <em>richtigen</em> drücken. Das kostet messbar
+      Zeit. Mit vier LEDs noch mehr. Der Zuwachs folgt einem Gesetz (Hick), das ihr selbst findet.</p>
+      <div class="ss"><span class="g">Start:</span> eine von n LEDs &nbsp;·&nbsp;
+        <span class="r">Stopp:</span> der zugehörige Taster</div>
+      <div class="meta"><span class="tag t">t über Anzahl n</span><span class="dots">●●○</span></div></div>
+    <div class="card c2"><h3>Grün drücken, Rot nicht</h3>
+      <p>Die Ampel-Aufgabe. Bei Grün so schnell wie möglich, bei Rot die Hand stillhalten.
+      Jetzt gibt es zwei Zahlen: die Zeit <em>und</em> die Fehlerquote. Die eine wird besser,
+      wenn die andere schlechter wird.</p>
+      <div class="ss"><span class="g">Start:</span> grüne oder rote LED &nbsp;·&nbsp;
+        <span class="r">Stopp:</span> Taster &mdash; oder bewusst keiner</div>
+      <div class="meta"><span class="tag t">Zeit + Fehlerrate</span><span class="dots">●●○</span></div></div>
+    <div class="card c2"><h3>Hau den Maulwurf</h3>
+      <p>Vier LEDs, vier Taster, 30 Runden am Stück, Punktestand auf dem Display.
+      Ein echtes Spiel &mdash; und nebenbei eine saubere Messreihe über Wahlreaktionszeiten.</p>
+      <div class="ss"><span class="g">Start:</span> zufällige LED &nbsp;·&nbsp;
+        <span class="r">Stopp:</span> passender Taster</div>
+      <div class="meta"><span class="tag t">Score + Ø-Zeit</span><span class="tag">Display</span><span class="dots">●●●</span></div></div>
+    <div class="card c2"><h3>Zwei Dinge gleichzeitig</h3>
+      <p>Reaktionstest wie immer &mdash; aber dabei laut rückwärts in Siebenerschritten zählen.
+      Oder eine Nachricht tippen. Wie viel Reaktionszeit kostet Ablenkung wirklich?</p>
+      <div class="ss"><span class="g">Start:</span> LED &nbsp;·&nbsp;
+        <span class="r">Stopp:</span> Taster, mit Nebenaufgabe im Kopf</div>
+      <div class="meta"><span class="tag t">mit / ohne Last</span><span class="dots">●○○</span></div></div>
   </div>
 </section>
 
 <!-- 8 -->
 <section class="slide">
-  <div class="kicker">Ideen 3 / 5 · statt 250 ms: 600 Mikrosekunden</div>
-  <h2>Abstand &amp; Schall</h2>
+  <div class="kicker">Ideen 3 / 5 · das Gerät bleibt gleich, du änderst dich</div>
+  <h2>Was macht dich schneller &mdash; und was langsamer?</h2>
   <div class="cards">
-    <div class="card c3"><h3>Einparkhilfe</h3>
-      <p>Das Ultraschallmodul macht nichts anderes als das Reaktionsspiel &mdash; nur dass die
-      „Reaktion“ hier das zurückkommende Echo ist. Je näher, desto schneller piept der Summer.</p>
-      <div class="ss"><span class="g">Start:</span> Impuls geht raus &nbsp;·&nbsp;
-        <span class="r">Stopp:</span> Echo kommt an</div>
-      <div class="meta"><span class="tag t">s = c·t/2</span><span class="tag">HC-SR04</span><span class="dots">●○○</span></div></div>
-    <div class="card c3"><h3>Schallgeschwindigkeit messen</h3>
-      <p>Gleiches Modul, umgedrehte Frage: Abstand bekannt, c gesucht. Dann die Luft erwärmen und
-      die Temperaturabhängigkeit nachweisen. Aus dem Bauteil wird ein echtes Experiment.</p>
-      <div class="ss"><span class="g">Start:</span> Impuls &nbsp;·&nbsp;
-        <span class="r">Stopp:</span> Echo bei bekanntem s</div>
-      <div class="meta"><span class="tag t">c(T)</span><span class="dots">●●●</span></div></div>
-    <div class="card c3"><h3>Blitz-Entfernungsmesser</h3>
-      <p>Hier drückst du wieder selbst &mdash; aber jetzt ist deine Reaktionszeit der <em>Fehler</em>.
-      Rechne aus, wie viele Meter dich dein eigener Messwert kostet. Eine schöne Fehlerdiskussion.</p>
-      <div class="ss"><span class="g">Start:</span> dein Finger beim Blitz &nbsp;·&nbsp;
-        <span class="r">Stopp:</span> Mikrofon hört den Donner</div>
-      <div class="meta"><span class="tag t">s = c·t</span><span class="dots">●○○</span></div></div>
-    <div class="card c3"><h3>Berührungsloser Füllstand</h3>
-      <p>Ultraschall von oben in den Behälter, Laufzeit &rarr; Pegel in Prozent, Servo als Zeiger.
-      Das kontaktlose Gegenstück zum Schwimmergeber aus AB&nbsp;7.</p>
-      <div class="ss"><span class="g">Start:</span> Impuls &nbsp;·&nbsp;
-        <span class="r">Stopp:</span> Echo von der Oberfläche</div>
-      <div class="meta"><span class="tag t">Kalibrierung</span><span class="tag">Servo</span><span class="dots">●●○</span></div></div>
+    <div class="card c3"><h3>Die Lernkurve</h3>
+      <p>Hundert Durchgänge am Stück, nichts verändern außer der Übung. Wird man besser?
+      Wann hört die Verbesserung auf? Ein Diagramm, das jeder sofort versteht.</p>
+      <div class="ss"><span class="g">Start:</span> LED, Durchgang 1…100 &nbsp;·&nbsp;
+        <span class="r">Stopp:</span> Finger</div>
+      <div class="meta"><span class="tag t">t über Versuchsnummer</span><span class="dots">●○○</span></div></div>
+    <div class="card c3"><h3>Nach dem Sprint</h3>
+      <p>Messreihe in Ruhe, dann 30 Kniebeugen oder zwei Minuten Treppe, dann sofort nochmal.
+      Puls dazu zählen. Macht Belastung wach oder langsam?</p>
+      <div class="ss"><span class="g">Start:</span> LED &nbsp;·&nbsp;
+        <span class="r">Stopp:</span> Finger, Puls notiert</div>
+      <div class="meta"><span class="tag t">t über Puls</span><span class="dots">●●○</span></div></div>
+    <div class="card c3"><h3>Musik, Handy, Gespräch</h3>
+      <p>Vier Bedingungen, je 20 Durchgänge: still, Musik über Kopfhörer, jemand redet dich an,
+      Handy in der anderen Hand. Vier Mittelwerte, vier Streuungen, ein Balkendiagramm.</p>
+      <div class="ss"><span class="g">Start:</span> LED &nbsp;·&nbsp;
+        <span class="r">Stopp:</span> Finger unter Störbedingung</div>
+      <div class="meta"><span class="tag t">Vergleich 4 Gruppen</span><span class="dots">●○○</span></div></div>
+    <div class="card c3"><h3>Schreibhand gegen Fuß</h3>
+      <p>Rechts, links, Fuß &mdash; dieselbe Aufgabe, drei Körperteile. Der Fuß ist der interessante:
+      genau mit ihm bremst man im Auto, und er ist deutlich langsamer als der Finger.</p>
+      <div class="ss"><span class="g">Start:</span> LED &nbsp;·&nbsp;
+        <span class="r">Stopp:</span> Taster unter Hand bzw. Schuh</div>
+      <div class="meta"><span class="tag t">drei Mittelwerte</span><span class="dots">●○○</span></div></div>
   </div>
 </section>
 
 <!-- 9 -->
 <section class="slide">
-  <div class="kicker">Ideen 4 / 5 · der Mensch bleibt im Spiel</div>
-  <h2>Mensch &amp; Sport</h2>
+  <div class="kicker">Ideen 4 / 5 · kann man das System austricksen?</div>
+  <h2>Erwartung, Fehlstart und das Duell</h2>
   <div class="cards">
-    <div class="card c2"><h3>Reaktions-Duell</h3>
-      <p>Das Einstiegsspiel zu Ende gebaut: zwei Taster, zwei Spieler, Fehlstarterkennung,
-      Bestenliste auf dem Display. Wer ist wirklich schneller &mdash; und ab welchem Abstand ist das kein Zufall mehr?</p>
-      <div class="ss"><span class="g">Start:</span> LED &nbsp;·&nbsp;
-        <span class="r">Stopp:</span> der schnellere von zwei Tastern</div>
-      <div class="meta"><span class="tag t">Statistik</span><span class="tag">Display</span><span class="dots">●●○</span></div></div>
-    <div class="card c2"><h3>Reaktionszeit unter Bedingungen</h3>
-      <p>Die naheliegendste Erweiterung: Hörst du schneller als du siehst? Wie wirkt Müdigkeit,
-      Ablenkung, Koffein? Dasselbe Gerät, aber eine Messreihe mit Versuchsplan.</p>
-      <div class="ss"><span class="g">Start:</span> LED <em>oder</em> Summer &nbsp;·&nbsp;
-        <span class="r">Stopp:</span> Taster</div>
-      <div class="meta"><span class="tag t">Vergleich zweier Mittelwerte</span><span class="dots">●●○</span></div></div>
-    <div class="card c2"><h3>Sprungkraft-Messer</h3>
-      <p>Eine Matte mit Kontakt: Solange du in der Luft bist, ist der Kontakt offen. Aus der
-      Flugzeit folgt die Sprunghöhe &mdash; h = g·t²/8. Der Mensch löst aus, misst aber nicht mehr mit.</p>
-      <div class="ss"><span class="g">Start:</span> Kontakt öffnet &nbsp;·&nbsp;
-        <span class="r">Stopp:</span> Kontakt schließt</div>
-      <div class="meta"><span class="tag t">Flugzeit → h</span><span class="dots">●●○</span></div></div>
-    <div class="card c2"><h3>Pulsmesser</h3>
-      <p>Eine helle LED durch die Fingerkuppe, ein Fotowiderstand dahinter: Jeder Herzschlag ändert
-      die Helligkeit. Diesmal drückt nichts &mdash; dein Körper löst selbst aus.</p>
-      <div class="ss"><span class="g">Start:</span> Helligkeitseinbruch &nbsp;·&nbsp;
-        <span class="r">Stopp:</span> der nächste</div>
-      <div class="meta"><span class="tag t">f = 60/T</span><span class="tag">LDR</span><span class="dots">●●●</span></div></div>
+    <div class="card c4"><h3>Der verräterische Takt</h3>
+      <p>Einmal kommt die LED nach zufälliger Pause, einmal exakt alle drei Sekunden.
+      Im Takt werden die Zeiten absurd kurz &mdash; weil nicht mehr reagiert, sondern geraten wird.
+      Genau deshalb ist die Zufallspause im Spiel drin.</p>
+      <div class="ss"><span class="g">Start:</span> LED, Pause fest oder zufällig &nbsp;·&nbsp;
+        <span class="r">Stopp:</span> Finger</div>
+      <div class="meta"><span class="tag t">Reaktion vs. Antizipation</span><span class="dots">●●○</span></div></div>
+    <div class="card c4"><h3>Der Fehlstart-Richter</h3>
+      <p>Beim Sprint gilt: unter 100&nbsp;ms kann kein Mensch reagiert haben &mdash; das ist ein
+      Fehlstart. Baut den Richter nach, der das erkennt, und prüft an euren eigenen Daten,
+      ob die 100&nbsp;ms-Grenze fair ist.</p>
+      <div class="ss"><span class="g">Start:</span> Startsignal &nbsp;·&nbsp;
+        <span class="r">Stopp:</span> Taster &mdash; oder Disqualifikation</div>
+      <div class="meta"><span class="tag t">Schwellenwert prüfen</span><span class="tag">Summer</span><span class="dots">●●○</span></div></div>
+    <div class="card c4"><h3>Das Duell</h3>
+      <p>Eine LED, zwei Taster, zwei Leute. Der Arduino meldet, wer zuerst war und um wie viele
+      Millisekunden. Turnierbaum, Bestenliste, Revanche &mdash; und am Ende 200 Messwerte für die Klasse.</p>
+      <div class="ss"><span class="g">Start:</span> LED für beide &nbsp;·&nbsp;
+        <span class="r">Stopp:</span> der erste der beiden Taster</div>
+      <div class="meta"><span class="tag t">Differenz in ms</span><span class="tag">Display</span><span class="dots">●●○</span></div></div>
+    <div class="card c4"><h3>Die Menschenkette</h3>
+      <p>Die ganze Klasse hält Händchen. Am Anfang der Kette startet der Arduino, der Letzte drückt
+      den Taster. Zeit geteilt durch Personenzahl &mdash; so schnell läuft ein Impuls durch eine Gruppe.</p>
+      <div class="ss"><span class="g">Start:</span> Signal an Person 1 &nbsp;·&nbsp;
+        <span class="r">Stopp:</span> Taster bei Person n</div>
+      <div class="meta"><span class="tag t">t pro Person</span><span class="dots">●●○</span></div></div>
   </div>
 </section>
 
 <!-- 10 -->
 <section class="slide">
-  <div class="kicker">Ideen 5 / 5 · wenn niemand drückt</div>
-  <h2>Elektrik, Wärme &amp; Flüssigkeit</h2>
+  <div class="kicker">Ideen 5 / 5 · wozu das Ganze gut ist</div>
+  <h2>Von der Millisekunde zum Meter</h2>
   <div class="cards">
-    <div class="card c5"><h3>Kapazitätsmesser</h3>
-      <p>Hier löst der Arduino Start <em>und</em> Stopp selbst aus &mdash; kein Mensch, keine
-      Streuung. Kondensator anstecken, Gerät zeigt die Kapazität an.</p>
-      <div class="ss"><span class="g">Start:</span> Pin auf HIGH &nbsp;·&nbsp;
-        <span class="r">Stopp:</span> Spannung erreicht 63&nbsp;%</div>
-      <div class="meta"><span class="tag t">C = τ/R</span><span class="dots">●●○</span></div></div>
-    <div class="card c5"><h3>Dämmungs-Tester</h3>
-      <p>Zwei gleiche Becher, einer isoliert, NTC in beiden. Statt Millisekunden misst
-      dein Gerät jetzt eine ganze Stunde &mdash; und schreibt dabei mit.</p>
-      <div class="ss"><span class="g">Start:</span> heiß eingefüllt &nbsp;·&nbsp;
-        <span class="r">Stopp:</span> alle 10&nbsp;s ein Messwert</div>
-      <div class="meta"><span class="tag t">Datenlogger</span><span class="tag">NTC</span><span class="dots">●●○</span></div></div>
-    <div class="card c5"><h3>Tropfenzähler</h3>
-      <p>Lichtschranke unter dem Hahn: Zeit zwischen zwei Tropfen &rarr; Durchfluss in ml/min.
-      Hochrechnung: Was kostet ein tropfender Wasserhahn im Jahr?</p>
-      <div class="ss"><span class="g">Start:</span> Tropfen fällt &nbsp;·&nbsp;
-        <span class="r">Stopp:</span> nächster Tropfen</div>
-      <div class="meta"><span class="tag t">Q = V/t</span><span class="dots">●●○</span></div></div>
+    <div class="card c5"><h3>Dein Bremsweg</h3>
+      <p>Die stärkste Idee: Der Arduino misst deine Reaktionszeit und rechnet sofort vor,
+      wie weit du bei 30, 50 und 100&nbsp;km/h <em>ungebremst</em> weiterfährst. Auf dem Display
+      stehen keine Millisekunden mehr, sondern Meter. Das wirkt.</p>
+      <div class="ss"><span class="g">Start:</span> LED = Bremslicht vorn &nbsp;·&nbsp;
+        <span class="r">Stopp:</span> Fußtaster = Bremspedal</div>
+      <div class="meta"><span class="tag t">s = v · t</span><span class="tag">Display</span><span class="dots">●●○</span></div></div>
+    <div class="card c5"><h3>Das Lineal als Gegenprobe</h3>
+      <p>Der klassische Test ohne Elektronik: Lineal fallen lassen, Greifhöhe ablesen,
+      t&nbsp;=&nbsp;√(2h/g). Zwei völlig verschiedene Messverfahren an derselben Person &mdash;
+      kommt dasselbe heraus? Wenn nein: warum nicht?</p>
+      <div class="ss"><span class="g">Start:</span> Lineal losgelassen &nbsp;·&nbsp;
+        <span class="r">Stopp:</span> zugegriffen</div>
+      <div class="meta"><span class="tag t">zwei Verfahren</span><span class="tag">kein Bauteil</span><span class="dots">●●○</span></div></div>
+    <div class="card c5"><h3>Die Klassenstatistik</h3>
+      <p>Alle 26 messen am selben Gerät je 20-mal. Daraus wird ein Histogramm, ein Mittelwert,
+      eine Streuung &mdash; und die Frage, ob der Beste wirklich besser ist oder nur Glück hatte.</p>
+      <div class="ss"><span class="g">Start:</span> LED &nbsp;·&nbsp;
+        <span class="r">Stopp:</span> Finger &mdash; 520 Messwerte</div>
+      <div class="meta"><span class="tag t">Verteilung, σ</span><span class="dots">●●○</span></div></div>
     <div class="card c5"><h3>Deine eigene Idee</h3>
-      <p>Sie muss nur zwei Dinge haben, die du benennen kannst: ein Startereignis und ein
-      Stoppereignis. Den Rest kennst du aus den Sketches der letzten Blätter.</p>
-      <div class="ss"><span class="g">Start:</span> ? &nbsp;·&nbsp; <span class="r">Stopp:</span> ?</div>
-      <div class="meta"><span class="tag t">dein Thema</span><span class="dots">●?○</span></div></div>
+      <p>Alles, was eine Startbedingung und eine Stoppbedingung hat, geht &mdash; ihr müsst nur
+      sagen können, <em>welche Frage über den Menschen</em> ihr damit beantwortet.
+      Sprecht mich an, bevor ihr baut.</p>
+      <div class="ss"><span class="g">Start:</span> ? &nbsp;·&nbsp;
+        <span class="r">Stopp:</span> ?</div>
+      <div class="meta"><span class="tag t">eure Frage</span><span class="dots">?</span></div></div>
   </div>
 </section>
+
 
 <!-- 11 -->
 <section class="slide">
@@ -429,7 +439,7 @@ t = micros() - t0;                    <span class="c">// Stoppereignis</span></p
   <div class="kicker">Nächster Schritt</div>
   <h1>Drei Ideen aufschreiben.<br>Je einen Satz:<br>Start &mdash; Stopp &mdash; Ergebnis.</h1>
   <div class="rule" style="background:var(--a2)"></div>
-  <p class="lead">Mehr nicht. Über Bauteile reden wir danach.<br>
+  <p class="lead">Jede Idee ändert genau <em>eine</em> Sache am Reaktionsspiel.<br>
   Vorher wird gespielt: Reaktionsspiel bauen, messen, Bestenliste.</p>
 </section>
 
