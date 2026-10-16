@@ -217,7 +217,22 @@
   .crew b{color:var(--acc);font-weight:700}
   .title-slide .crew{margin-top:2em}
 
-  /* Druck: zurueck auf hell */
+  
+/* QR-Folie */
+.qrwrap{display:grid;grid-template-columns:auto 1fr;gap:clamp(1.4rem,3vw,3rem);align-items:center;margin-top:1.2em}
+.qrbox{background:#fff;padding:clamp(.6rem,1.1vw,1rem);border-radius:14px;
+  box-shadow:0 0 0 1px var(--line),0 0 42px color-mix(in srgb,var(--acc) 38%, transparent)}
+.qrbox img{display:block;width:clamp(170px,22vw,280px);height:auto;image-rendering:pixelated}
+.qrtext ul{list-style:none;margin:.7em 0 0;padding:0}
+.qrtext li{position:relative;padding-left:1.5em;margin:.34em 0;font-size:clamp(.9rem,1.42vw,1.26rem);color:var(--muted)}
+.qrtext li::before{content:"";position:absolute;left:0;top:.55em;width:.5em;height:.5em;border-radius:50%;
+  background:var(--acc);box-shadow:0 0 10px var(--acc)}
+.qrtext li b{color:var(--ink)}
+.qrtext .small{margin-top:.9em;font-size:clamp(.76rem,1.1vw,.98rem);color:var(--muted);line-height:1.6}
+.qrtext .lnk{font-family:ui-monospace,"Cascadia Mono",Consolas,monospace;color:var(--acc);word-break:break-all}
+@media (max-width:900px){.qrwrap{grid-template-columns:1fr;justify-items:start}}
+
+/* Druck: zurueck auf hell */
   @media print{
     body{background:#fff;color:#15202b;overflow:visible}
     body::before,body::after{display:none}
@@ -225,7 +240,8 @@
     .title-slide h1{color:#15202b;-webkit-text-fill-color:#15202b}
     .card,.matrix .col,.vs>div,.flow .box{background:#fff;border-color:#dfe5ea;box-shadow:none}
     .card h3,.matrix li b,.qs .t,.ss b{color:#15202b}
-    .crew{background:#fff;border-color:#dfe5ea;color:#5b6b7a}
+    .qrbox{box-shadow:0 0 0 1px #dfe5ea} .qrtext li{color:#5b6b7a} .qrtext li b{color:#15202b}
+  .crew{background:#fff;border-color:#dfe5ea;color:#5b6b7a}
     .crew b{color:#15202b}
     pre.code{background:#f5f8fb;color:#15202b;box-shadow:none}
     #bar,#hud,#brand{display:none}
@@ -536,6 +552,27 @@ t = micros() - t0;                    <span class="c">// Stoppereignis</span></p
   <b>Wolfgang Wegner</b> &amp; <b>Heiko Braak</b></div>
 </section>
 
+<!-- 14 -->
+<section class="slide">
+  <div class="kicker">Her damit</div>
+  <h2>Idee eintippen &mdash; jetzt, nicht morgen.</h2>
+  <div class="qrwrap">
+    <div class="qrbox"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAUgAAAFIAQAAAAAab1qeAAACZklEQVR4nO1a0WokMQyTjv3/X1YfJHsDhSMLpRmXpC27nQgmMY4tOaawOf7tAi/yIn8M+QLobwLlf8T8AMvslB0dtyfKbkKsalMKINSzU3b0ACRJAAQJQgRACoxvevYJ6xyGtDdSBCS2y/7S2/8g0vGTImJN8Rff/ieQL+DthZ2FlvDZs1N2dN6e5YTxRqr/RPXslB0dt2fHSAJxTcI5fo2gU3Z0FgmFEUH51p+AoJ7TlB2dRdoLxfikP5bn6uM/ZUfH7bn+wqKojj5D8Hn10UdIIcSzJWeo6BJUn7DOEUin9Qj3Ekjm8yZMFkjH1zkC+QIA0InHntk6UwCrLHJ6nVOQtqeKGVVCoh9RJelv/NxHiqSJUUpLtNy0lC8Ken6dU5COnwmjCiW19FSJ+iescxBSzT9NnJiqCNWC/hHrfDyyOWciZtsUiNx0crrxc3PI7iclgr415ipFcfXmNlJyCqLCRSmL+CL2pqHH1zkCGaWZehKYstI39X56nVOQL1uyQqYcP4VKS46fl39+gKQoQqSFkWQ+zz7/uvr9E2RfaHbxmLngTDDF1e/byO5nELq89C4oJ4he/9xGxniWRKZNqhOO9/PLlz5B5vJtqSspnKkaRC5f2hxVX1I1hkAqxVnSXVe/byOruolinS0wnfT7Fn7Mjo77Z3XQieWRXQ5FbuGvft8dS3+dfZEydyqLqkp5U3Z0/Lwz7Qu5LOr74u5dshSdsqMnIdk3SLmHV3fcPWqdQ5CshqV3lkqN/vbTbo6lv05lPCQzwZKJ9/7oM3smUHZhPvUmNce//HMbufDPA2+/yIv8//gCXb1aYI/ULvsAAAAASUVORK5CYII=" alt="QR-Code zum Ideen-Formular"></div>
+    <div class="qrtext">
+      <p class="lead">Handy raus, QR scannen, Idee abschicken. Dauert zwei Minuten.</p>
+      <ul>
+        <li>Eure Idee in <b>einem Satz</b></li>
+        <li><b>Start</b>-Ereignis und <b>Stopp</b>-Ereignis</li>
+        <li>Was ihr <b>herausfinden</b> wollt &mdash; und eure Vermutung</li>
+        <li>Welche <b>Bauteile</b> ihr braucht</li>
+        <li>Eure <b>Namen</b>, sonst finden wir euch nicht wieder</li>
+      </ul>
+      <p class="small">Mehrere Ideen? Einfach mehrfach abschicken.<br>
+      <span class="lnk">m920q.tail653c87.ts.net/feedback/ideen-projekttage-12np</span></p>
+    </div>
+  </div>
+</section>
+
 </div>
 
 <div id="bar"></div>
@@ -551,7 +588,7 @@ t = micros() - t0;                    <span class="c">// Stoppereignis</span></p
   document.getElementById('tot').textContent = s.length;
   var PAL = ['#2ee6d6','#2ee6d6','#ff4d6d','#ffc23d','#2ee6d6',
              '#2ee6d6','#ff4d6d','#5ddc7a','#b08cff','#ffc23d',
-             '#2ee6d6','#2ee6d6','#ff4d6d'];
+             '#2ee6d6','#2ee6d6','#ff4d6d','#5ddc7a'];
   function show(n){
     i = Math.max(0, Math.min(s.length-1, n));
     s.forEach(function(el,k){ el.classList.toggle('on', k===i); });
